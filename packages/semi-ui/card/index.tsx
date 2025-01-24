@@ -1,5 +1,5 @@
 import React, { PureComponent, ReactNode, CSSProperties } from 'react';
-import { omit, isString } from 'lodash-es';
+import { omit, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import { cssClasses, strings } from '@douyinfe/semi-foundation/card/constants';
 import '@douyinfe/semi-foundation/card/card.scss';
@@ -13,9 +13,9 @@ const prefixcls = cssClasses.PREFIX;
 
 export type Shadows = 'hover' | 'always';
 
-export { MetaProps } from './meta';
+export type { MetaProps } from './meta';
 
-export { CardGroupProps } from './cardGroup';
+export type { CardGroupProps } from './cardGroup';
 
 export interface CardProps {
     /** Operation group at the bottom of the card content area */
@@ -26,6 +26,7 @@ export interface CardProps {
     bordered?: boolean;
     /** Style class name */
     className?: string;
+    children?: React.ReactNode;
     /** Cover */
     cover?: ReactNode;
     /** Additional additions to the right of the title */
@@ -50,8 +51,9 @@ export interface CardProps {
     style?: CSSProperties;
     /** Title */
     title?: ReactNode;
+    /** aria label */
+    'aria-label'?: string
 }
-
 
 class Card extends PureComponent<CardProps> {
     static Meta = Meta;
@@ -73,7 +75,8 @@ class Card extends PureComponent<CardProps> {
         loading: PropTypes.bool,
         shadows: PropTypes.oneOf(strings.SHADOWS),
         style: PropTypes.object,
-        title: PropTypes.node
+        title: PropTypes.node,
+        'aria-label': PropTypes.string,
     };
 
     static defaultProps = {
@@ -102,37 +105,33 @@ class Card extends PureComponent<CardProps> {
         if (header || headerExtraContent || title) {
             return (
                 <div style={headerStyle} className={headerCls}>
-                    {
-                        header || ( // Priority of header over title and headerExtraContent
-                            <div className={headerWrapperCls}>
-                                {headerExtraContent &&
-                                    (
-                                        <div className={`${prefixcls}-header-wrapper-extra`}>
-                                            {headerExtraContent}
-                                        </div>
-                                    )
-                                }
-                                {title &&
-                                    (
-                                        <div className={titleCls}>
-                                            {
-                                                isString(title) ?
-                                                    (
-                                                        <Typography.Title
-                                                            heading={6}
-                                                            ellipsis={{ showTooltip: true, rows: 1 }}
-                                                        >
-                                                            {title}
-                                                        </Typography.Title>
-                                                    ) :
-                                                    title
-                                            }
-                                        </div>
-                                    )
-                                }
-                            </div>
-                        )
-                    }
+                    {header || ( // Priority of header over title and headerExtraContent
+                        <div className={headerWrapperCls}>
+                            {headerExtraContent && (
+                                <div
+                                    className={`${prefixcls}-header-wrapper-extra`}
+                                    x-semi-prop="headerExtraContent"
+                                >
+                                    {headerExtraContent}
+                                </div>
+                            )}
+                            {title && (
+                                <div className={titleCls}>
+                                    {isString(title) ? (
+                                        <Typography.Title
+                                            heading={6}
+                                            ellipsis={{ showTooltip: true, rows: 1 }}
+                                            x-semi-prop="title"
+                                        >
+                                            {title}
+                                        </Typography.Title>
+                                    ) : (
+                                        title
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             );
         }
@@ -145,16 +144,17 @@ class Card extends PureComponent<CardProps> {
         } = this.props;
         const coverCls = cls(`${prefixcls}-cover`);
 
-        return cover && <div className={coverCls}>{cover}</div>;
+        return (
+            cover && (
+                <div className={coverCls} x-semi-prop="cover">
+                    {cover}
+                </div>
+            )
+        );
     };
 
     renderBody = (): ReactNode => {
-        const {
-            bodyStyle,
-            children,
-            actions,
-            loading
-        } = this.props;
+        const { bodyStyle, children, actions, loading } = this.props;
         const bodyCls = cls(`${prefixcls}-body`);
         const actionsCls = cls(`${prefixcls}-body-actions`);
         const actionsItemCls = cls(`${prefixcls}-body-actions-item`);
@@ -178,7 +178,7 @@ class Card extends PureComponent<CardProps> {
                         <div className={actionsCls}>
                             <Space spacing={12}>
                                 {actions.map((item, idx) => (
-                                    <div key={idx} className={actionsItemCls}>{item}</div>
+                                    <div key={idx} className={actionsItemCls} x-semi-prop={`actions.${idx}`}>{item}</div>
                                 ))}
                             </Space>
                         </div>
@@ -198,7 +198,13 @@ class Card extends PureComponent<CardProps> {
             [`${prefixcls}-footer-bordered`]: footerLine
         });
 
-        return footer && <div style={footerStyle} className={footerCls}>{footer}</div>;
+        return (
+            footer && (
+                <div style={footerStyle} className={footerCls} x-semi-prop="footer">
+                    {footer}
+                </div>
+            )
+        );
     };
 
     render(): ReactNode {
@@ -230,7 +236,7 @@ class Card extends PureComponent<CardProps> {
         });
 
         return (
-            <div {...others} className={cardCls} style={style}>
+            <div {...others} aria-busy={this.props.loading} className={cardCls} style={style}>
                 {this.renderHeader()}
                 {this.renderCover()}
                 {this.renderBody()}

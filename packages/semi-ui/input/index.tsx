@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, max-len, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
@@ -7,7 +6,7 @@ import { cssClasses, strings } from '@douyinfe/semi-foundation/input/constants';
 import { isSemiIcon } from '../_utils';
 import BaseComponent from '../_base/baseComponent';
 import '@douyinfe/semi-foundation/input/input.scss';
-import { isString, noop, isFunction } from 'lodash-es';
+import { isString, noop, isFunction, isUndefined } from 'lodash';
 import { IconClear, IconEyeOpened, IconEyeClosedSolid } from '@douyinfe/semi-icons';
 
 const prefixCls = cssClasses.PREFIX;
@@ -16,8 +15,8 @@ const sizeSet = strings.SIZE;
 const statusSet = strings.STATUS;
 const modeSet = strings.MODE;
 
-export { InputGroupProps } from './inputGroup';
-export { TextAreaProps } from './textarea';
+export type { InputGroupProps } from './inputGroup';
+export type { TextAreaProps } from './textarea';
 export type InputSize = 'small' | 'large' | 'default';
 export type InputMode = 'password';
 // still keep success as ValidateStatus optional value because form will pass success as props.validateStatus in sometime
@@ -25,9 +24,16 @@ export type InputMode = 'password';
 export type ValidateStatus = "default" | "error" | "warning" | "success";
 
 export interface InputProps extends
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'prefix' | 'size' | 'autoFocus' | 'placeholder' | 'onFocus' | 'onBlur'> {
+    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'prefix' | 'size' | 'placeholder' | 'onFocus' | 'onBlur'> {
+    'aria-label'?: React.AriaAttributes['aria-label'];
+    'aria-describedby'?: React.AriaAttributes['aria-describedby'];
+    'aria-errormessage'?: React.AriaAttributes['aria-errormessage'];
+    'aria-invalid'?: React.AriaAttributes['aria-invalid'];
+    'aria-labelledby'?: React.AriaAttributes['aria-labelledby'];
+    'aria-required'?: React.AriaAttributes['aria-required'];
     addonBefore?: React.ReactNode;
     addonAfter?: React.ReactNode;
+    borderless?: boolean;
     prefix?: React.ReactNode;
     suffix?: React.ReactNode;
     mode?: InputMode;
@@ -35,14 +41,15 @@ export interface InputProps extends
     defaultValue?: React.ReactText;
     disabled?: boolean;
     readonly?: boolean;
-    autofocus?: boolean;
     type?: string;
     showClear?: boolean;
     hideSuffix?: boolean;
     placeholder?: React.ReactText;
     insetLabel?: React.ReactNode;
+    insetLabelId?: string;
     size?: InputSize;
     className?: string;
+    clearIcon?: React.ReactNode;
     style?: React.CSSProperties;
     validateStatus?: ValidateStatus;
     onClear?: (e: React.MouseEvent<HTMLDivElement>) => void;
@@ -57,6 +64,10 @@ export interface InputProps extends
     inputStyle?: React.CSSProperties;
     getValueLength?: (value: string) => number;
     forwardRef?: ((instance: any) => void) | React.MutableRefObject<any> | null;
+    preventScroll?: boolean;
+    /** internal prop, DatePicker use it */
+    showClearIgnoreDisabled?: boolean;
+    onlyBorder?: number
 }
 
 export interface InputState {
@@ -64,17 +75,23 @@ export interface InputState {
     cachedValue: React.ReactText;
     disabled: boolean;
     props: Record<string, any>;
-    paddingLeft: string;
     isFocus: boolean;
     isHovering: boolean;
     eyeClosed: boolean;
-    minLength: number;
+    minLength: number
 }
 
 class Input extends BaseComponent<InputProps, InputState> {
     static propTypes = {
+        'aria-label': PropTypes.string,
+        'aria-labelledby': PropTypes.string,
+        'aria-invalid': PropTypes.bool,
+        'aria-errormessage': PropTypes.string,
+        'aria-describedby': PropTypes.string,
+        'aria-required': PropTypes.bool,
         addonBefore: PropTypes.node,
         addonAfter: PropTypes.node,
+        clearIcon: PropTypes.node,
         prefix: PropTypes.node,
         suffix: PropTypes.node,
         mode: PropTypes.oneOf(modeSet),
@@ -82,7 +99,7 @@ class Input extends BaseComponent<InputProps, InputState> {
         defaultValue: PropTypes.any,
         disabled: PropTypes.bool,
         readonly: PropTypes.bool,
-        autofocus: PropTypes.bool,
+        autoFocus: PropTypes.bool,
         type: PropTypes.string,
         showClear: PropTypes.bool,
         hideSuffix: PropTypes.bool,
@@ -101,8 +118,11 @@ class Input extends BaseComponent<InputProps, InputState> {
         onKeyPress: PropTypes.func,
         onEnterPress: PropTypes.func,
         insetLabel: PropTypes.node,
+        insetLabelId: PropTypes.string,
         inputStyle: PropTypes.object,
         getValueLength: PropTypes.func,
+        preventScroll: PropTypes.bool,
+        borderless: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -110,7 +130,6 @@ class Input extends BaseComponent<InputProps, InputState> {
         addonAfter: '',
         prefix: '',
         suffix: '',
-        disabled: false,
         readonly: false,
         type: 'text',
         showClear: false,
@@ -127,7 +146,8 @@ class Input extends BaseComponent<InputProps, InputState> {
         onKeyUp: noop,
         onKeyPress: noop,
         onEnterPress: noop,
-        validateStatus: 'default'
+        validateStatus: 'default',
+        borderless: false,
     };
 
     inputRef!: React.RefObject<HTMLInputElement>;
@@ -137,12 +157,12 @@ class Input extends BaseComponent<InputProps, InputState> {
 
     constructor(props: InputProps) {
         super(props);
+        const initValue = 'value' in props ? props.value : props.defaultValue;
         this.state = {
-            value: '',
-            cachedValue: null, // Cache current props.value value
+            value: initValue,
+            cachedValue: props.value, // Cache current props.value value
             disabled: false,
             props: {},
-            paddingLeft: '',
             isFocus: false,
             isHovering: false,
             eyeClosed: props.mode === 'password',
@@ -160,13 +180,12 @@ class Input extends BaseComponent<InputProps, InputState> {
             setValue: (value: string) => this.setState({ value }),
             setEyeClosed: (value: boolean) => this.setState({ eyeClosed: value }),
             toggleFocusing: (isFocus: boolean) => {
-                const input = this.inputRef && this.inputRef.current;
-                if (isFocus) {
-                    input && input.focus();
-                } else {
-                    input && input.blur();
-                }
                 this.setState({ isFocus });
+            },
+            focusInput: () => {
+                const { preventScroll } = this.props;
+                const input = this.inputRef && this.inputRef.current;
+                input && input.focus({ preventScroll });
             },
             toggleHovering: (isHovering: boolean) => this.setState({ isHovering }),
             getIfFocusing: () => this.state.isFocus,
@@ -179,9 +198,8 @@ class Input extends BaseComponent<InputProps, InputState> {
             notifyKeyUp: (e: React.KeyboardEvent<HTMLInputElement>) => this.props.onKeyUp(e),
             notifyEnterPress: (e: React.KeyboardEvent<HTMLInputElement>) => this.props.onEnterPress(e),
             notifyClear: (e: React.MouseEvent<HTMLDivElement>) => this.props.onClear(e),
-            setPaddingLeft: (paddingLeft: string) => this.setState({ paddingLeft }),
             setMinLength: (minLength: number) => this.setState({ minLength }),
-            isEventTarget: (e: React.MouseEvent) => e && e.target === e.currentTarget
+            isEventTarget: (e: React.MouseEvent) => e && e.target === e.currentTarget,
         };
     }
 
@@ -200,6 +218,15 @@ class Input extends BaseComponent<InputProps, InputState> {
         const { mode } = this.props;
         if (prevProps.mode !== mode) {
             this.handleModeChange(mode);
+        }
+    }
+
+    componentDidMount(): void {
+        // autofocus is changed from the original support of input to the support of manually calling the focus method,
+        // so that preventScroll can still take effect under the setting of autofocus
+        const { disabled, autoFocus, preventScroll } = this.props;
+        if (!disabled && (autoFocus || this.props['autofocus'])) {
+            this.inputRef.current.focus({ preventScroll });
         }
     }
 
@@ -235,6 +262,10 @@ class Input extends BaseComponent<InputProps, InputState> {
         this.foundation.handleMouseUp(e);
     };
 
+    handleModeEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        this.foundation.handleModeEnterPress(e);
+    };
+
     handleClickPrefixOrSuffix = (e: React.MouseEvent<HTMLInputElement>) => {
         this.foundation.handleClickPrefixOrSuffix(e);
     };
@@ -251,7 +282,11 @@ class Input extends BaseComponent<InputProps, InputState> {
                 [`${prefixCls}-prepend-text`]: addonBefore && isString(addonBefore),
                 [`${prefixCls}-prepend-icon`]: isSemiIcon(addonBefore),
             });
-            return <div className={prefixWrapperCls}>{addonBefore}</div>;
+            return (
+                <div className={prefixWrapperCls} x-semi-prop="addonBefore">
+                    {addonBefore}
+                </div>
+            );
         }
         return null;
     }
@@ -264,19 +299,28 @@ class Input extends BaseComponent<InputProps, InputState> {
                 [`${prefixCls}-append-text`]: addonAfter && isString(addonAfter),
                 [`${prefixCls}-append-icon`]: isSemiIcon(addonAfter),
             });
-            return <div className={prefixWrapperCls}>{addonAfter}</div>;
+            return (
+                <div className={prefixWrapperCls} x-semi-prop="addonAfter">
+                    {addonAfter}
+                </div>
+            );
         }
         return null;
     }
 
     renderClearBtn() {
         const clearCls = cls(`${prefixCls}-clearbtn`);
+        const { clearIcon } = this.props;
         const allowClear = this.foundation.isAllowClear();
         // use onMouseDown to fix issue 1203
         if (allowClear) {
             return (
-                <div className={clearCls} onMouseDown={this.handleClear}>
-                    <IconClear />
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+                <div
+                    className={clearCls}
+                    onMouseDown={this.handleClear}
+                >
+                    {clearIcon ? clearIcon : <IconClear />}
                 </div>
             );
         }
@@ -284,14 +328,25 @@ class Input extends BaseComponent<InputProps, InputState> {
     }
 
     renderModeBtn() {
-        const { value, isFocus, isHovering, eyeClosed } = this.state;
+        const { eyeClosed } = this.state;
         const { mode, disabled } = this.props;
         const modeCls = cls(`${prefixCls}-modebtn`);
         const modeIcon = eyeClosed ? <IconEyeClosedSolid /> : <IconEyeOpened />;
-        const showModeBtn = mode === 'password' && value && !disabled && (isFocus || isHovering);
+        // alway show password button for a11y
+        const showModeBtn = mode === 'password' && !disabled;
+        const ariaLabel = eyeClosed ? 'Show password' : 'Hidden password';
         if (showModeBtn) {
             return (
-                <div className={modeCls} onClick={this.handleClickEye} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp}>
+                <div
+                    role="button"
+                    tabIndex={0}
+                    aria-label={ariaLabel}
+                    className={modeCls}
+                    onClick={this.handleClickEye}
+                    onMouseDown={this.handleMouseDown}
+                    onMouseUp={this.handleMouseUp}
+                    onKeyPress={this.handleModeEnterPress}
+                >
                     {modeIcon}
                 </div>
             );
@@ -300,7 +355,7 @@ class Input extends BaseComponent<InputProps, InputState> {
     }
 
     renderPrefix() {
-        const { prefix, insetLabel } = this.props;
+        const { prefix, insetLabel, insetLabelId } = this.props;
         const labelNode = prefix || insetLabel;
         if (!labelNode) {
             return null;
@@ -312,13 +367,18 @@ class Input extends BaseComponent<InputProps, InputState> {
             [`${prefixCls}-prefix-icon`]: isSemiIcon(labelNode),
         });
 
-        return <div className={prefixWrapperCls} onMouseDown={this.handlePreventMouseDown} onClick={this.handleClickPrefixOrSuffix}>{labelNode}</div>;
-    }
-
-    showClearBtn() {
-        const { value, isFocus, isHovering } = this.state;
-        const { disabled, showClear } = this.props;
-        return Boolean(value) && showClear && !disabled && (isFocus || isHovering);
+        return (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+            <div
+                className={prefixWrapperCls}
+                onMouseDown={this.handlePreventMouseDown}
+                onClick={this.handleClickPrefixOrSuffix}
+                id={insetLabelId}
+                x-semi-prop="prefix,insetLabel"
+            >
+                {labelNode}
+            </div>
+        );
     }
 
     renderSuffix(suffixAllowClear: boolean) {
@@ -327,25 +387,54 @@ class Input extends BaseComponent<InputProps, InputState> {
             return null;
         }
         const suffixWrapperCls = cls({
-            [`${prefixCls }-suffix`]: true,
-            [`${prefixCls }-suffix-text`]: suffix && isString(suffix),
-            [`${prefixCls }-suffix-icon`]: isSemiIcon(suffix),
+            [`${prefixCls}-suffix`]: true,
+            [`${prefixCls}-suffix-text`]: suffix && isString(suffix),
+            [`${prefixCls}-suffix-icon`]: isSemiIcon(suffix),
             [`${prefixCls}-suffix-hidden`]: suffixAllowClear && Boolean(hideSuffix),
         });
-        return <div className={suffixWrapperCls} onMouseDown={this.handlePreventMouseDown} onClick={this.handleClickPrefixOrSuffix}>{suffix}</div>;
+        return (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+            <div
+                className={suffixWrapperCls}
+                onMouseDown={this.handlePreventMouseDown}
+                onClick={this.handleClickPrefixOrSuffix}
+                x-semi-prop="suffix"
+            >
+                {suffix}
+            </div>
+        );
+    }
+
+    getInputRef() {
+        const { forwardRef } = this.props;
+        if (!isUndefined(forwardRef)) {
+            if (typeof forwardRef === 'function') {
+                return (node: HTMLInputElement) => {
+                    forwardRef(node);
+                    this.inputRef = { current: node };
+                };
+            } else if (Object.prototype.toString.call(forwardRef) === '[object Object]') {
+                this.inputRef = forwardRef;
+                return forwardRef;
+            }
+        }
+        return this.inputRef;
     }
 
     render() {
         const {
             addonAfter,
             addonBefore,
-            autofocus,
+            autoFocus,
+            clearIcon,
             className,
             disabled,
+            defaultValue,
             placeholder,
             prefix,
             mode,
             insetLabel,
+            insetLabelId,
             validateStatus,
             type,
             readonly,
@@ -360,12 +449,16 @@ class Input extends BaseComponent<InputProps, InputState> {
             forwardRef,
             maxLength,
             getValueLength,
+            preventScroll,
+            borderless,
+            showClearIgnoreDisabled,
+            onlyBorder,
             ...rest
         } = this.props;
-        const { value, paddingLeft, isFocus, minLength: stateMinLength } = this.state;
-        const suffixAllowClear = this.showClearBtn();
+        const { value, isFocus, minLength: stateMinLength } = this.state;
+        const suffixAllowClear = this.foundation.isAllowClear();
         const suffixIsIcon = isSemiIcon(suffix);
-        const ref = forwardRef || this.inputRef;
+        const ref = this.getInputRef();
         const wrapperPrefix = `${prefixCls}-wrapper`;
         const wrapperCls = cls(wrapperPrefix, className, {
             [`${prefixCls}-wrapper__with-prefix`]: prefix || insetLabel,
@@ -385,6 +478,8 @@ class Input extends BaseComponent<InputProps, InputState> {
             [`${wrapperPrefix}-modebtn`]: mode === 'password',
             [`${wrapperPrefix}-hidden`]: type === 'hidden',
             [`${wrapperPrefix}-${size}`]: size,
+            [`${prefixCls}-borderless`]: borderless,
+            [`${prefixCls}-only_border`]: onlyBorder!==undefined && onlyBorder!==null,
         });
         const inputCls = cls(prefixCls, {
             [`${prefixCls}-${size}`]: size,
@@ -395,8 +490,7 @@ class Input extends BaseComponent<InputProps, InputState> {
         const inputValue = value === null || value === undefined ? '' : value;
         const inputProps: React.InputHTMLAttributes<HTMLInputElement> = {
             ...rest,
-            style: { paddingLeft, ...inputStyle },
-            autoFocus: autofocus,
+            style: inputStyle,
             className: inputCls,
             disabled,
             readOnly: readonly,
@@ -417,10 +511,23 @@ class Input extends BaseComponent<InputProps, InputState> {
         if (stateMinLength) {
             inputProps.minLength = stateMinLength;
         }
+        if (validateStatus === 'error') {
+            inputProps['aria-invalid'] = 'true';
+        }
+
+        let wrapperStyle = { ...style };
+        if (onlyBorder!==undefined) {
+            wrapperStyle = {
+                borderWidth: onlyBorder,
+                ...style
+            };
+        }
+
         return (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
             <div
                 className={wrapperCls}
-                style={style}
+                style={wrapperStyle}
                 onMouseEnter={e => this.handleMouseOver(e)}
                 onMouseLeave={e => this.handleMouseLeave(e)}
                 onClick={e => this.handleClick(e)}

@@ -3,20 +3,27 @@ import warning from '@douyinfe/semi-foundation/utils/warning';
 import { OptionProps } from './option';
 import { OptionGroupProps } from './optionGroup';
 
-const generateOption = (child: React.ReactElement, parent?: any): OptionProps => {
+const generateOption = (child: React.ReactElement, parent: any, index: number, newKey?: string | number): OptionProps => {
     const childProps = child.props;
     if (!child || !childProps) {
         return null;
     }
     const option = {
         value: childProps.value,
-        // Drop-down menu rendering priority label value, children, value in turn downgrade
+        // Dropdown menu rendering priority label value, children, value in turn downgrade
         label: childProps.label || childProps.children || childProps.value,
         _show: true,
         _selected: false,
+        _scrollIndex: index,
         ...childProps,
         _parentGroup: parent,
     };
+
+    // Props are collected from ReactNode, after React.Children.toArray
+    // no need to determine whether the key exists in child
+    // Even if the user does not explicitly declare it, React will always generate a key.
+    option._keyInJsx = newKey || child.key;
+    
     return option;
 };
 
@@ -27,27 +34,43 @@ const getOptionsFromGroup = (selectChildren: React.ReactNode) => {
     const emptyGroup: {
         label: string;
         children: OptionProps[];
-        _show: boolean;
+        _show: boolean
     } = { label: '', children: [], _show: false };
 
     // avoid null
-    // eslint-disable-next-line max-len
-    const childNodes = React.Children.toArray(selectChildren).filter((childNode: React.ReactElement) => childNode && childNode.props);
+    let childNodes = React.Children.toArray(selectChildren) as React.ReactElement[];
+    childNodes = childNodes.filter((childNode) => childNode && childNode.props);    
+
     let type = '';
+    let optionIndex = -1;
 
     childNodes.forEach((child: React.ReactElement<any, any>) => {
         if (child.type.isSelectOption) {
             type = 'option';
-            const option = generateOption(child);
+            optionIndex++;
+            const option = generateOption(child, undefined, optionIndex);
             emptyGroup.children.push(option);
             options.push(option);
         } else if (child.type.isSelectOptionGroup) {
             type = 'group';
             // Avoid saving children (reactNode) by... removing other props from the group except children, causing performance problems
-            // eslint-disable-next-line prefer-const
             let { children, ...restGroupProps } = child.props;
+            let originKeys = [];
+            if (Array.isArray(children)) {
+                // if group has children > 1
+                originKeys = children.map(item => item.key);
+            } else {
+                originKeys.push(children.key);
+            }
             children = React.Children.toArray(children);
-            const childrenOption = children.map((option: React.ReactElement) => generateOption(option, restGroupProps));
+            const childrenOption = children.map((option: React.ReactElement, index: number) => {
+                let newKey = option.key;
+                if (originKeys[index] === null) {
+                    newKey = child.key + '' + option.key; // if option in group and didn't set key, concat parent key to avoid conflict (default generate key just like .0, .1)
+                }
+                optionIndex++;
+                return generateOption(option, restGroupProps, optionIndex, newKey);
+            });
             const group = {
                 ...child.props,
                 children: childrenOption,
@@ -60,7 +83,7 @@ const getOptionsFromGroup = (selectChildren: React.ReactNode) => {
         }
     });
     if (type === 'option') {
-        optionGroups = [emptyGroup];
+        optionGroups = [emptyGroup] as OptionGroupProps[];
     }
     return { optionGroups, options };
 };

@@ -1,5 +1,6 @@
 import { Descriptions, Tag } from '../../index';
 import { BASE_CLASS_PREFIX } from '../../../semi-foundation/base/constants';
+import React from "react";
 
 const data = [
     { key: '实际用户数量', value: '1,480,000' },
@@ -14,6 +15,14 @@ const dataWithHide = [
     { key: '7天留存', value: '98%' },
     { key: '安全等级', value: '3级' },
     { key: '垂类标签', value: <Tag style={{ margin: 0 }}>电商</Tag> },
+    { key: '认证状态', value: '未认证' },
+];
+
+const dataWithKeyIsNode = [
+    { key: <strong>实际用户数量</strong>, value: '1,480,000' },
+    { key: '7天留存', value: '98%' },
+    { key: '安全等级', value: '3级' },
+    { key: '垂类标签', value: <Tag>电商</Tag> },
     { key: '认证状态', value: '未认证' },
 ];
 
@@ -134,7 +143,6 @@ describe('Descriptions', () => {
         largeDesc.unmount();
     });
 
-
     it('Descriptions with jsx', () => {
         const desc = mount(
             <Descriptions>
@@ -162,6 +170,64 @@ describe('Descriptions', () => {
                 .getDOMNode()
                 .textContent
         ).toEqual('1,480,000');
+        desc.unmount();
+    });
+
+    it('Descriptions with key is node', () => {
+        const desc = renderDescriptions({ data: dataWithKeyIsNode });
+        expect(
+            desc
+                .find(`.${BASE_CLASS_PREFIX}-descriptions-key strong`)
+                .at(0)
+                .getDOMNode()
+                .textContent
+        ).toEqual('实际用户数量');
+        expect(
+            desc
+                .find(`.${BASE_CLASS_PREFIX}-descriptions-key`)
+                .at(1)
+                .getDOMNode()
+                .textContent
+        ).toEqual('7天留存');
+        desc.unmount();
+    });
+
+    it('Descriptions layout horizontal', () => {
+        const desc = mount(
+            <Descriptions layout='horizontal' align='left' column={4}>
+                <Descriptions.Item itemKey={<strong style={{ color: 'red' }}>实际用户数量</strong>}>1,480,000</Descriptions.Item>
+                <Descriptions.Item itemKey="7天留存">98%</Descriptions.Item>
+                <Descriptions.Item itemKey="认证状态">未认证</Descriptions.Item>
+            </Descriptions>, {
+                attachTo: document.getElementById('container'),
+            });
+        const tds = document.querySelectorAll('td');
+        expect(tds.length).toEqual(3);
+        const ths = document.querySelectorAll('td');
+        expect(ths.length).toEqual(3);
+        const trs = document.querySelectorAll('tr');
+        expect(trs.length).toEqual(1);
+        expect(desc.exists(`.${BASE_CLASS_PREFIX}-descriptions-horizontal`)).toEqual(true);
+        expect(
+            desc
+                .find(`.${BASE_CLASS_PREFIX}-descriptions-key`)
+                .at(0)
+                .getDOMNode()
+                .textContent
+        ).toEqual('实际用户数量');
+        expect(
+            desc
+                .find(`.${BASE_CLASS_PREFIX}-descriptions-value`)
+                .at(0)
+                .getDOMNode()
+                .textContent
+        ).toEqual('1,480,000');
+
+        let totalSpan = ths.length
+        tds.forEach(item=>{
+            totalSpan += +item.getAttribute('colspan')
+        })
+        expect(totalSpan).toEqual(8);
         desc.unmount();
     });
 })

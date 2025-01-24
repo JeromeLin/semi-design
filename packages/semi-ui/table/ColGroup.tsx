@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { get } from 'lodash-es';
+import { get } from 'lodash';
 import { cssClasses } from '@douyinfe/semi-foundation/table/constants';
 import { flattenColumns } from '@douyinfe/semi-foundation/table/utils';
-import { ColumnProps } from './interface';
+import { ColumnProps, TableComponents } from './interface';
 
 export interface ColGroupProps {
     columns?: ColumnProps[];
     prefixCls?: string;
     className?: string;
     style?: React.CSSProperties;
-    components?: Record<string, any>;
+    components?: TableComponents['body']
 }
 
 export default class ColGroup extends React.PureComponent<ColGroupProps> {
@@ -31,7 +31,6 @@ export default class ColGroup extends React.PureComponent<ColGroupProps> {
     render() {
         const { columns, className, style, prefixCls, components } = this.props;
 
-        // eslint-disable-next-line @typescript-eslint/no-shadow
         const ColGroup = get(components, 'colgroup.wrapper', 'colgroup');
         const Col = get(components, 'colgroup.col', 'col');
 

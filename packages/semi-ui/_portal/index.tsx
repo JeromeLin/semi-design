@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { BASE_CLASS_PREFIX } from '@douyinfe/semi-foundation/base/constants';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import ConfigContext from '../configProvider/context';
+import ConfigContext, { ContextValue } from '../configProvider/context';
 import '@douyinfe/semi-foundation/_portal/portal.scss';
 
 export interface PortalProps {
@@ -12,11 +12,11 @@ export interface PortalProps {
     prefixCls?: string;
     className?: string;
     getPopupContainer?: () => HTMLElement;
-    didUpdate?: (props: PortalProps) => void;
+    didUpdate?: (props: PortalProps) => void
 }
 
 export interface PortalState {
-    container: undefined | HTMLElement;
+    container: undefined | HTMLElement
 }
 
 const defaultGetContainer = () => document.body;
@@ -37,34 +37,40 @@ class Portal extends PureComponent<PortalProps, PortalState> {
     };
 
     el: HTMLElement;
-    constructor(props: PortalProps) {
+    context: ContextValue;
+    constructor(props: PortalProps, context: ContextValue) {
         super(props);
-        try {
-            this.el = document.createElement('div');
-        } catch (e) {
-        }
         this.state = {
-            container: undefined
+            container: this.initContainer(context, true)
         };
     }
 
     componentDidMount() {
-        if (!this.el) {
-            this.el = document.createElement('div');
-        }
-        const { state, props, context } = this;
-        const getContainer = props.getPopupContainer || context.getPopupContainer || defaultGetContainer;
-        const container = getContainer();
-        if (container !== state.container) {
-            // const computedStyle = window.getComputedStyle(container);
-            // if (computedStyle.position !== 'relative') {
-            //    container.style.position = 'relative';
-            // }
-            container.appendChild(this.el);
-            this.addStyle(props.style);
-            this.addClass(props.prefixCls, props.className);
+        const container = this.initContainer(this.context);
+        if (container!==this.state.container) {
             this.setState({ container });
         }
+    }
+
+    initContainer = (context: ContextValue, catchError = false) => {
+        try {
+            let container: HTMLElement | undefined = undefined;
+            if (!this.el || !this.state?.container || !Array.from(this.state.container.childNodes).includes(this.el)) {
+                this.el = document.createElement('div');
+                const getContainer = this.props.getPopupContainer || context.getPopupContainer || defaultGetContainer;
+                const portalContainer = getContainer();
+                portalContainer.appendChild(this.el);
+                this.addStyle(this.props.style);
+                this.addClass(this.props.prefixCls, context, this.props.className);
+                container = portalContainer;
+                return container;
+            }
+        } catch (e) {
+            if (!catchError) {
+                throw e;
+            }
+        }
+        return this.state?.container;
     }
 
     componentDidUpdate(prevProps: PortalProps) {
@@ -90,8 +96,8 @@ class Portal extends PureComponent<PortalProps, PortalState> {
         }
     };
 
-    addClass = (prefixCls: string, ...classNames: string[]) => {
-        const { direction } = this.context;
+    addClass = (prefixCls: string, context = this.context, ...classNames: string[]) => {
+        const { direction } = context;
         const cls = classnames(prefixCls, ...classNames, {
             [`${prefixCls}-rtl`]: direction === 'rtl'
         });

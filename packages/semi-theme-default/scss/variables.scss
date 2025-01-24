@@ -31,6 +31,8 @@ $z-portal: 1; // 抽象插槽，适用于未经特殊定制的所有组件
 $z-affix: 10; // 固定位置的页面元素 z-index
 $z-backtop: 10; // 返回顶部 z-index
 $z-badge: 10; // badge z-index
+// $z-avatar-default: 100;
+$z-table-fixed: 101; // table fixed column
 $z-modal: 1000; // modal z-index
 $z-modal-mask: 1000; // modal 遮罩 z-index
 
@@ -40,6 +42,14 @@ $z-popover: 1030; // popover 组件 z-index
 $z-dropdown: 1050; // dropdown 组件 z-index
 $z-tooltip: 1060; // tooltip 组件 z-index
 // $z-avatar-default: 100;
+$z-image_preview: 1070; // Image 组件预览层z-index
+$z-image_preview_header: 1; // Image 组件预览层中 header 部分 z-index
+
+// 正在拖拽中的元素的 z-index，需要高于所有的弹出层组件 z-index
+$z-transfer_right_item_drag_item_move: 2000; // 穿梭框右侧面板中正在拖拽元素的z-index
+$z-tagInput_drag_item_move: 2000; // 标签输入框中正在拖拽元素的z-index
+$z-resizable_handler: 2000; // 伸缩框组件中handler的z-index 
+// $z-resizable_background: 2010; // 伸缩框组件中背景的z-index
 
 // font
 $font-family-regular: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',

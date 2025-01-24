@@ -1,4 +1,3 @@
-/* eslint-disable prefer-template */
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -9,8 +8,8 @@ const prefix = cssClasses.PREFIX;
 export interface SectionProps {
     className?: string;
     style?: React.CSSProperties;
-    text?: React.ReactNode | string;
-    children?: React.ReactNode;
+    text?: React.ReactNode;
+    children?: React.ReactNode
 }
 
 export default class Section extends PureComponent<SectionProps> {

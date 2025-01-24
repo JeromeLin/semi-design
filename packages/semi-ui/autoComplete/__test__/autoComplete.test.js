@@ -1,5 +1,5 @@
 import { Icon, AutoComplete } from '../../index';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 import sinon from 'sinon';
 import { BASE_CLASS_PREFIX } from '../../../semi-foundation/base/constants';
 import keyCode from '@douyinfe/semi-foundation/utils/keyCode';
@@ -191,7 +191,7 @@ describe('AutoComplete', () => {
         };
         let ac = getAc(props);
         expect(ac.exists(`.${BASE_CLASS_PREFIX}-autocomplete-loading-wrapper`)).toEqual(true);
-        expect(ac.exists(`.${BASE_CLASS_PREFIX}-select-option`)).toEqual(false);
+        expect(ac.exists(`.${BASE_CLASS_PREFIX}-autocomplete-option`)).toEqual(false);
     });
 
     it('【onSelect】trigger onSelect when click candidate option', () => {
@@ -204,7 +204,7 @@ describe('AutoComplete', () => {
             ...commonProps,
         };
         let ac = getAc(props);
-        let options = ac.find(`.${BASE_CLASS_PREFIX}-select-option`);
+        let options = ac.find(`.${BASE_CLASS_PREFIX}-autocomplete-option`);
         let firstOption = options.at(0);
         const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
         firstOption.simulate('click', nativeEvent);
@@ -223,7 +223,7 @@ describe('AutoComplete', () => {
             ...commonProps,
         };
         let ac = getAc(props);
-        let options = ac.find(`.${BASE_CLASS_PREFIX}-select-option`);
+        let options = ac.find(`.${BASE_CLASS_PREFIX}-autocomplete-option`);
         let firstOption = options.at(0);
         const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
         firstOption.simulate('click', nativeEvent);
@@ -269,7 +269,7 @@ describe('AutoComplete', () => {
             renderSelectedItem: option => option.email,
         };
         let ac = getAc(props);
-        let options = ac.find(`.${BASE_CLASS_PREFIX}-select-option`);
+        let options = ac.find(`.${BASE_CLASS_PREFIX}-autocomplete-option`);
         let firstOption = options.at(0);
         const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
         firstOption.simulate('click', nativeEvent);
@@ -306,7 +306,7 @@ describe('AutoComplete', () => {
             value: '',
         };
         const ac = getAc(props);
-        ac.find(`.${BASE_CLASS_PREFIX}-select-option`)
+        ac.find(`.${BASE_CLASS_PREFIX}-autocomplete-option`)
             .at(0)
             .simulate('click');
         expect(fakeOnChange.calledWith('XK')).toEqual(true);
@@ -374,7 +374,7 @@ describe('AutoComplete', () => {
         let event = { target: { value: 'abc' } };
         component.find('input').simulate('change', event);
         expect(spyOnChange.calledWith('abc')).toEqual(true);
-        let options = component.find(`.${BASE_CLASS_PREFIX}-select-option`);
+        let options = component.find(`.${BASE_CLASS_PREFIX}-autocomplete-option`);
         let firstOption = options.at(0);
         const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
         firstOption.simulate('click', nativeEvent);

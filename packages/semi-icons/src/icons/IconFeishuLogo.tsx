@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { convertIcon } from '../components/Icon';
-
 function SvgComponent(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg
@@ -14,14 +13,21 @@ function SvgComponent(props: React.SVGProps<SVGSVGElement>) {
             {...props}
         >
             <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M10.396 12.9586L15.7149 7.59084C15.5779 7.34131 15.5 7.05475 15.5 6.75C15.5 5.78351 16.2835 5 17.25 5C17.549 5 17.8305 5.07501 18.0768 5.20723L22.2456 1L0 7.44405L5.28847 12.6722L10.396 12.9586ZM11.1685 13.7194L11.5483 18.9896L16.6209 24L23.0001 1.77899L18.827 5.99044C18.9379 6.22018 19 6.47784 19 6.75C19 7.7165 18.2165 8.5 17.25 8.5C16.9835 8.5 16.731 8.44045 16.5049 8.33391L11.1685 13.7194Z"
+                d="M6.14 3.8a28.88 28.88 0 0 1 6.6 7.63l1.7-1.67a8.37 8.37 0 0 1 2.82-1.83 12.23 12.23 0 0 0-2.32-4.28.67.67 0 0 0-.53-.25H6.28c-.21 0-.3.27-.14.4Z"
+                fill="currentColor"
+            />
+            <path d="m20.57 14.2.01-.02.04-.07-.05.08Z" fill="currentColor" />
+            <path
+                d="M11.04 14.56c1.23.52 2.34.97 3.65 1.32a4.75 4.75 0 0 0 5.63-2.4l1.32-2.63c.3-.64.67-1.23 1.12-1.78a6.2 6.2 0 0 0-2.3-.44c-1.9 0-3.7.73-5.06 2.06l-2.02 2c-.72.7-1.5 1.33-2.34 1.87Z"
+                fill="currentColor"
+            />
+            <path d="M20.8 13.78v-.02l.01-.01s0 .02-.02.03Z" fill="currentColor" />
+            <path
+                d="M1.63 9.75a.23.23 0 0 0-.4.16v7.96c0 .23.12.44.3.56a12.95 12.95 0 0 0 14.08.2c.78-.5 1.39-.92 2.04-1.55-1.05.3-2.2.33-3.37.01A28.99 28.99 0 0 1 1.63 9.75Z"
                 fill="currentColor"
             />
         </svg>
     );
 }
-
 const IconComponent = convertIcon(SvgComponent, 'feishu_logo');
 export default IconComponent;

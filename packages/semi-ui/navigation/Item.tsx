@@ -1,47 +1,53 @@
-/* eslint-disable max-len */
-/* eslint-disable no-nested-ternary */
 import BaseComponent, { BaseProps } from '../_base/baseComponent';
 import React from 'react';
 import PropTypes from 'prop-types';
 import cls from 'classnames';
-import { times, noop } from 'lodash-es';
+import { noop, times } from 'lodash';
 
 import isNullOrUndefined from '@douyinfe/semi-foundation/utils/isNullOrUndefined';
 import { cloneDeep, isSemiIcon } from '../_utils';
-import ItemFoundation, { ItemProps, SelectedItemProps, ItemAdapter } from '@douyinfe/semi-foundation/navigation/itemFoundation';
-import { strings, cssClasses } from '@douyinfe/semi-foundation/navigation/constants';
+import ItemFoundation, {
+    ItemAdapter,
+    ItemProps,
+    ItemKey,
+    SelectedItemProps
+} from '@douyinfe/semi-foundation/navigation/itemFoundation';
+import { cssClasses, strings } from '@douyinfe/semi-foundation/navigation/constants';
 
 import Tooltip from '../tooltip';
-import NavContext from './nav-context';
+import NavContext, { NavContextType } from './nav-context';
 import Dropdown from '../dropdown';
 
 const clsPrefix = `${cssClasses.PREFIX}-item`;
-
-export interface NavItemProps extends ItemProps, BaseProps {
+interface NavItemProps extends ItemProps, BaseProps {
     children?: React.ReactNode;
     disabled?: boolean;
     forwardRef?: (ele: HTMLLIElement) => void;
     icon?: React.ReactNode;
-    itemKey?: React.ReactText;
+    itemKey?: ItemKey;
     level?: number;
     link?: string;
-    linkOptions?: React.HTMLAttributes<HTMLLinkElement>;
+    linkOptions?: React.AnchorHTMLAttributes<HTMLAnchorElement>;
+    tabIndex?: number; // on the site we change the tabindex to -1 in order to use gatsby's navigate link
     text?: React.ReactNode;
     tooltipHideDelay?: number;
     tooltipShowDelay?: number;
+
     onClick?(clickItems: SelectedData): void;
+
     onMouseEnter?: React.MouseEventHandler<HTMLLIElement>;
-    onMouseLeave?: React.MouseEventHandler<HTMLLIElement>;
+    onMouseLeave?: React.MouseEventHandler<HTMLLIElement>
 }
 
-export interface SelectedData extends SelectedItemProps<NavItemProps> {
-    text?: React.ReactNode;
+interface SelectedData extends SelectedItemProps<NavItemProps> {
+    text?: React.ReactNode
 }
 
-export interface NavItemState {
-    tooltipShow: boolean;
+interface NavItemState {
+    tooltipShow: boolean
 }
 
+export type { NavItemProps, ItemKey, NavItemState, SelectedData };
 export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
     static contextType = NavContext;
 
@@ -63,6 +69,7 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
         link: PropTypes.string,
         linkOptions: PropTypes.object,
         disabled: PropTypes.bool,
+        tabIndex: PropTypes.number
     };
 
     static defaultProps = {
@@ -74,7 +81,11 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
         onMouseEnter: noop,
         onMouseLeave: noop,
         disabled: false,
+        tabIndex: 0
     };
+
+    foundation: ItemFoundation;
+    context: NavContextType;
 
     constructor(props: NavItemProps) {
         super(props);
@@ -107,11 +118,13 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
             notifyMouseLeave: (...args) => this.props.onMouseLeave(...args),
             getIsCollapsed: () => this.props.isCollapsed || Boolean(this.context && this.context.isCollapsed) || false,
             getSelected: () =>
-                Boolean(this.context && this.context.selectedKeys && this.context.selectedKeys.includes(this.props.itemKey)),
+                Boolean(this.context && this.context.selectedKeys && this.context.selectedKeys.includes(this.props.itemKey as string)),
+            getIsOpen: () =>
+                Boolean(this.context && this.context.openKeys && this.context.openKeys.includes(this.props.itemKey as string)),
         };
     }
 
-    renderIcon(icon: React.ReactNode, pos: string, isToggleIcon = false) {
+    renderIcon(icon: React.ReactNode, pos: string, isToggleIcon = false, key: number | string = 0) {
         if (this.props.isSubNav) {
             return null;
         }
@@ -131,8 +144,8 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
         });
 
         return (
-            <i className={className}>
-                {isSemiIcon(icon) ? React.cloneElement((icon as React.ReactElement), {size: (icon as React.ReactElement).props.size || iconSize}) : icon}
+            <i className={className} key={key}>
+                {isSemiIcon(icon) ? React.cloneElement((icon as React.ReactElement), { size: (icon as React.ReactElement).props.size || iconSize }) : icon}
             </i>
         );
     }
@@ -144,14 +157,17 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
 
     wrapTooltip = (node: React.ReactNode) => {
         const { text, tooltipHideDelay, tooltipShowDelay } = this.props;
+        const hideDelay = tooltipHideDelay ?? this.context.tooltipHideDelay;
+        const showDelay = tooltipShowDelay ?? this.context.tooltipShowDelay;
 
         return (
             <Tooltip
                 content={text}
+                wrapWhenSpecial={false}
                 position="right"
                 trigger={'hover'}
-                mouseEnterDelay={tooltipShowDelay}
-                mouseLeaveDelay={tooltipHideDelay}
+                mouseEnterDelay={showDelay}
+                mouseLeaveDelay={hideDelay}
             >
                 {node}
             </Tooltip>
@@ -159,6 +175,7 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
     };
 
     handleClick = (e: React.MouseEvent) => this.foundation.handleClick(e);
+    handleKeyPress = (e: React.KeyboardEvent) => this.foundation.handleKeyPress(e);
 
     render() {
         const {
@@ -176,6 +193,7 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
             linkOptions,
             disabled,
             level = 0,
+            tabIndex
         } = this.props;
 
         const { mode, isInSubNav, prefixCls, limitIndent } = this.context;
@@ -185,23 +203,22 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
         const selected = this.adapter.getSelected();
 
 
-
         let itemChildren = null;
         if (!isNullOrUndefined(children)) {
             itemChildren = children;
         } else {
             let placeholderIcons = null;
-            if (mode === strings.MODE_VERTICAL && !limitIndent) {
+            if (mode === strings.MODE_VERTICAL && !limitIndent && !isCollapsed) {
                 const iconAmount = (icon && !indent) ? level : level - 1;
-                placeholderIcons = times(iconAmount, () => this.renderIcon(null, strings.ICON_POS_RIGHT, false));
+                placeholderIcons = times(iconAmount, (index) => this.renderIcon(null, strings.ICON_POS_RIGHT, false, index));
             }
             itemChildren = (
                 <>
                     {placeholderIcons}
-                    {this.context.toggleIconPosition === strings.TOGGLE_ICON_LEFT && this.renderIcon(toggleIcon, strings.ICON_POS_RIGHT, true)}
-                    {icon || indent || isInSubNav ? this.renderIcon(icon, strings.ICON_POS_LEFT) : null}
+                    {this.context.toggleIconPosition === strings.TOGGLE_ICON_LEFT && this.renderIcon(toggleIcon, strings.ICON_POS_RIGHT, true, 'key-toggle-pos-right')}
+                    {icon || indent || isInSubNav ? this.renderIcon(icon, strings.ICON_POS_LEFT, false, 'key-position-left') : null}
                     {!isNullOrUndefined(text) ? <span className={`${cssClasses.PREFIX}-item-text`}>{text}</span> : ''}
-                    {this.context.toggleIconPosition === strings.TOGGLE_ICON_RIGHT && this.renderIcon(toggleIcon, strings.ICON_POS_RIGHT, true)}
+                    {this.context.toggleIconPosition === strings.TOGGLE_ICON_RIGHT && this.renderIcon(toggleIcon, strings.ICON_POS_RIGHT, true, 'key-toggle-pos-right')}
                 </>
             );
         }
@@ -209,7 +226,7 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
 
         if (typeof link === 'string') {
             itemChildren = (
-                <a className={`${prefixCls}-item-link`} href={link} {...(linkOptions as any)}>
+                <a className={`${prefixCls}-item-link`} href={link} tabIndex={-1} {...(linkOptions as any)}>
                     {itemChildren}
                 </a>
             );
@@ -236,28 +253,44 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}
                     disabled={disabled}
+                    onKeyDown={this.handleKeyPress}
                 >
                     {itemChildren}
                 </Dropdown.Item>
             );
         } else {
             // Items are divided into normal and sub-wrap
-            const popoverItemCls = cls(`${className || `${clsPrefix }-normal`}`, {
+            const popoverItemCls = cls(`${className || `${clsPrefix}-normal`}`, {
                 [clsPrefix]: true,
                 [`${clsPrefix}-sub`]: isSubNav,
                 [`${clsPrefix}-selected`]: selected && !isSubNav,
                 [`${clsPrefix}-collapsed`]: isCollapsed,
                 [`${clsPrefix}-disabled`]: disabled,
+                [`${clsPrefix}-has-link`]: typeof link === 'string',
             });
+            const ariaProps = {
+                'aria-disabled': disabled,
+            };
+            if (isSubNav) {
+                const isOpen = this.adapter.getIsOpen();
+                ariaProps['aria-expanded'] = isOpen;
+            }
 
             itemDom = (
+                // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
                 <li
+                    // if role = menuitem, the narration will read all expanded li
+                    role={isSubNav ? null : "menuitem"}
+                    tabIndex={isSubNav ? -1 : tabIndex}
+                    {...ariaProps}
                     style={style}
                     ref={this.setItemRef}
                     className={popoverItemCls}
                     onClick={this.handleClick}
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}
+                    onKeyPress={this.handleKeyPress}
+                    {...this.getDataAttr(this.props)}
                 >
                     {itemChildren}
                 </li>
@@ -268,7 +301,14 @@ export default class NavItem extends BaseComponent<NavItemProps, NavItemState> {
         if (isCollapsed && !isInSubNav && !isSubNav || isCollapsed && isSubNav && disabled) {
             itemDom = this.wrapTooltip(itemDom);
         }
-
+        if (typeof this.context.renderWrapper === 'function') {
+            return this.context.renderWrapper({
+                itemElement: itemDom,
+                isSubNav: isSubNav,
+                isInSubNav: isInSubNav,
+                props: this.props
+            });
+        }
         return itemDom;
     }
 }

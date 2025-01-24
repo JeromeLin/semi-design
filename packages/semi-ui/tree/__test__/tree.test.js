@@ -1,6 +1,7 @@
-import { Tree, Icon } from '../../index';
-import { BASE_CLASS_PREFIX } from '../../../semi-foundation/base/constants';
+import { isEqual } from 'lodash';
 import { IconMapPin } from '@douyinfe/semi-icons';
+import { BASE_CLASS_PREFIX } from '../../../semi-foundation/base/constants';
+import { Tree, Button } from '../../index';
 
 const treeChildren = [
     {
@@ -96,6 +97,113 @@ const treeData2 = [
         key: '1',
     }
 ];
+
+const treeData3 = [
+    {
+        label: '亚洲',
+        value: 'Asia',
+        key: '0',
+        newLabel: '亚洲#1#yazhou',
+        children: [
+            {
+                label: '中国',
+                value: 'China',
+                key: '0-0',
+                newLabel: '中国#2#zhongguo',
+                children: [
+                    {
+                        label: '北京',
+                        value: 'Beijing',
+                        key: '0-0-0',
+                        newLabel: '北京#3#beijing',
+                    },
+                    {
+                        label: '上海',
+                        value: 'Shanghai',
+                        key: '0-0-1',
+                        newLabel: '上海#4#shanghai',
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        label: '北美洲',
+        value: 'North America',
+        newLabel: '北美洲#5#beimeizhou',
+        key: '1',
+    }
+];
+
+const specialTreeData = [
+    {
+      label1: '亚洲',
+      value1: 'Yazhou',
+      key1: 'yazhou',
+      children1: [
+        {
+          label1: '中国',
+          value1: 'Zhongguo',
+          key1: 'zhongguo',
+          disabled1: true,
+          children1: [
+            {
+              label1: '北京',
+              value1: 'Beijing',
+              key1: 'beijing',
+            },
+            {
+              label1: '上海',
+              value1: 'Shanghai',
+              key1: 'shanghai',
+            },
+          ],
+        },
+        {
+          label1: '日本',
+          value1: 'Riben',
+          key1: 'riben',
+          children1: [
+            {
+              label1: '东京',
+              value1: 'Dongjing',
+              key1: 'dongjing',
+            },
+            {
+              label1: '大阪',
+              value1: 'Daban',
+              key1: 'daban',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      label1: '北美洲',
+      value1: 'Beimeizhou',
+      key1: 'beimeizhou',
+      children1: [
+        {
+          label1: '美国',
+          value1: 'Meiguo',
+          key1: 'meiguo',
+        },
+        {
+          label1: '加拿大',
+          value1: 'Jianada',
+          key1: 'jianada',
+        },
+      ],
+    },
+];
+
+const defaultKeyMaps = {
+    value: 'value1',
+    key: 'key1',
+    label: 'label1',
+    children: 'children1',
+    disabled: 'disabled1'
+}
 
 const dragNodeData = {"label":"亚洲","value":"Yazhou","key":"yazhou","children":[{"label":"中国","value":"Zhongguo","key":"zhongguo","children":[{"label":"北京","value":"Beijing","key":"beijing"},{"label":"上海","value":"Shanghai","key":"shanghai"}]},{"label":"日本","value":"Riben","key":"riben","children":[{"label":"东京","value":"Dongjing","key":"dongjing"},{"label":"大阪","value":"Daban","key":"daban"}]}],"expanded":false,"pos":"0-0"}
 const dropNodeData = {"label":"北美洲","value":"Beimeizhou","key":"beimeizhou","children":[{"label":"美国","value":"Meiguo","key":"meiguo"},{"label":"加拿大","value":"Jianada","key":"jianada"}],"expanded":false,"pos":"0-1"}
@@ -454,10 +562,6 @@ describe('Tree', () => {
         let event2 = { target: { value: searchValue2 } };
         searchWrapper2.find('input').simulate('change', event2);
         expect(tree2.find(`.${BASE_CLASS_PREFIX}-tree-option`).length).toEqual(10);
-        expect(tree2.find(`.${BASE_CLASS_PREFIX}-tree-option-filtered`).length).toEqual(3);
-        expect(tree2.find(`.${BASE_CLASS_PREFIX}-tree-option-filtered`).at(0).instance().textContent).toEqual('上海');
-        expect(tree2.find(`.${BASE_CLASS_PREFIX}-tree-option-filtered`).at(1).instance().textContent).toEqual('大阪');
-        expect(tree2.find(`.${BASE_CLASS_PREFIX}-tree-option-filtered`).at(2).instance().textContent).toEqual('加拿大');
     });
 
     it('filterTreeNode + no result', () => {
@@ -481,9 +585,23 @@ describe('Tree', () => {
         let event2 = { target: { value: searchValue2 } };
         searchWrapper2.find('input').simulate('change', event2);
         expect(tree2.find(`.${BASE_CLASS_PREFIX}-tree-option`).length).toEqual(2);
-        expect(tree2.find(`.${BASE_CLASS_PREFIX}-tree-option-filtered`).length).toEqual(0);
-        
     });
+
+    if('filterTreeNode + treeNodeFilterProp + hightLight right') {
+        let tree = getTree({
+            treeData: treeData3,
+            filterTreeNode: true,
+            treeNodeFilterProp: 'newLabel'
+        });
+        const searchWrapper = tree.find(`.${BASE_CLASS_PREFIX}-tree-search-wrapper`);
+        let searchValue = '中';
+        let event = { target: { value: searchValue } };
+        searchWrapper.find('input').simulate('change', event);
+        expect(tree.find(`.${BASE_CLASS_PREFIX}-tree-option`).length).toEqual(3);
+        expect(tree.find(`.${BASE_CLASS_PREFIX}-tree-option-highlight`).length).toEqual(1);
+        expect(tree.find(`.${BASE_CLASS_PREFIX}-tree-option-highlight`).instance().textContent).toEqual("中");
+        tree.unmount();
+    }
 
     it('filterTreeNode + showFilteredOnly + no result', () => {
         let tree = getTree({
@@ -672,6 +790,90 @@ describe('Tree', () => {
         expect(tree.state().selectedKeys.length).toEqual(0);
     });
 
+
+    /**
+     * Detect whether the expanded item will be expanded according to the value when the value
+     *  or treeData is changed, when expandedKeys is not controlled
+     */
+     const treeJsonData1 = {
+        "Node0": {
+            "Child Node0-0": '0-0',
+            "Child Node0-1": '0-1',
+        },
+        "Node1": {
+            "Child Node1-0": '1-0',
+            "Child Node1-1": '1-1',
+        }
+    };
+    const treeJsonData2 = {
+        "Updated Node0": { 
+            "Updated Child Node0-0": {
+                'Updated Child Node0-0-0':'0-0'
+            }, 
+            "Updated Child Node0-1": '0-1', 
+        },
+        "Updated Node1": { 
+            "Updated Child Node1-0": '1-0', 
+            "Updated Child Node1-1": '1-1', 
+        }
+    };
+
+    it('expandedKeys when treeDataSimpleJson update', () => {
+        const tree = mount(
+            <Tree
+                value='0-0'
+                multiple
+                treeDataSimpleJson={treeJsonData1}
+            />,
+            {
+                attachTo: document.getElementById('container')
+            }
+        );
+        const treeDataButton = mount(
+            <Button
+                onClick={() => {
+                    if (isEqual(tree.props().treeDataSimpleJson, treeJsonData1)) {
+                        tree.setProps({ treeDataSimpleJson: treeJsonData2 });
+                        tree.update();
+                    } else {
+                        tree.setProps({ treeDataSimpleJson: treeJsonData1 });
+                        tree.update();
+                    }
+                }}
+            >
+                update treeData
+            </Button>
+        );
+        expect(
+            tree
+            .find(`.${BASE_CLASS_PREFIX}-tree-option.${BASE_CLASS_PREFIX}-tree-option-level-1`)
+            .at(0)
+            .hasClass(`${BASE_CLASS_PREFIX}-tree-option-collapsed`)
+        ).toEqual(false);
+        expect(
+            tree
+            .find(`.${BASE_CLASS_PREFIX}-tree-option.${BASE_CLASS_PREFIX}-tree-option-level-2`)
+            .at(0)
+            .hasClass(`${BASE_CLASS_PREFIX}-tree-option-collapsed`)
+        ).toEqual(true);
+        expect(
+            tree
+            .find(`.${BASE_CLASS_PREFIX}-tree-option.${BASE_CLASS_PREFIX}-tree-option-level-1`)
+            .at(1)
+            .hasClass(`${BASE_CLASS_PREFIX}-tree-option-collapsed`)
+        ).toEqual(true);
+        treeDataButton.simulate('click');
+        expect(
+            tree
+            .find(`.${BASE_CLASS_PREFIX}-tree-option.${BASE_CLASS_PREFIX}-tree-option-level-2`)
+            .at(0)
+            .hasClass(`${BASE_CLASS_PREFIX}-tree-option-collapsed`)
+        ).toEqual(false);
+        treeDataButton.simulate('click');
+        tree.unmount();
+        treeDataButton.unmount();
+    });
+
     it('expandAction = false / default behavior', () => {
         const nativeEvent = { nativeEvent: { stopImmediatePropagation: () => { } } }
         let spyOnExpand = sinon.spy(() => { });
@@ -839,4 +1041,57 @@ describe('Tree', () => {
         expect(spyOnDragEnd.calledOnce).toBe(true);
         expect(spyOnDragEnd.calledWithMatch({node: dragNodeData})).toEqual(true);
     });
+
+    it('keyMaps', () => {
+        let spyOnChange = sinon.spy(() => { });
+        let tree = getTree({
+            treeData: specialTreeData,
+            defaultValue: 'Beijing',
+            onChange: spyOnChange,
+            defaultExpandAll: true,
+            motion: false,
+            keyMaps: defaultKeyMaps
+        });
+        let disabledNode = tree.find(`.${BASE_CLASS_PREFIX}-tree-option-disabled`).at(0);
+        expect(disabledNode.find(`.${BASE_CLASS_PREFIX}-tree-option-label-text`).instance().textContent).toEqual('中国');
+        let selectedNode = tree.find(`.${BASE_CLASS_PREFIX}-tree-option-selected`);
+        expect(selectedNode.instance().textContent).toEqual('北京');
+        let nodeShanghai = tree.find(`.${BASE_CLASS_PREFIX}-tree-option.${BASE_CLASS_PREFIX}-tree-option-level-3`).at(1);
+        // select beijing
+        nodeShanghai.simulate('click');
+        // onSelect & onChange
+        expect(spyOnChange.calledOnce).toBe(true);
+        expect(spyOnChange.calledWithMatch("Shanghai")).toEqual(true);
+    });
+
+    it('keyMaps + onChangeWithObject', () => {
+        let spyOnChange = sinon.spy(() => { });
+        let tree = getTree({
+            treeData: specialTreeData,
+            defaultValue: {
+                label1: '北京',
+                value1: 'Beijing',
+                key1: 'beijing',
+            },
+            onChangeWithObject: true,
+            onChange: spyOnChange,
+            defaultExpandAll: true,
+            keyMaps: defaultKeyMaps
+        });
+        let disabledNode = tree.find(`.${BASE_CLASS_PREFIX}-tree-option-disabled`).at(0);
+        expect(disabledNode.find(`.${BASE_CLASS_PREFIX}-tree-option-label-text`).instance().textContent).toEqual('中国');
+        let selectedNode = tree.find(`.${BASE_CLASS_PREFIX}-tree-option-selected`);
+        expect(selectedNode.instance().textContent).toEqual('北京');
+        let nodeShanghai = tree.find(`.${BASE_CLASS_PREFIX}-tree-option.${BASE_CLASS_PREFIX}-tree-option-level-3`).at(1);
+        // select beijing
+        nodeShanghai.simulate('click');
+        // onSelect & onChange
+        expect(spyOnChange.calledOnce).toBe(true);
+        expect(spyOnChange.calledWithMatch({
+            label1: '上海',
+            value1: 'Shanghai',
+            key1: 'shanghai',
+        })).toEqual(true);
+    });
+
 })

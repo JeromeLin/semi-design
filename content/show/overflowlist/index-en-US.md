@@ -1,17 +1,12 @@
 ---
 localeCode: en-US
-order: 52
+order: 72
 category: Show
 title: OverflowList
 subTitle: OverflowList
 icon: doc-overflowList
-brief: The OverflowList component is a container component used to take list of items and display as many items as can fit inside itself.
+brief: OverflowList is a behavior component used to take list of items and display as many items as can fit inside itself. Overflowed items that do not fit are collected and rendered by callback function. The visible items will be recomputed when a resize is detected.
 ---
-
-## When to use
-
-`OverflowList` is a behavior component used to take list of items and display as many items as can fit inside itself. Overflowed items that do not fit are collected and rendered by callback function. The visible items will be recomputed when a resize is detected.
-
 ## Demos
 
 ### How to import
@@ -32,7 +27,7 @@ import { IconAlarm, IconBookmark, IconCamera, IconDuration, IconEdit, IconFolder
 () => {
     const [width, setWidth] = useState(100);
     const renderOverflow = items => {
-        return items.length ? <Tag style={{ flex: '0 0 auto' }}>+{items.length}</Tag> : null;
+        return items.length ? <Tag style={{ flex: '0 0 auto', fontVariantNumeric: 'tabular-nums' }}>+{items.length}</Tag> : null;
     };
     const renderItem = (item, ind) => {
         return (
@@ -77,7 +72,7 @@ import { IconAlarm, IconBookmark, IconCamera, IconDuration, IconEdit, IconFolder
 () => {
     const [width, setWidth] = useState(100);
     const renderOverflow = items => {
-        return items.length ? <Tag style={{ marginRight: 8, flex: '0 0 auto' }}>+{items.length}</Tag> : null;
+        return items.length ? <Tag style={{ marginRight: 8, flex: '0 0 auto', fontVariantNumeric: 'tabular-nums' }}>+{items.length}</Tag> : null;
     };
     const renderItem = (item, ind) => {
         return (
@@ -127,7 +122,7 @@ import { IconAlarm, IconBookmark, IconCamera, IconDuration, IconEdit, IconFolder
 () => {
     const [width, setWidth] = useState(100);
     const renderOverflow = items => {
-        return items.length ? <Tag style={{ flex: '0 0 auto' }}>+{items.length}</Tag> : null;
+        return items.length ? <Tag style={{ flex: '0 0 auto', fontVariantNumeric: 'tabular-nums' }}>+{items.length}</Tag> : null;
     };
     const renderItem = (item, ind) => {
         return (
@@ -178,7 +173,7 @@ import { IconAlarm, IconBookmark, IconCamera, IconDuration, IconEdit, IconFolder
 () => {
     const [width, setWidth] = useState(100);
     const renderOverflow = items => {
-        return items.map(item => <Tag style={{ marginRight: 8, marginLeft: 8, flex: '0 0 auto' }}>+{item.length}</Tag>);
+        return items.map(item => <Tag style={{ marginRight: 8, marginLeft: 8, flex: '0 0 auto', fontVariantNumeric: 'tabular-nums' }} key={item.key}>+{item.length}</Tag>);
     };
     const renderItem = (item, ind) => {
         return (
@@ -220,11 +215,12 @@ import { IconAlarm, IconBookmark, IconCamera, IconDuration, IconEdit, IconFolder
 
 ## API Reference
 
-| Properties | Instructions  | type                  | Default | version |
-| ---------- | ------------- | --------------------- | ------- | ------- |
-| className  | Class name.   | string                | -       | 1.1.0   |
-| renderMode | Render mode.  | `collapse`\| `scroll` | `true`  | -       |
-| style      | OverflowList style  | React.CSSProperties   | -       | 1.1.0   |
+| Properties | Instructions                           | type                  | Default | version |
+| ---------- |----------------------------------------| --------------------- | ------- | ------- |
+| className  | Class name.                            | string                | -       | 1.1.0   |
+| onVisibleStateChange | Hide and display state change callback | (visibleState: Map\<string, boolean\>) => void; | -          | 2.61.0 |
+| renderMode | Render mode.                           | `collapse`\| `scroll` | `true`  | -       |
+| style      | OverflowList style                     | React.CSSProperties   | -       | 1.1.0   |
 
 ### renderMode='collapse'
 

@@ -1,15 +1,19 @@
-/* eslint-disable prefer-const, max-len */
 import BaseFoundation from '../base/foundation';
 import * as ObjectUtil from '../utils/object';
 import isPromise from '../utils/isPromise';
 import { isValid } from './utils';
-import { isUndefined, isFunction, toPath } from 'lodash-es';
-import scrollIntoView, { Options as scrollIntoViewOptions } from 'scroll-into-view-if-needed';
+import { isUndefined, isFunction, toPath } from 'lodash';
+import scrollIntoView, { Options as ScrollIntoViewOptions } from 'scroll-into-view-if-needed';
 
 import { BaseFormAdapter, FormState, CallOpts, FieldState, FieldStaff, ComponentProps, setValuesConfig, ArrayFieldStaff } from './interface';
 
-export { BaseFormAdapter };
+export type { BaseFormAdapter };
 
+type ScrollToErrorOpts = {
+    field?: string;
+    index?: number;
+    scrollOpts?: ScrollIntoViewOptions
+}
 export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
 
     data: FormState;
@@ -73,6 +77,11 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
         this.getFormProps = this.getFormProps.bind(this);
         this.getFieldExist = this.getFieldExist.bind(this);
         this.scrollToField = this.scrollToField.bind(this);
+        this.scrollToError = this.scrollToError.bind(this);
+    }
+
+    init() {
+        this._adapter.initFormId();
     }
 
     getField(field: string): FieldStaff | undefined {
@@ -127,7 +136,7 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
         this._adapter.forceUpdate();
     }
 
-    // in order to slove byted-issue-289
+    // in order to solve bytedance internal issue-289
     registerArrayField(arrayFieldPath: string, val: any): void {
         this.updateArrayField(arrayFieldPath, {
             updateKey: new Date().valueOf(),
@@ -171,18 +180,21 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
                 maybePromisedErrors = errors;
             }
             if (!maybePromisedErrors) {
-                resolve(values);
+                const _values = this._adapter.cloneDeep(values);
+                resolve(_values);
                 this.injectErrorToField({});
             } else if (isPromise(maybePromisedErrors)) {
                 maybePromisedErrors.then(
                     (result: any) => {
                         // validate success，clear error
                         if (!result) {
-                            resolve(values);
+                            const _values = this._adapter.cloneDeep(values);
+                            resolve(_values);
                             this.injectErrorToField({});
                         } else {
                             this.data.errors = result;
                             this._adapter.notifyChange(this.data);
+
                             this.injectErrorToField(result);
                             this._adapter.forceUpdate();
                             this._autoScroll(100);
@@ -201,6 +213,7 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
                 this.data.errors = maybePromisedErrors;
                 this.injectErrorToField(maybePromisedErrors);
                 this._adapter.notifyChange(this.data);
+
                 this._adapter.forceUpdate();
                 this._autoScroll(100);
                 reject(maybePromisedErrors);
@@ -230,10 +243,12 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
             Promise.all(promiseSet).then(() => {
                 // After the centralized verification is completed, trigger notify and forceUpdate once.
                 this._adapter.notifyChange(this.data);
+
                 this._adapter.forceUpdate();
                 const errors = this.getError();
                 if (this._isValid(targetFields)) {
-                    resolve(values);
+                    const _values = this._adapter.cloneDeep(values);
+                    resolve(_values);
                 } else {
                     this._autoScroll();
                     reject(errors);
@@ -242,26 +257,35 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
         });
     }
 
-    submit(): void {
+    submit(e?: any): void {
         const { values } = this.data;
         // validate form
         this.validate()
             .then((resolveValues: any) => {
                 // if valid do submit
                 const _values = this._adapter.cloneDeep(resolveValues);
-                this._adapter.notifySubmit(_values);
+                this._adapter.notifySubmit(_values, e);
             })
             .catch(errors => {
                 const _errors = this._adapter.cloneDeep(errors);
                 const _values = this._adapter.cloneDeep(values);
-                this._adapter.notifySubmitFail(_errors, _values);
+                this._adapter.notifySubmitFail(_errors, _values, e);
             });
     }
 
-    // All fields: a[0]、a[1]、b.type、b.name[2]、b.name[0]
-    // input => output:
-    //      a  => a[0]、a[1]
-    //      b  => b.type、b.name[3]、b.name[2]
+    /**
+     * Case A：
+     *      All fields: a[0]、a[1]、b.type、b.name[2]、b.name[0]
+     *      input => output:
+     *           a  => a[0]、a[1]
+     *           b  => b.type、b.name[0]、b.name[2]
+     *
+     * Case B：
+     *      All fields: activity.a[0]、activity.a[1]、activity.c、activity.d、other
+     *      input => output:
+     *           activity.a => activity.a[0]、activity.a[1]
+     *
+     */
     _getNestedField(path: string): Map<string, FieldStaff> {
         const allRegisterField = this.fields;
         const allFieldPath = [...allRegisterField].map(item => item[0]);
@@ -269,7 +293,7 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
         allFieldPath.forEach(item => {
             let itemPath = toPath(item);
             let targetPath = toPath(path);
-            if (itemPath[0] === targetPath[0]) {
+            if (targetPath.every((path, i) => (targetPath[i] === itemPath[i]))) {
                 const realField = allRegisterField.get(item);
                 nestedFieldPath.set(item, realField);
             }
@@ -281,7 +305,7 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
     _getOperateFieldMap(fieldPaths?: Array<string>): Map<string, FieldStaff> {
         let targetFields = new Map();
         if (!isUndefined(fieldPaths)) {
-            // reset or validate spcific fields
+            // reset or validate specific fields
             fieldPaths.forEach(path => {
                 const field = this.fields.get(path);
                 // may be undefined, if exists two fields like 'a[0]'、'a[1]', but user directly call reset(['a']) / validate(['a'])
@@ -387,8 +411,8 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
                 this.updateArrayField(path, { updateKey: new Date().valueOf() });
             });
         }
-        // When isOverrid is true, there may be a non-existent field in the values passed in, directly synchronized to formState.values
-        // 当isOverrid为true，传入的values中可能存在不存在的field时，直接将其同步到formState.values中
+        // When isOverride is true, there may be a non-existent field in the values passed in, directly synchronized to formState.values
+        // 当isOverride为true，传入的values中可能存在不存在的field时，直接将其同步到formState.values中
         if (isOverride) {
             this.data.values = _values;
         }
@@ -401,7 +425,7 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
     }
 
     // update formState value
-    updateStateValue(field: string, value: any, opts: CallOpts): void {
+    updateStateValue(field: string, value: any, opts: CallOpts, callback?: () => void): void {
         const notNotify = opts && opts.notNotify;
         const notUpdate = opts && opts.notUpdate;
         const fieldAllowEmpty = opts && opts.fieldAllowEmpty;
@@ -433,7 +457,7 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
         }
 
         if (!notUpdate) {
-            this._adapter.forceUpdate();
+            this._adapter.forceUpdate(callback);
         }
     }
 
@@ -446,7 +470,7 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
     }
 
     // update formState touched
-    updateStateTouched(field: string, isTouched: boolean, opts?: CallOpts): void {
+    updateStateTouched(field: string, isTouched: boolean, opts?: CallOpts, callback?: () => void): void {
         const notNotify = opts && opts.notNotify;
         const notUpdate = opts && opts.notUpdate;
         ObjectUtil.set(this.data.touched, field, isTouched);
@@ -455,7 +479,7 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
             this._adapter.notifyChange(this.data);
         }
         if (!notUpdate) {
-            this._adapter.forceUpdate();
+            this._adapter.forceUpdate(callback);
         }
     }
 
@@ -468,18 +492,20 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
     }
 
     // update formState error
-    updateStateError(field: string, error: any, opts: CallOpts): void {
+    updateStateError(field: string, error: any, opts: CallOpts, callback?: () => void): void {
         const notNotify = opts && opts.notNotify;
         const notUpdate = opts && opts.notUpdate;
         ObjectUtil.set(this.data.errors, field, error);
+
+        
         // The setError caused by centralized validation does not need to trigger notify, otherwise it will be called too frequently, as many times as there are fields
-        // 集中validate时，引起的setError不需要触发notify，否则会过于频繁调用，有多少个field就调用了多少次
         if (!notNotify) {
             this._adapter.notifyChange(this.data);
         }
-
+        this._adapter.notifyErrorChange(this.data.errors, { [field]: error });
+        
         if (!notUpdate) {
-            this._adapter.forceUpdate();
+            this._adapter.forceUpdate(callback);
         }
     }
 
@@ -497,15 +523,18 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
                 // At this time, first modify formState directly, then find out the subordinate fields and drive them to update
                 // Eg: peoples: [0, 2, 3]. Each value of the peoples array corresponds to an Input Field
                 // When the user directly calls formA pi.set Value ('peoples', [2,3])
-                this.updateStateValue(field, newValue, opts);
-                let nestedFields = this._getNestedField(field);
-                if (nestedFields.size) {
-                    nestedFields.forEach(fieldStaff => {
-                        let fieldPath = fieldStaff.field;
-                        let newFieldVal = ObjectUtil.get(this.data.values, fieldPath);
-                        fieldStaff.fieldApi.setValue(newFieldVal, opts);
-                    });
-                }
+                this.updateStateValue(field, newValue, opts, () => {
+                    let nestedFields = this._getNestedField(field);
+                    if (nestedFields.size) {
+                        nestedFields.forEach(fieldStaff => {
+                            let fieldPath = fieldStaff.field;
+                            let newFieldVal = ObjectUtil.get(this.data.values, fieldPath);
+                            let nestedBatchUpdateOpts = { notNotify: true, notUpdate: true };
+                            fieldStaff.fieldApi.setValue(newFieldVal, nestedBatchUpdateOpts);
+                        });
+                    }
+                });
+
                 // If the reset happens to be, then update the updateKey corresponding to ArrayField to render it again
                 if (this.getArrayField(field)) {
                     this.updateArrayField(field, { updateKey: new Date().valueOf() });
@@ -518,15 +547,17 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
             if (fieldApi) {
                 fieldApi.setError(newError, opts);
             } else {
-                this.updateStateError(field, newError, opts);
-                let nestedFields = this._getNestedField(field);
-                if (nestedFields.size) {
-                    nestedFields.forEach(fieldStaff => {
-                        let fieldPath = fieldStaff.field;
-                        let newFieldError = ObjectUtil.get(this.data.errors, fieldPath);
-                        fieldStaff.fieldApi.setError(newFieldError, opts);
-                    });
-                }
+                this.updateStateError(field, newError, opts, () => {
+                    let nestedFields = this._getNestedField(field);
+                    if (nestedFields.size) {
+                        nestedFields.forEach(fieldStaff => {
+                            let fieldPath = fieldStaff.field;
+                            let newFieldError = ObjectUtil.get(this.data.errors, fieldPath);
+                            let nestedBatchUpdateOpts = { notNotify: true, notUpdate: true };
+                            fieldStaff.fieldApi.setError(newFieldError, nestedBatchUpdateOpts);
+                        });
+                    }
+                });
                 if (this.getArrayField(field)) {
                     this.updateArrayField(field, { updateKey: new Date().valueOf() });
                 }
@@ -534,19 +565,21 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
         };
         const setTouched = (field: string, isTouched: boolean, opts: CallOpts) => {
             const fieldApi = this.fields.get(field) ? this.fields.get(field).fieldApi : undefined;
-            // touched is boolean variable, no need to execu deepClone like setValue
+            // touched is boolean variable, no need to exec deepClone like setValue
             if (fieldApi) {
                 fieldApi.setTouched(isTouched, opts);
             } else {
-                this.updateStateTouched(field, isTouched, opts);
-                let nestedFields = this._getNestedField(field);
-                if (nestedFields.size) {
-                    nestedFields.forEach(fieldStaff => {
-                        let fieldPath = fieldStaff.field;
-                        let newFieldTouch = ObjectUtil.get(this.data.touched, fieldPath);
-                        fieldStaff.fieldApi.setTouched(newFieldTouch, opts);
-                    });
-                }
+                this.updateStateTouched(field, isTouched, opts, () => {
+                    let nestedFields = this._getNestedField(field);
+                    if (nestedFields.size) {
+                        nestedFields.forEach(fieldStaff => {
+                            let fieldPath = fieldStaff.field;
+                            let newFieldTouch = ObjectUtil.get(this.data.touched, fieldPath);
+                            let nestedBatchUpdateOpts = { notNotify: true, notUpdate: true };
+                            fieldStaff.fieldApi.setTouched(newFieldTouch, nestedBatchUpdateOpts);
+                        });
+                    }
+                });
                 if (this.getArrayField(field)) {
                     this.updateArrayField(field, { updateKey: new Date().valueOf() });
                 }
@@ -591,6 +624,7 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
             getValue: (field?: string) => this.getValue(field, { needClone: true }),
             getValues: () => this.getValue(undefined, { needClone: true }),
             getFormState: () => this.getFormState(true),
+            getFormProps: (props?: Array<string>) => this.getFormProps(props),
             getInitValue: (field: string) => this.getInitValue(field),
             getInitValues: () => this.getInitValues(),
             getTouched: (field?: string) => this.getTouched(field),
@@ -599,11 +633,12 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
             submitForm: () => this.submit(),
             getFieldExist: (field: string) => this.getFieldExist(field),
             scrollToField: (field: string, scrollOpts?: ScrollIntoViewOptions) => this.scrollToField(field, scrollOpts),
+            scrollToError: (opts?: ScrollToErrorOpts) => this.scrollToError(opts),
         };
     }
 
     getFormState(needClone = false): FormState {
-        // NOTES：这里如果直接返回this.data，forceUpdae触发Formrerender时，通过context传下去的formState会被认为是同一个对象【应该是浅对比的原因】
+        // NOTES：这里如果直接返回this.data，forceUpdate 触发 Form rerender 时，通过context传下去的formState会被认为是同一个对象【应该是浅对比的原因】
         // 使用了useFormState相关的component都不会触发重新渲染。所以使用...复制一次
 
         /*
@@ -674,19 +709,49 @@ export default class FormFoundation extends BaseFoundation<BaseFormAdapter> {
         }
     }
 
-    _getErrorFieldAndScroll(scrollOpts?: scrollIntoViewOptions | boolean): void {
+    _getErrorFieldAndScroll(scrollOpts?: ScrollIntoViewOptions | boolean): void {
         const errorDOM = this._adapter.getAllErrorDOM();
         if (errorDOM && errorDOM.length) {
             try {
-                const fieldDom = errorDOM[0].parentNode.parentNode;
-                scrollIntoView(fieldDom as Element, scrollOpts);
+                const fieldDOM = errorDOM[0].parentNode.parentNode;
+                scrollIntoView(fieldDOM as Element, scrollOpts);
             } catch (error) {}
         }
     }
 
-    scrollToField(field: string, scrollOpts = { behavior: 'smooth', block: 'start' } as scrollIntoViewOptions): void {
+    scrollToField(field: string, scrollOpts = { behavior: 'smooth', block: 'start' } as ScrollIntoViewOptions): void {
         if (this.getFieldExist(field)) {
             const fieldDOM = this._adapter.getFieldDOM(field);
+            scrollIntoView(fieldDOM as Element, scrollOpts);
+        }
+    }
+
+    scrollToError(config?: ScrollToErrorOpts): void { 
+        let scrollOpts: ScrollIntoViewOptions = config && config.scrollOpts ? config.scrollOpts : { behavior: 'smooth', block: 'start' };
+        let field = config && config.field;
+        let index = config && config.index;
+        let fieldDOM, errorDOM;
+        if (typeof index === 'number') {
+            const allErrorDOM = this._adapter.getAllErrorDOM();
+            let errorDOM = allErrorDOM[index];
+            if (errorDOM) {
+                fieldDOM = errorDOM.parentNode.parentNode;
+            }
+        } else if (field) {
+            // If field is specified, find the error dom of the corresponding field
+            errorDOM = this._adapter.getFieldErrorDOM(field);
+            if (errorDOM) {
+                fieldDOM = errorDOM.parentNode.parentNode;
+            }
+        } else if (typeof field === 'undefined') {
+            // If field is not specified, find all error doms and scroll to the first one
+            let allErrorDOM = this._adapter.getAllErrorDOM();
+            if (allErrorDOM && allErrorDOM.length) {
+                fieldDOM = allErrorDOM[0].parentNode.parentNode;
+            }
+        }
+
+        if (fieldDOM) {
             scrollIntoView(fieldDOM as Element, scrollOpts);
         }
     }

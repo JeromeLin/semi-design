@@ -1,25 +1,22 @@
-/* eslint-disable no-useless-constructor */
 import BaseFoundation, { DefaultAdapter } from '../base/foundation';
 import { NoticeInstance, NoticePosition, NoticeProps } from '../notification/notificationFoundation';
 import { strings } from './constants';
 
 
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface NotificationListProps{
+export interface NotificationListProps {
 
 }
 
-export interface NotificationListState{
+export interface NotificationListState {
     notices: NoticeInstance[];
     removedItems: NoticeInstance[];
+    updatedItems: NoticeInstance[]
 }
 
-export interface NotificationListAdapter extends DefaultAdapter<NotificationListProps, NotificationListState>{
-    updateNotices: (notices: NoticeInstance[], removedItems?: NoticeInstance[]) => void;
-    getNotices: () => NoticeInstance[];
+export interface NotificationListAdapter extends DefaultAdapter<NotificationListProps, NotificationListState> {
+    updateNotices: (notices: NoticeInstance[], removedItems?: NoticeInstance[], updatedItems?: NoticeInstance[]) => void;
+    getNotices: () => NoticeInstance[]
 }
-
 
 
 export interface ConfigProps {
@@ -30,10 +27,8 @@ export interface ConfigProps {
     duration?: number;
     position?: NoticePosition;
     zIndex?: number;
-    direction?: typeof strings.directions[number];
+    direction?: typeof strings.directions[number]
 }
-
-
 
 
 export default class NotificationListFoundation extends BaseFoundation<NotificationListAdapter> {
@@ -48,8 +43,19 @@ export default class NotificationListFoundation extends BaseFoundation<Notificat
         //         this.removeNotice(opts.id);
         //     }, opts.duration * 1000);
         // }
-        this._adapter.updateNotices([...notices, opts]);
+        this._adapter.updateNotices([opts, ...notices]);
         // return id;
+    }
+
+    has(id: string) {
+        return this._adapter.getNotices().some(notice=>notice.id===id);
+    }
+
+    update(id: string, noticeOpts: NoticeProps) {
+        let notices = this._adapter.getNotices();
+        notices = notices.map((notice) => notice.id === id ? { ...notice, ...noticeOpts }: notice);
+        const updatedItems = notices.filter(notice=>notice.id === id);
+        this._adapter.updateNotices(notices, [], updatedItems);
     }
 
     removeNotice(id: string) {

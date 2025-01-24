@@ -1,6 +1,6 @@
 ---
 localeCode: zh-CN
-order: 32
+order: 48
 category: 输入类
 title: Upload 上传
 icon: doc-upload
@@ -24,11 +24,15 @@ import React from 'react';
 import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
-<Upload action="https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859">
-    <Button icon={<IconUpload />} theme="light">
-        点击上传
-    </Button>
-</Upload>
+() => {
+    return (
+        <Upload action="https://api.semi.design/upload">
+            <Button icon={<IconUpload />} theme="light">
+                点击上传
+            </Button>
+        </Upload>
+    );
+};
 ```
 
 ### 添加提示文本
@@ -42,7 +46,7 @@ import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
 () => {
-    const action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    const action = 'https://api.semi.design/upload';
     const getPrompt = (pos, isListType) => {
         let basicStyle = { display: 'flex', alignItems: 'center', color: 'grey', height: isListType ? '100%' : 32 };
         let marginStyle = {
@@ -55,8 +59,7 @@ import { IconUpload } from '@douyinfe/semi-icons';
     };
     const button = (
         <Button icon={<IconUpload />} theme="light">
-            {' '}
-            点击上传{' '}
+            点击上传
         </Button>
     );
     const positions = ['right', 'left', 'bottom'];
@@ -87,7 +90,7 @@ import { Upload } from '@douyinfe/semi-ui';
 import { IconPlus } from '@douyinfe/semi-icons';
 
 () => {
-    const action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    const action = 'https://api.semi.design/upload';
     const getPrompt = (pos, isListType) => {
         let basicStyle = { display: 'flex', alignItems: 'center', color: 'grey', height: isListType ? '100%' : 32 };
         let marginStyle = {
@@ -96,31 +99,24 @@ import { IconPlus } from '@douyinfe/semi-icons';
         };
         let style = { ...basicStyle, ...marginStyle[pos] };
 
-        return <div style={style}>请上传萌宠认证材料</div>;
+        return <div style={style}>请上传认证材料</div>;
     };
     const defaultFileList = [
         {
             uid: '1',
-            name: 'jiafang1.jpeg',
+            name: 'dy.jpeg',
             status: 'success',
             size: '130kb',
             url:
-                'https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/bf8647bffab13c38772c9ff94bf91a9d.jpg',
-        },
-        {
-            uid: '2',
-            name: 'jiafang2.jpeg',
-            size: '222kb',
-            url:
-                'https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/dbf7351bb779433d17c4f50478cf42f7.jpg',
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/dy.png',
         },
         {
             uid: '5',
-            name: 'jiafang3.jpeg',
+            name: 'resso.jpeg',
             percent: 50,
             size: '222kb',
             url:
-                'https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/8bd8224511db085ed74fea37205aede5.jpg',
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/Resso.png',
         },
     ];
     const positions = ['right', 'bottom'];
@@ -157,27 +153,27 @@ import { Upload, Avatar, Toast } from '@douyinfe/semi-ui';
 import { IconCamera } from '@douyinfe/semi-icons';
 
 () => {
-    const [url, setUrl] = useState('https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/avatarDemo.jpeg');
+    const [url, setUrl] = useState('https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/dy.png');
     const onSuccess = (response, file) => {
         Toast.success('头像更新成功');
         setUrl('https://sf6-cdn-tos.douyinstatic.com/obj/ttfe/ies/semi/ttmoment.jpeg');
     };
 
     const style = {
-        backgroundColor: 'rgba(0,0,0,.4)',
+        backgroundColor: 'var(--semi-color-overlay-bg)',
         height: '100%',
         width: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#FFF',
+        color: 'var(--semi-color-white)',
     };
     
-    const hoverMask =  (<div style={style}>
+    const hoverMask = (<div style={style}>
         <IconCamera />
     </div>);
 
-    const api = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    const api = 'https://api.semi.design/upload';
     let imageOnly = 'image/*';
 
     return (
@@ -191,8 +187,8 @@ import { IconCamera } from '@douyinfe/semi-icons';
         >
             <Avatar src={url} style={{ margin: 4 }} hoverMask={hoverMask} />
         </Upload>
-    )
-}
+    );
+};
 ```
 
 ```css
@@ -211,7 +207,7 @@ import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
     let data = {
         role: 'ies',
         time: new Date().getTime(),
@@ -252,7 +248,7 @@ import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
     let imageOnly = 'image/*';
     let videoOnly = 'video/*';
     let fileLimit = '.pdf,.png,.jpeg';
@@ -288,7 +284,7 @@ import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
     return (
         <>
             <Upload action={action} directory>
@@ -311,7 +307,7 @@ import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
     return (
         <Upload action={action} multiple>
             <Button icon={<IconUpload />} theme="light">
@@ -333,10 +329,10 @@ import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https:https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
     let limit = 1;
     let onChange = props => {
-        console.log(props.fileList)
+        console.log(props.fileList);
     };
     return (
         <Upload
@@ -358,7 +354,7 @@ import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https:https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
     let [disabled, setDisabled] = useState(false);
     let limit = 2;
     let onChange = props => {
@@ -392,24 +388,24 @@ import { Upload } from '@douyinfe/semi-ui';
 import { IconPlus } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
     const defaultFileList = [
         {
             uid: '1',
-            name: 'vigo.png',
+            name: 'dyBag.png',
             status: 'success',
             size: '130KB',
             preview: true,
-            url: 'https://sf6-cdn-tos.douyinstatic.com/img/ee-finolhu/c2a65140483e4a20802d64af5fec1b39~noop.image',
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg',
         },
         {
             uid: '2',
-            name: 'vigo2.jpeg',
+            name: 'dyBag2.jpeg',
             status: 'success',
             size: '222KB',
             preview: true,
-            fileInstance: new File([new ArrayBuffer(2048)], 'vigo2.jpeg', { type: 'image/png' }),
-            url: 'https://sf6-cdn-tos.douyinstatic.com/img/ee-finolhu/c2a65140483e4a20802d64af5fec1b39~noop.image',
+            fileInstance: new File([new ArrayBuffer(2048)], 'dyBag2.jpeg', { type: 'image/png' }),
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg',
         },
     ];
     return (
@@ -437,7 +433,7 @@ import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
 
     return (
         <>
@@ -456,32 +452,76 @@ import { IconUpload } from '@douyinfe/semi-icons';
 };
 ```
 
-### 自定义预览逻辑
+### 自定义列表操作区
 
-`listType` 为 `list` 时，可以通过传入 `previewFile` 览逻辑。  
-例如你不需要对图片类型进行缩略图预览时，可以在 `previewFile` 中恒定返回一个`<IconFile />`
+`listType` 为 `list` 时，可以通过传入 `renderFileOperation` 来自定义列表操作区
 
 ```jsx live=true width=48%
 import React from 'react';
 import { Upload, Button } from '@douyinfe/semi-ui';
-import { IconUpload, IconFile } from '@douyinfe/semi-icons';
+import { IconUpload, IconDownload, IconEyeOpened, IconDelete } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
+
     const defaultFileList = [
         {
             uid: '1',
-            name: 'vigo.png',
+            name: 'dyBag.png',
             status: 'success',
             size: '130KB',
-            url: 'https://sf6-cdn-tos.douyinstatic.com/img/ee-finolhu/c2a65140483e4a20802d64af5fec1b39~noop.image',
+            preview: true,
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg',
+        }
+    ];
+    const renderFileOperation = (fileItem) => (
+        <div style={{ display: 'flex', columnGap: 8, padding: '0 8px' }}>
+            <Button icon={<IconEyeOpened></IconEyeOpened>} type="tertiary" theme="borderless" size="small"></Button>
+            <Button icon={<IconDownload></IconDownload>} type="tertiary" theme="borderless" size="small"></Button>
+            <Button onClick={e=>fileItem.onRemove()} icon={<IconDelete></IconDelete>} type="tertiary" theme="borderless" size="small"></Button>
+        </div>
+    );
+    return <Upload action={action} defaultFileList={defaultFileList} itemStyle={{ width: 300 }} renderFileOperation={renderFileOperation}>
+        <Button icon={<IconUpload />} theme="light">点击上传</Button>
+    </Upload>;
+};
+```
+
+### 自定义预览逻辑
+
+`listType` 为 `list` 时，可以通过传入 `previewFile` 览逻辑  
+例如你不需要对图片类型进行缩略图预览时，可以在 `previewFile` 中恒定返回一个`<IconFile />`  
+假如你希望点击图片时放大预览，则可以在 `previewFile`中使用 Image 组件  
+或者你希望使用额外的操作区来实现点击放大预览，你也可以结合 `renderFileOperation` 放置一些自定义元素例如 Icon 图标实现点击放大  
+
+```jsx live=true width=48%
+import React from 'react';
+import { Upload, Button, Image } from '@douyinfe/semi-ui';
+import { IconUpload, IconFile } from '@douyinfe/semi-icons';
+
+() => {
+    let action = 'https://api.semi.design/upload';
+    const defaultFileList = [
+        {
+            uid: '1',
+            name: 'dyBag.png',
+            status: 'success',
+            size: '130KB',
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg',
+        },
+        {
+            uid: '2',
+            name: 'dyBag2.png',
+            status: 'success',
+            size: '130KB',
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg',
         },
     ];
     return (
         <Upload
             defaultFileList={defaultFileList}
             action={action}
-            previewFile={file => <IconFile size="large" />}
+            previewFile={file => file.uid === '1' ? <IconFile size="large" /> : <Image src={file.url} />}
         >
             <Button icon={<IconUpload />} theme="light">
                 点击上传
@@ -491,9 +531,59 @@ import { IconUpload, IconFile } from '@douyinfe/semi-icons';
 };
 ```
 
+结合 renderFileOperation 与 ImagePreview 的示例，以下示例点击右侧第一个 Icon 可放大图片预览
+```jsx live=true
+import React, { useStae } from 'react';
+import { Upload, Button, ImagePreview } from '@douyinfe/semi-ui';
+import { IconUpload, IconDownload, IconEyeOpened, IconDelete, IconExpand } from '@douyinfe/semi-icons';
+
+() => {
+    let action = 'https://api.semi.design/upload';
+    const [visible, setVisible] = useState(false);
+    const defaultFileList = [
+        {
+            uid: '1',
+            name: 'dyBag.png',
+            status: 'success',
+            size: '130KB',
+            preview: true,
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg',
+        }
+    ];
+    const renderFileOperation = (fileItem) => (
+        <div style={{ display: 'flex', columnGap: 8, padding: '0 8px' }}>
+            <Button
+                icon={<IconExpand></IconExpand>}
+                type="tertiary"
+                theme="borderless"
+                size="small"
+                onClick={()=> setVisible(true)}
+            >
+            </Button>
+            <Button icon={<IconDownload></IconDownload>} type="tertiary" theme="borderless" size="small"></Button>
+            <Button onClick={e=>fileItem.onRemove()} icon={<IconDelete></IconDelete>} type="tertiary" theme="borderless" size="small"></Button>
+            <ImagePreview
+                src={fileItem.url}
+                visible={visible}
+                onVisibleChange={setVisible}
+            />
+        </div>
+    );
+    return <Upload action={action} defaultFileList={defaultFileList} itemStyle={{ width: 300 }} renderFileOperation={renderFileOperation}>
+        <Button icon={<IconUpload />} theme="light">点击上传</Button>
+    </Upload>;
+};
+
+```
+
 ### 默认文件列表
 
 通过 `defaultFileList` 可以展示已上传的文件。当需要预览默认文件的缩略图时，你可以将 `defaultFileList` 内对应 `item` 的 `preview` 属性设为 `true`
+
+<Notice title='注意事项'>
+    defaultFileList中 uid 必须唯一，不可重复
+</Notice>
+
 
 ```jsx live=true width=48%
 import React from 'react';
@@ -501,25 +591,25 @@ import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
 
     const defaultFileList = [
         {
             uid: '1',
-            name: 'vigo.png',
+            name: 'dyBag.jpeg',
             status: 'success',
             size: '130KB',
             preview: true,
-            url: 'https://sf6-cdn-tos.douyinstatic.com/img/ee-finolhu/c2a65140483e4a20802d64af5fec1b39~noop.image',
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg',
         },
         {
             uid: '2',
-            name: 'vigo2.jpeg',
+            name: 'dyBag2.jpeg',
             status: 'uploadFail',
             size: '222KB',
             preview: true,
-            fileInstance: new File([new ArrayBuffer(2048)], 'vigo2.jpeg', { type: 'image/png' }),
-            url: 'https://sf6-cdn-tos.douyinstatic.com/img/ee-finolhu/c2a65140483e4a20802d64af5fec1b39~noop.image',
+            fileInstance: new File([new ArrayBuffer(2048)], 'dyBag2.jpeg', { type: 'image/png' }),
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg',
         },
     ];
 
@@ -548,22 +638,22 @@ import { IconUpload } from '@douyinfe/semi-icons';
     const initList = [
         {
             uid: '1',
-            name: 'vigo.png',
+            name: 'dyBag.jpeg',
             status: 'success',
             size: '130KB',
             preview: true,
-            url: 'https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/e82f3b261133d2b20d85e8483c203112.jpg',
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg',
         },
         {
             uid: '2',
-            name: 'jiafang.jpeg',
+            name: 'dy.jpeg',
             status: 'uploading',
             size: '222KB',
             percent: 50,
             preview: true,
-            fileInstance: new File([new ArrayBuffer(2048)], 'jiafang.jpeg', { type: 'image/jpeg' }),
+            fileInstance: new File([new ArrayBuffer(2048)], 'dy.jpeg', { type: 'image/jpeg' }),
             url:
-                'https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/4a55704fb0b8b85eaccdb4ed22469f57.jpg',
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/dy.png',
         },
     ];
 
@@ -575,11 +665,11 @@ import { IconUpload } from '@douyinfe/semi-icons';
         console.log(currentFile);
         let newFileList = [...fileList]; // spread to get new array
         updateList(newFileList);
-    }
+    };
 
     return (
         <Upload
-            action="https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859"
+            action="https://api.semi.design/upload"
             onChange={onChange}
             fileList={list}
             showRetry={false}
@@ -588,13 +678,14 @@ import { IconUpload } from '@douyinfe/semi-icons';
                 点击上传
             </Button>
         </Upload>
-    )
-}
+    );
+};
 ```
 
-### 照片墙
+### 图片墙
 
-设置 `listType = 'picture'`，用户可以上传图片并在列表中显示缩略图
+设置 `listType = 'picture'`，用户可以上传图片并在列表中显示缩略图  
+如果通过 defaultFileList 或 fileList 设置已上传的文件列表时，会自动读取对象数组中的 url 属性用于展示图片
 
 ```jsx live=true width=48%
 import React from 'react';
@@ -602,21 +693,237 @@ import { Upload } from '@douyinfe/semi-ui';
 import { IconPlus } from '@douyinfe/semi-icons';
 
 () => {
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
     const defaultFileList = [
         {
             uid: '1',
-            name: 'jiafang.png',
+            name: 'dy.png',
             status: 'success',
             size: '130KB',
             preview: true,
             url:
-                'https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/e82f3b261133d2b20d85e8483c203112.jpg',
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/dy.png',
         },
     ];
     return (
         <>
             <Upload action={action} listType="picture" accept="image/*" multiple defaultFileList={defaultFileList}>
+                <IconPlus size="extra-large" />
+            </Upload>
+        </>
+    );
+};
+```
+
+设置 `showPicInfo`，可以查看图片基础信息
+
+```jsx live=true width=48%
+import React from 'react';
+import { Upload } from '@douyinfe/semi-ui';
+import { IconPlus } from '@douyinfe/semi-icons';
+
+() => {
+    let action = 'https://api.semi.design/upload';
+    const defaultFileList = [
+        {
+            uid: '1',
+            name: 'music.png',
+            status: 'success',
+            size: '130KB',
+            preview: true,
+            url:
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/Resso.png',
+        },
+        {
+            uid: '2',
+            name: 'brand.png',
+            status: 'success',
+            size: '130KB',
+            preview: true,
+            url:
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/Resso.png',
+        },
+    ];
+    return (
+        <>
+            <Upload action={action} listType="picture" showPicInfo accept="image/*" multiple defaultFileList={defaultFileList}>
+                <IconPlus size="extra-large" />
+            </Upload>
+        </>
+    );
+};
+```
+
+### 图片墙放大预览
+配合 Image 组件，通过 renderThumbnail API ，可以实现点击图片放大预览
+
+```jsx live=true width=48%
+import React from 'react';
+import { Upload, Image } from '@douyinfe/semi-ui';
+import { IconPlus } from '@douyinfe/semi-icons';
+
+() => {
+    let action = 'https://api.semi.design/upload';
+    const defaultFileList = [
+        {
+            uid: '1',
+            name: 'music.png',
+            status: 'success',
+            size: '130KB',
+            preview: true,
+            url:
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/Resso.png',
+        }
+    ];
+    return (
+        <>
+            <Upload
+                action={action}
+                listType="picture"
+                accept="image/*"
+                multiple
+                defaultFileList={defaultFileList}
+                renderThumbnail={(file) => (<Image src={file.url} />)}
+            >
+                <IconPlus size="extra-large" />
+            </Upload>
+        </>
+    );
+};
+```
+
+可以通过 `renderPicPreviewIcon`，`onPreviewClick` 来自定义预览图标，当显示替换图标 `showReplace` 时，不会再显示预览图标<br />
+当需要自定义预览/替换功能时，需要关闭替换功能，使用 `renderPicPreviewIcon` 监听图标点击事件即可。<br />
+`onPreviewClick` 监听的是单张图片容器的点击事件
+
+```jsx live=true width=48%
+import React from 'react';
+import { Upload } from '@douyinfe/semi-ui';
+import { IconPlus, IconEyeOpened } from '@douyinfe/semi-icons';
+
+() => {
+    let action = 'https://api.semi.design/upload';
+    const defaultFileList = [
+        {
+            uid: '1',
+            name: 'resso.png',
+            status: 'success',
+            size: '130KB',
+            preview: true,
+            url:
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/Resso.png',
+        },
+    ];
+    const handlePreview = (file) => {
+        const feature = "width=300,height=300";
+        window.open(file.url, 'imagePreview', feature);
+    };
+    return (
+        <>
+            <Upload
+                action={action}
+                listType="picture"
+                showPicInfo
+                accept="image/*"
+                multiple
+                defaultFileList={defaultFileList}
+                onPreviewClick={handlePreview}
+                renderPicPreviewIcon={()=><IconEyeOpened style={{ color: 'var(--semi-color-white)', fontSize: 24 }} />}
+            >
+                <IconPlus size="extra-large" />
+            </Upload>
+        </>
+    );
+};
+```
+
+### 图片墙设置宽高
+通过设置 picHeight, picWidth （ v2.42 后提供），可以统一设置图片墙元素的宽高
+如果同时使用 `renderThumbnail` return Image 组件来实现点击放大预览，你需要同时指定 Image 组件的 width 和 height
+
+```jsx live=true dir="column"
+import React from 'react';
+import { Upload } from '@douyinfe/semi-ui';
+import { IconPlus } from '@douyinfe/semi-icons';
+
+() => {
+    let action = 'https://api.semi.design/upload';
+    const defaultFileList = [
+        {
+            uid: '1',
+            name: 'image-1.jpg',
+            status: 'success',
+            size: '130KB',
+            preview: true,
+            url:
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/abstract.jpg',
+        }
+    ];
+    return (
+        <>
+            <Upload
+                action={action}
+                listType="picture"
+                accept="image/*"
+                multiple
+                defaultFileList={defaultFileList}
+                picHeight={110}
+                picWidth={200}
+                renderThumbnail={(file) => (<Image src={file.url} width={200} height={110} />)}
+            >
+                <IconPlus size="extra-large" style={{ margin: 4 }} />
+                点击添加图片
+            </Upload>
+        </>
+    );
+};
+```
+
+设置 `hotSpotLocation` 自定义点击热区的顺序，默认在照片墙列表结尾
+
+```jsx live=true width=48%
+import React from 'react';
+import { Upload, Select, RadioGroup, Radio } from '@douyinfe/semi-ui';
+import { IconPlus, IconEyeOpened } from '@douyinfe/semi-icons';
+
+() => {
+    let action = 'https://api.semi.design/upload';
+    const defaultFileList = [
+        {
+            uid: '1',
+            name: 'resso.png',
+            status: 'success',
+            size: '130KB',
+            preview: true,
+            url:
+                'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/Resso.png',
+        },
+    ];
+    const handlePreview = (file) => {
+        const feature = "width=300,height=300";
+        window.open(file.url, 'imagePreview', feature);
+    };
+    const [hotSpotLocation, setLocation] = useState('end');
+    return (
+        <>
+            <RadioGroup
+                value={hotSpotLocation}
+                type='button'
+                onChange={e => setLocation(e.target.value)}>
+                <Radio value='start'>start</Radio>
+                <Radio value='end'>end</Radio>
+            </RadioGroup>
+            <hr />
+            <Upload
+                action={action}
+                listType="picture"
+                showPicInfo
+                accept="image/*"
+                multiple
+                hotSpotLocation={hotSpotLocation}
+                defaultFileList={defaultFileList}
+                onPreviewClick={handlePreview}
+            >
                 <IconPlus size="extra-large" />
             </Upload>
         </>
@@ -635,22 +942,22 @@ import { IconUpload } from '@douyinfe/semi-icons';
     const defaultFileList = [
         {
             uid: '1',
-            name: 'vigo.png',
+            name: 'first.png',
             status: 'success',
             size: '130KB',
             preview: true,
-            url: 'https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/e82f3b261133d2b20d85e8483c203112.jpg',
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/dy.png',
         },
         {
             uid: '2',
-            name: 'vigo2.jpeg',
+            name: 'second.png',
             status: 'validateFail',
             size: '222KB',
             preview: true,
-            url: 'https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/e82f3b261133d2b20d85e8483c203112.jpg',
+            url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/dy.png',
         },
     ];
-    let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+    let action = 'https://api.semi.design/upload';
     return (
         <>
             <Upload action={action} disabled defaultFileList={defaultFileList}>
@@ -684,7 +991,7 @@ class ManulUploadDemo extends React.Component {
     }
 
     render() {
-        let action = 'https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859';
+        let action = 'https://api.semi.design/upload';
         return (
             <div>
                 <Upload
@@ -698,10 +1005,10 @@ class ManulUploadDemo extends React.Component {
                     <Button icon={<IconPlus />} theme="light" style={{ marginRight: 8 }}>
                         选择文件
                     </Button>
-                    <Button icon={<IconUpload />} theme="light" onClick={this.manulUpload}>
-                        开始上传
-                    </Button>
                 </Upload>
+                <Button icon={<IconUpload />} theme="light" onClick={this.manulUpload}>
+                    开始上传
+                </Button>
             </div>
         );
     }
@@ -711,6 +1018,9 @@ class ManulUploadDemo extends React.Component {
 ### 拖拽上传
 
 `draggable='true'`，可以使用拖拽功能
+<Notice type="primary" title="注意事项">
+    <div>在directory为true的情况下，因为浏览器自动做了限制，所以点击上传时不允许选单个文件，拖拽时我们认为同时允许文件夹、文件都能拖动更合理，所以不做另外的拦截处理。</div>
+</Notice>
 
 ```jsx live=true width=48%
 import React from 'react';
@@ -718,7 +1028,7 @@ import { Upload } from '@douyinfe/semi-ui';
 
 () => (
     <Upload
-        action="https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859"
+        action="https://api.semi.design/upload"
         draggable={true}
         dragMainText={'点击上传文件或拖拽文件到这里'}
         dragSubText="支持任意类型文件"
@@ -734,14 +1044,14 @@ import { Upload } from '@douyinfe/semi-ui';
 import { IconBolt } from '@douyinfe/semi-icons';
 
 () => <Upload
-    action="https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859"
+    action="https://api.semi.design/upload"
     dragIcon={<IconBolt />}
     draggable={true}
     accept="application/pdf,.jpeg"
     dragMainText={'点击上传文件或拖拽文件到这里'}
     dragSubText="仅支持jpeg、pdf"
     style={{ marginTop: 10 }}
-></Upload>
+></Upload>;
 ```
 
 还可以通过 `children` 传入 ReactNode，完全自定义拖拽区的显示
@@ -752,7 +1062,7 @@ import { Upload } from '@douyinfe/semi-ui';
 import { IconBolt } from '@douyinfe/semi-icons';
 
 () => (<Upload
-    action="https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859"
+    action="https://api.semi.design/upload"
     dragIcon={<IconBolt />}
     draggable={true}
     accept="application/pdf,.jpeg"
@@ -760,8 +1070,9 @@ import { IconBolt } from '@douyinfe/semi-icons';
 >
     <div className="components-upload-demo-drag-area">
         <img
-            src="https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/0f2a32f27eab90a296814fbc26103b2b.jpg"
+            src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/dy.png"
             height="96"
+            alt='demo img'
             style={{ borderRadius: 4 }}
         />
         <div
@@ -776,8 +1087,8 @@ import { IconBolt } from '@douyinfe/semi-icons';
             Wow, you can really dance.
         </div>
     </div>
-    </Upload>
-)
+</Upload>
+);
 ```
 
 Scss 样式如下
@@ -861,7 +1172,7 @@ class ValidateDemo extends React.Component {
     render() {
         return (
             <Upload
-                action="https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859"
+                action="https://api.semi.design/upload"
                 transformFile={this.transformFile}
                 beforeUpload={this.beforeUpload}
             >
@@ -916,7 +1227,7 @@ class AsyncBeforeUploadDemo extends React.Component {
 
     render() {
         return (
-            <Upload action="https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859" beforeUpload={this.beforeUpload}>
+            <Upload action="https://api.semi.design/upload" beforeUpload={this.beforeUpload}>
                 <Button icon={<IconUpload />} theme="light">
                     点击上传（上传前异步校验）
                 </Button>
@@ -930,15 +1241,21 @@ class AsyncBeforeUploadDemo extends React.Component {
 
 可以通过 `afterUpload` 钩子，对文件状态，校验信息，文件名进行更新。  
 `({ response: any, file: FileItem, fileList: Array<FileItem> }) => afterUploadResult`  
-afterUpload 在上传完成后(xhr.onload)且没有发生错误的情况下触发，需返回一个 Object 对象（不支持异步返回），具体结构如下
+`afterUpload` 在上传完成后(`xhr.onload`)且没有发生错误的情况下触发，需返回一个 Object 对象（不支持异步返回），具体结构如下
 
 ```ts
 // afterUploadResult:
 {
-    status?: 'success' | 'uploadFail' | 'validateFail' | 'validating' | 'uploading' | 'wait',
-    validateMessage?: React.ReactNode | string, // 文件的校验信息
-    autoRemove: boolean, // 是否从fileList中移除该文件，默认为false
-    name: string,
+    status?: 'success' | 'uploadFail' | 'validateFail' | 'validating' | 'uploading' | 'wait';
+    // 文件的校验信息
+    validateMessage?: React.ReactNode | string;
+    // 是否从fileList中移除该文件，默认为false
+    autoRemove?: boolean;
+    // 文件的名称
+    name?: string;
+    // 预览文件的url，一般为当次上传请求中 Server 接收到文件后返回的存储地址，v2.63后支持传入。
+    // 之前的版本也可以通过 onChange 中结合 status 手动更新受控 fileList 中的属性实现
+    url?: string 
 }
 ```
 
@@ -947,14 +1264,8 @@ import React from 'react';
 import { Upload, Button } from '@douyinfe/semi-ui';
 import { IconUpload } from '@douyinfe/semi-icons';
 
-class ValidateDemo extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-        this.count = 0;
-    }
-
-    afterUpload({ response, file }) {
+() => {
+    const afterUpload = ({ response, file }) => {
         // 可以根据业务接口返回，决定当次上传是否成功
         if (response.status_code === 200) {
             return {
@@ -962,28 +1273,27 @@ class ValidateDemo extends React.Component {
                 status: 'uploadFail',
                 validateMessage: '内容不合法',
                 name: 'RenameByServer.jpg',
+                url: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/edit-bag.jpeg'
             };
         } else {
             return {};
         }
-    }
+    };
 
-    render() {
-        return (
-            <Upload action="https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859" afterUpload={this.afterUpload}>
-                <Button icon={<IconUpload />} theme="light">
-                    点击上传
-                </Button>
-            </Upload>
-        );
-    }
+    return (
+        <Upload action="https://api.semi.design/upload" afterUpload={afterUpload}>
+            <Button icon={<IconUpload />} theme="light">
+                点击上传
+            </Button>
+        </Upload>
+    )
 }
 ```
 
 ### 自定义请求
 
 当传入 customRequest 时, 相当于使用的自定义的请求方法替换了 upload 内置的 xhr 请求，用户需要自行接管上传行为。  
-可在入参中获取到当前操作的 file 对象，用户自行实现上传过程，并且在适当的时候调用 customRequest 入参中的 onProgress、onError、onSuccess 以更新 Upload 组件内部状态  
+可在入参中获取到当前操作的 file 对象，用户自行实现上传过程，并且在适当的时候调用 customRequest 入参中的 onProgress、onError、onSuccess 以更新 Upload 组件内部状态进而驱动 UI 更新  
 customRequest 包含以下入参
 
 ```ts
@@ -1001,7 +1311,7 @@ customRequest 包含以下入参
     // 上传出错时应调用的函数
     onError: (userXhr: { status: number }, e: event) => any,
      // 上传成功后应调用的函数, response为上传成功后的请求结果
-    onSuccess: (response: any, e: event) => any,
+    onSuccess: (response: any, e?: event) => any,
     // 用户设置的props.withCredentials
     withCredentials: boolean,
     // 用户设置的props.action
@@ -1029,7 +1339,7 @@ import { IconUpload } from '@douyinfe/semi-icons';
     };
 
     return (
-        <Upload action="https://run.mocky.io/v3/d6ac5c9e-4d39-4309-a747-7ed3b5694859" customRequest={mockRequest}>
+        <Upload action="https://api.semi.design/upload" customRequest={mockRequest}>
             <Button icon={<IconUpload />} theme="light">
                 点击上传
             </Button>
@@ -1046,57 +1356,67 @@ import { IconUpload } from '@douyinfe/semi-icons';
 |--- | --- | --- | --- | --- |
 |accept | `html` 原生属性，接受上传的[文件类型](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-accept)。<br/>`accept` 的值为你允许选择文件的[MIME types 字符串](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types)或文件后缀（.jpg等） | string | |  |
 |action | 文件上传地址，必填 | string |  |  |
-|afterUpload | 文件上传后的钩子，根据 return 的 object 更新文件状态 | function(auProps) => afterUploadResult |  | 1.0.0 |
-|beforeClear|清空文件前回调，按照返回值来判断是否继续移除，返回false、Promise.resolve(false)、Promise.reject()会阻止移除|(fileList: Array<FileItem \>) => boolean \| Promise||1.31.0|
-|beforeRemove|移除文件前的回调，按照返回值来判断是否继续移除，返回false、Promise.resolve(false)、Promise.reject()会阻止移除|(file: <FileItem\>, fileList: Array<FileItem \>) => boolean \| Promise||1.31.0|
-|beforeUpload | 上传文件前的钩子，根据 return 的 object 更新文件状态，控制是否上传 | function(buProps) => beforeUploadResult \| Promise \| boolean |  | 1.0.0 |
-|capture | 文件上传控件中媒体拍摄的方式 | boolean \| string \| undefined | | |
+|addOnPasting | 按下 ctrl/command + v时，是否自动将剪贴板中的文件添加至 fileList，当前仅支持图片类型; 需用户授权同意 | boolean | false | 2.43.0 |
+|afterUpload | 文件上传后的钩子，根据 return 的 object 更新文件状态 | function(auProps) => afterUploadResult |  |  |
+|beforeClear|清空文件前回调，按照返回值来判断是否继续移除，返回false、Promise.resolve(false)、Promise.reject()会阻止移除|(fileList: Array<FileItem \>) => boolean\|Promise|| |
+|beforeRemove|移除文件前的回调，按照返回值来判断是否继续移除，返回false、Promise.resolve(false)、Promise.reject()会阻止移除|(file: <FileItem\>, fileList: Array<FileItem \>) => boolean\|Promise|| |
+|beforeUpload | 上传文件前的钩子，根据 return 的 object 更新文件状态，控制是否上传 | function(buProps) => beforeUploadResult \| Promise \| boolean |  |  |
+|capture | 文件上传控件中媒体拍摄的方式 | boolean\|string\|undefined | | |
 |className | 类名 | string |  |  |
-|customRequest | 自定义上传使用的异步请求方法 | (object: customRequestArgs) => void |  | 1.5.0 |
+|customRequest | 自定义上传使用的异步请求方法 | (object: customRequestArgs) => void |  |  |
 |data | 上传时附带的额外参数或返回上传额外参数的方法 | object\|(file: [File](https://developer.mozilla.org/zh-CN/docs/Web/API/File)) => object | {} |  |
 |defaultFileList | 已上传的文件列表 | Array<FileItem\> | [] |  |
-|directory | 文件夹类型上传 | boolean | false | 1.20.0 |
+|directory | 文件夹类型上传 | boolean | false |  |
 |disabled | 是否禁用 | boolean | false |  |
-|dragIcon | 拖拽区左侧 Icon | ReactNode | `<IconUpload />` | 0.22.0 |
-|dragMainText | 拖拽区主文本 | ReactNode | '点击上传文件或拖拽文件到这里' | 0.22.0 |
-|dragSubText | 拖拽区帮助文本 | ReactNode | '' | 0.22.0 |
-|draggable | 是否支持拖拽上传 | boolean | false | 0.22.0 |
-|fileList | 已上传的文件列表，传入该值时，upload 即为受控组件 | Array<FileItem\> |  | 1.0.0 |
-|fileName | 作用与 name 相同，主要在 Form.Upload 中使用，为了避免与 Field 的 props.name 冲突，此处另外提供一个重命名的 props | string |  | 1.0.0 |
+|dragIcon | 拖拽区左侧 Icon | ReactNode | `<IconUpload />` |  |
+|dragMainText | 拖拽区主文本 | ReactNode | '点击上传文件或拖拽文件到这里' | |
+|dragSubText | 拖拽区帮助文本 | ReactNode | '' |  |
+|draggable | 是否支持拖拽上传 | boolean | false |  |
+|fileList | 已上传的文件列表，传入该值时，upload 即为受控组件 | Array<FileItem\> |  |  |
+|fileName | 作用与 name 相同，主要在 Form.Upload 中使用，为了避免与 Field 的 props.name 冲突，此处另外提供一个重命名的 props | string |  | |
 |headers | 上传时附带的 headers 或返回上传额外 headers 的方法 | object\|(file: [File](https://developer.mozilla.org/zh-CN/docs/Web/API/File)) => object | {} |  |
-|itemStyle | fileCard 的内联样式 | CSSProperties |  | 1.0.0 |
+|hotSpotLocation | 照片墙点击热区的放置位置，可选值 `start`, `end` | string | 'end' | 2.5.0 |
+|itemStyle | fileCard 的内联样式 | CSSProperties |  |  |
 |limit | 最大允许上传文件个数 | number |  |  |
 |listType | 文件列表展示类型，可选`picture`、`list` | string | 'list' |  |
 |maxSize | 文件体积最大限制，单位 KB | number |  |  |
 |minSize | 文件体积最小限制，单位 KB | number |  |  |
 |multiple | 是否允许单次选中多个文件 | boolean | false |  |
 |name | 上传时使用的文件名 | string | '' |  |
-|onAcceptInvalid | 当接收到的文件不符合accept规范时触发（一般是因为文件夹选择了全部类型文件/拖拽不符合格式的文件时触发） | (files: File[]) => void | | 1.24.0 |
-|onChange | 文件状态发生变化时调用，包括上传成功，失败，上传中，回调入参为 Object，包含 fileList、currentFile 等值 | ({fileList: Array<FileItem\>, currentFile?: FileItem}) => void |  | 1.0.0 |
-|onClear | 点击清空时的回调 | () => void |  | 1.1.0 |
-|onDrop | 当拖拽的元素在拖拽区上被释放时触发 | (e, files: Array<File\>, fileList: Array<FileItem\>) => void |  | 1.9.0 |
+|onAcceptInvalid | 当接收到的文件不符合accept规范时触发（一般是因为文件夹选择了全部类型文件/拖拽不符合格式的文件时触发） | (files: File[]) => void | |  |
+|onChange | 文件状态发生变化时调用，包括上传成功，失败，上传中，回调入参为 Object，包含 fileList、currentFile 等值 | ({fileList: Array<FileItem\>, currentFile?: FileItem}) => void |  |  |
+|onClear | 点击清空时的回调 | () => void |  |  |
+|onDrop | 当拖拽的元素在拖拽区上被释放时触发 | (e, files: Array<File\>, fileList: Array<FileItem\>) => void |  |  |
 |onError | 上传错误时的回调 | (error: Error, file: [File](https://developer.mozilla.org/zh-CN/docs/Web/API/File), fileList: Array<FileItem\>, xhr: XMLHttpRequest) => void |  |  |
 |onExceed | 上传文件总数超出 `limit` 时的回调 | (fileList:Array<FileItem\>) => void |  |  |
 |onFileChange | 选中文件后的回调 | (Array<File\>) => void |  |  |
-|onOpenFileDialog | 打开系统文系统文件选择弹窗时触发 | () => void |  | 1.18.0 |
-|onPreviewClick | 点击文件卡片时的回调 | (fileItem: FileItem) => void |  | 1.8.0 |
+|onOpenFileDialog | 打开系统文系统文件选择弹窗时触发 | () => void |  |  |
+|onPreviewClick | 点击文件卡片时的回调 | (fileItem: FileItem) => void |  |  |
 |onProgress | 上传文件时的回调 | (percent: number, file: [File](https://developer.mozilla.org/zh-CN/docs/Web/API/File), fileList: Array<FileItem\>) => void |  |  |
+|onPastingError | addOnPasting为true时，粘贴读取失败时的回调 | (Error\|PermissionState) |  | 2.43.0 |
 |onRemove | 移除文件的回调 | (currentFile: [File](https://developer.mozilla.org/zh-CN/docs/Web/API/File), fileList:Array<FileItem\>, currentFileItem: FileItem) => void |  |  |
-|onRetry | 上传重试的回调 | (file: <FileItem\>) => void |  | 1.18.0 |
+|onRetry | 上传重试的回调 | (file: <FileItem\>) => void |  |  |
 |onSizeError | 文件尺寸非法的回调 | (file:[File](https://developer.mozilla.org/zh-CN/docs/Web/API/File), fileList:Array<FileItem\>) => void |  |  |
 |onSuccess | 上传成功后的回调 | (responseBody: object, file: [File](https://developer.mozilla.org/zh-CN/docs/Web/API/File), fileList:Array<FileItem\>) => void |  |
+|picHeight | 图片墙模式下，可通过该 API 定制图片展示高度 | string\|number |  | 2.42.0 |
+|picWidth | 图片墙模式下，可通过该 API 定制图片展示宽度 | string\|number |  | 2.42.0 |
 |previewFile | 自定义预览逻辑，该函数返回内容将会替换原缩略图 | (fileItem: FileItem) => ReactNode |  |  |
 |prompt | 自定义插槽，可用于插入提示文本。与直接在 `children` 中写的区别时，`prompt` 的内容在点击时不会触发上传<br/>（图片墙模式下，v1.3.0 后才支持传入 prompt） | ReactNode |  |  |
 |promptPosition | 提示文本的位置，当 listType 为 list 时，参照物为 children 元素；当 listType 为 picture 时，参照物为图片列表。可选值 `left`、`right`、`bottom`<br/>（图片墙模式下，v1.3.0 后才支持使用 promptPosition） | string | 'right' |  |
-|renderFileItem | fileCard 的自定义渲染 | (renderProps: RenderFileItemProps) => ReactNode |  | 1.0.0 |
-|showClear | 在 limit 不为 1 且当前已上传文件数大于 1 时，是否展示清空按钮 | boolean | true | 1.0.0 |
-|showReplace | 上传成功时，是否展示在 fileCard 内部展示替换按钮 | boolean | false | 1.21.0 |
-|showRetry | 上传失败时，是否展示在 fileCard 内部展示重试按钮 | boolean | true | 1.0.0 |
+|renderFileItem | fileCard 的自定义渲染 | (renderProps: RenderFileItemProps) => ReactNode |  |  |
+|renderFileOperation | 自定义列表项操作区 | (renderProps: RenderFileItemProps)=>ReactNode | | 2.5.0 |
+|renderPicInfo| 自定义照片墙信息，只在照片墙模式下有效| (renderProps: RenderFileItemProps)=>ReactNode | | 2.2.0 |
+|renderPicPreviewIcon| 自定义照片墙hover时展示的预览图标，只在照片墙模式下有效 | (renderProps: RenderFileItemProps)=>ReactNode | | 2.5.0 |
+|renderThumbnail| 自定义图片墙缩略图，只在照片墙模式下有效| (renderProps: RenderFileItemProps)=>ReactNode | | 2.2.0 |
+|showClear | 在 limit 不为 1 且当前已上传文件数大于 1 时，是否展示清空按钮 | boolean | true |  |
+|showPicInfo| 是否显示图片信息，只在照片墙模式下有效| boolean| false | 2.2.0 |
+|showReplace | 上传成功时，是否展示在 fileCard 内部展示替换按钮 | boolean | false |  |
+|showRetry | 上传失败时，是否展示在 fileCard 内部展示重试按钮 | boolean | true |  |
 |showUploadList | 是否显示文件列表 | boolean | true |  |
 |style | 样式 | CSSProperties |  |  |
-|transformFile | 选中文件后，上传文件前的回调函数，可用于对文件进行自定义转换处理 | (file:[File](https://developer.mozilla.org/zh-CN/docs/Web/API/File)) => FileItem |  | 1.0.0 |
+|transformFile | 选中文件后，上传文件前的回调函数，可用于对文件进行自定义转换处理 | (file:[File](https://developer.mozilla.org/zh-CN/docs/Web/API/File)) => FileItem |  |  |
 |uploadTrigger | 触发上传时机，可选值 `auto`、`custom` | string | 'auto' |  |
-|validateMessage | Upload 整体的错误信息 | ReactNode |  | 1.0.0 |
+|validateMessage | Upload 整体的错误信息 | ReactNode |  |  |
 |withCredentials | 是否带上 Cookie 信息 | boolean | false |  |
 
 
@@ -1128,23 +1448,35 @@ interface FileItem {
 }
 ```
 
-### RenderFileItemProps Interface
+## Methods
 
-```ts
-interface RenderFileItemProps extends FileItem {
-    previewFile: (fileItem: FileItem) => ReactNode; // 自定义预览元素
-    listType: 'picture' | 'list'; // 文件列表展示类型
-    onRemove: () => void; // 移除
-    onRetry: () => void; // 重试
-    onReplace: () => void; // 替换文件
-    key: string; // Item key
-    showRetry: boolean; // 是否展示重试
-    showReplace: boolean; // 是否展示替换
-    style: CSSProperties; // 传入的itemStyle
-    disabled: boolean; // 是否禁用
-    onPreviewClick: () => void; // 点击预览
-}
-```
+绑定在组件实例上的方法，可以通过 ref 调用实现某些特殊交互
+
+|名称 | 描述 | 类型 | 版本 |
+|----|----|----|----|
+| insert | 上传文件，当index传入时，会插入到指定位置，不传则插入到最后 | (files: Array<File\>, index?: number) => void | 2.2.0 |
+| upload | 手动开始上传，配合uploadTrigger="custom"使用 | () => void | |
+| openFileDialog | 打开文件选择窗口 | () => void | 2.21.0 |
+
+## Accessibility
+
+Upload组件是一个可交互的控件，在点击或拖拽时触发文件选择，文件选中后会在文件列表内展示状态。
+
+### ARIA
+
+- 为可点击元素添加 `role="button"`
+- 文件列表添加 `role="list"`，并用 `aria-label` 描述
+
+
+## 文案规范
+- 上传按钮
+  - 关于表单按钮的文案规范，参考[按钮Button组件的文案规范](/zh-CN/input/button#%E6%96%87%E6%A1%88%E8%A7%84%E8%8C%83) 
+- 帮助文本
+  - 帮助文本使用语句书写规范，首字母大写，可以不需要句号
+- 用户出错提示
+  - 清晰地告诉用户为什么文件无法被上传，并且告知用户如何操作能够成功上传
+  - 帮助文本使用语句书写规范，首字母大写
+  - 简洁的用语让用户能够一眼读懂，比如 `File size must be less than 20MB`, `File type must be .gif, .jpg, .png or .svg`
 
 ## 设计变量
 <DesignToken/>
@@ -1159,15 +1491,8 @@ interface RenderFileItemProps extends FileItem {
 -   Semi Upload把图片存到哪里了？
     -   Semi Upload不负责图片的保存，当你使用 Upload 组件时需要自定义 action。你可以选择把 action 设置为自己的服务器地址或者图片服务地址。
 -   Form.Upload props.name无效？
-    - Form.Field 中有props.name，Upload也有props.name，同名props会冲突。使用Form.Upload时，可以转为使用 props.fileName，避免冲突
+    - Form.Field 中有 props.name，Upload也有 props.name，同名 props 会冲突。使用 Form.Upload 时，可以转为使用 props.fileName，避免冲突
 -   上传图片后没有调用 XXX 方法？
     - 如果你设置了 `accept`，可以尝试把 accept 属性去掉，然后再看是否调用了改方法。去掉后调用了该方法说明，accept 在当前环境下获取的 file type 与设置的 accept 不符，上传行为提前终止。可以打个断点到 upload/foundation.js checkFileFormat 函数，看下获取的 file.type 真实值是否符合预期。
 
 <Notice title={"关于进度条"}>进度条表示上传进度，上传进度分为数据上载和服务器返回两部分，如果数据已经全部发出，但是服务器没有返回响应，进度条会停留在90%提示用户上传并没有完成，此时开发者工具中请求会处于 pending, 这是正常现象。仅当服务器返回响应，上传流程才真正结束，上传进度会达到100%</Notice>
-
-
-<!-- ## 相关物料
-
-```material
-82
-``` -->

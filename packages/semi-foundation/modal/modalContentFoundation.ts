@@ -6,13 +6,16 @@ export interface ModalContentProps extends ModalProps {
     onClose: (e: any) => void;
     getContainerContext: () => any;
     isFullScreen?: boolean;
-    contentClassName?: string,
+    contentClassName?: string;
     maskClassName?: string;
-    onAnimationEnd?: () => void;
+    onAnimationEnd?: (e: any) => void;
+    maskExtraProps?: Record<string, any>;
+    contentExtraProps?: Record<string, any>
 }
 
 export interface ModalContentState {
     dialogMouseDown: boolean;
+    prevFocusElement: HTMLElement
 }
 
 export interface ModalContentAdapter extends DefaultAdapter<ModalContentProps, ModalContentState> {
@@ -22,6 +25,9 @@ export interface ModalContentAdapter extends DefaultAdapter<ModalContentProps, M
     addKeyDownEventListener: () => void;
     removeKeyDownEventListener: () => void;
     getMouseState: () => boolean;
+    modalDialogFocus: () => void;
+    modalDialogBlur: () => void;
+    prevFocusElementReFocus: () => void
 }
 
 export default class ModalContentFoundation extends BaseFoundation<ModalContentAdapter> {
@@ -32,6 +38,8 @@ export default class ModalContentFoundation extends BaseFoundation<ModalContentA
 
     destroy() {
         this.handleKeyDownEventListenerUnmount();
+        this.modalDialogBlur();
+        this.prevFocusElementReFocus();
     }
 
     handleDialogMouseDown() {
@@ -42,7 +50,7 @@ export default class ModalContentFoundation extends BaseFoundation<ModalContentA
         this._adapter.notifyDialogMouseUp();
     }
 
-    handleKeyDown(e: any) {
+    handleKeyDown = (e: any) => {
         const { closeOnEsc } = this.getProps();
         if (closeOnEsc && e.keyCode === KeyCode.ESC) {
             e.stopPropagation();
@@ -72,5 +80,17 @@ export default class ModalContentFoundation extends BaseFoundation<ModalContentA
 
     close(e: any) {
         this._adapter.notifyClose(e);
+    }
+
+    modalDialogFocus() {
+        this._adapter.modalDialogFocus();
+    }
+
+    modalDialogBlur() {
+        this._adapter.modalDialogBlur();
+    }
+
+    prevFocusElementReFocus() {
+        this._adapter.prevFocusElementReFocus();
     }
 }

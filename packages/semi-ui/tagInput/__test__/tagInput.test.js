@@ -1,5 +1,5 @@
 import { Icon, TagInput } from '../../index';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 import { cssClasses } from '@douyinfe/semi-foundation/icons/constants';
 import { BASE_CLASS_PREFIX } from '../../../semi-foundation/base/constants';
 const prefixCls = cssClasses.PREFIX;
@@ -76,6 +76,28 @@ describe('TagInput', () => {
         tagInput.unmount();
     });
 
+    it('TagInput with defaultValue and value is undefined', () => {
+        const props = {
+            defaultValue: ['semi', 'hotsoon'],
+            value: undefined,
+        };
+        const tagInput = getTagInput(props);
+        const tags = tagInput.find(`.${BASE_CLASS_PREFIX}-tagInput-wrapper .${BASE_CLASS_PREFIX}-tag-content`);
+        expect(tags.length).toEqual(0);
+        tagInput.unmount();
+    });
+
+    it('TagInput with defaultValue and value is null', () => {
+        const props = {
+            defaultValue: ['semi', 'hotsoon'],
+            value: null,
+        };
+        const tagInput = getTagInput(props);
+        const tags = tagInput.find(`.${BASE_CLASS_PREFIX}-tagInput-wrapper .${BASE_CLASS_PREFIX}-tag-content`);
+        expect(tags.length).toEqual(0);
+        tagInput.unmount();
+    });
+
     it('TagInput with disabled', () => {
         const disabledTagInput = mount(<TagInput disabled />);
         expect(disabledTagInput.exists(`.${BASE_CLASS_PREFIX}-tagInput-disabled`)).toEqual(true);
@@ -101,26 +123,26 @@ describe('TagInput', () => {
         /* when separator is null */
         const props2 = {
             separator: null,
-            inputValue: 'tiktok-hotsoon'
+            inputValue: 'semi-hotsoon'
         }
         const tagInput2 = getTagInput(props2);
         tagInput2.find('input').simulate('keyDown', { keyCode: 13 });
         const tags2 = tagInput2.find(`.${BASE_CLASS_PREFIX}-tagInput-wrapper .${BASE_CLASS_PREFIX}-tag-content`);
         expect(tags2.length).toEqual(1);
-        expect(tags2.at(0).getDOMNode().textContent).toEqual('tiktok-hotsoon');
+        expect(tags2.at(0).getDOMNode().textContent).toEqual('semi-hotsoon');
         tagInput2.unmount();
 
         /* when separator is number */
         const props3 = {
             separator: 1,
-            inputValue: 'tiktok1hotsoon'
+            inputValue: 'semi1design'
         }
         const tagInput3 = getTagInput(props3);
         tagInput3.find('input').simulate('keyDown', { keyCode: 13 });
         const tags3 = tagInput3.find(`.${BASE_CLASS_PREFIX}-tagInput-wrapper .${BASE_CLASS_PREFIX}-tag-content`);
         expect(tags3.length).toEqual(2);
-        expect(tags3.at(0).getDOMNode().textContent).toEqual('tiktok');
-        expect(tags3.at(1).getDOMNode().textContent).toEqual('hotsoon');
+        expect(tags3.at(0).getDOMNode().textContent).toEqual('semi');
+        expect(tags3.at(1).getDOMNode().textContent).toEqual('design');
         tagInput3.unmount();
     });
 
@@ -328,6 +350,30 @@ describe('TagInput', () => {
         expect(tagInput.find(`.${BASE_CLASS_PREFIX}-tagInput-wrapper .${BASE_CLASS_PREFIX}-tag-content`).getDOMNode().textContent).toEqual('hotsoon');
     });
 
+    it('tagInput with set value to null  ', () => {
+        const props = {
+            value: ['semi']
+        };
+        const tagInput = getTagInput(props);
+        expect(tagInput.find(`.${BASE_CLASS_PREFIX}-tagInput-wrapper .${BASE_CLASS_PREFIX}-tag-content`).getDOMNode().textContent).toEqual('semi');
+        tagInput.setProps({ value: null });
+        tagInput.update();
+        const tags = tagInput.find(`.${BASE_CLASS_PREFIX}-tagInput-wrapper .${BASE_CLASS_PREFIX}-tag-content`);
+        expect(tags.length).toEqual(0);
+    });
+
+    it('tagInput with set value to null  ', () => {
+        const props = {
+            value: ['semi']
+        };
+        const tagInput = getTagInput(props);
+        expect(tagInput.find(`.${BASE_CLASS_PREFIX}-tagInput-wrapper .${BASE_CLASS_PREFIX}-tag-content`).getDOMNode().textContent).toEqual('semi');
+        tagInput.setProps({ value: undefined });
+        tagInput.update();
+        const tags = tagInput.find(`.${BASE_CLASS_PREFIX}-tagInput-wrapper .${BASE_CLASS_PREFIX}-tag-content`);
+        expect(tags.length).toEqual(0);
+    });
+
     it('tagInput with inputValue controlled mode ', () => {
         const props = {
             inputValue: 'abc'
@@ -338,4 +384,15 @@ describe('TagInput', () => {
         tagInput.update();
         expect(tagInput.find('input').getDOMNode().value).toEqual('hotsoon');
     })
+
+    it('TagInput with onKeyDown', () => {
+        const spyOnKeyDown = sinon.spy(value => { });
+        const props = {
+            onKeyDown: spyOnKeyDown,
+        };
+        const tagInput = getTagInput(props);
+        tagInput.find('input').simulate('keyDown', { keyCode: 13 });
+        expect(spyOnKeyDown.callCount).toEqual(1);
+        tagInput.unmount();
+    });
 })

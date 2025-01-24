@@ -1,13 +1,12 @@
-/* eslint-disable max-len */
 import React, { PureComponent, isValidElement, ReactNode } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { get, set, isNull } from 'lodash-es';
+import { get, set, isNull } from 'lodash';
 
 import { cssClasses, strings } from '@douyinfe/semi-foundation/table/constants';
 import { arrayAdd, filterColumns } from '@douyinfe/semi-foundation/table/utils';
 import Store from '@douyinfe/semi-foundation/utils/Store';
-import TableContext from '../table-context';
+import TableContext, { TableContextProps } from '../table-context';
 import TableRow from './BaseRow';
 import { amendTableWidth } from '../utils';
 import { ColumnProps, ExpandIcon, TableComponents, Virtualized, Fixed } from '../interface';
@@ -31,7 +30,8 @@ export interface TableExpandedRowProps {
     renderExpandIcon?: (record?: Record<string, any>, isNested?: boolean) => ReactNode | null;
     store?: Store;
     style?: React.CSSProperties;
-    virtualized?: Virtualized;
+    virtualized?: Virtualized
+    displayNone?: boolean;
 }
 
 /**
@@ -68,6 +68,8 @@ export default class TableExpandedRow extends PureComponent<TableExpandedRowProp
         prefixCls: cssClasses.PREFIX,
     };
 
+    context: TableContextProps;
+
     render() {
         const {
             record,
@@ -84,6 +86,7 @@ export default class TableExpandedRow extends PureComponent<TableExpandedRowProp
             virtualized,
             indentSize,
             cellWidths,
+            displayNone
         } = this.props;
         const { tableWidth, anyColumnFixed, getCellWidths } = this.context;
         const cell: ExpandedRowRenderReturnType = expandedRowRender(record, index, expanded);
@@ -95,7 +98,6 @@ export default class TableExpandedRow extends PureComponent<TableExpandedRowProp
         } else if (isValidElement(cell)) {
             children = cell;
         } else if (cell && Object.prototype.toString.call(cell) === '[object Object]') {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { children: cellChildren, fixed, ...restProps } = cell as { children: ReactNode; fixed: Fixed };
             children = cellChildren;
             column = { ...restProps };
@@ -147,6 +149,7 @@ export default class TableExpandedRow extends PureComponent<TableExpandedRowProp
                 virtualized={virtualized}
                 indentSize={indentSize}
                 cellWidths={baseRowCellWidths}
+                displayNone={displayNone}
             />
         );
     }

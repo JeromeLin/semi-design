@@ -1,10 +1,9 @@
-/* eslint-disable prefer-const */
 import BaseFoundation, { DefaultAdapter } from '../base/foundation';
-
+import isEnterPress from '../utils/isEnterPress';
 import { BreadcrumbItemInfo, Route } from './itemFoundation';
 export interface BreadcrumbAdapter<P = Record<string, any>, S = Record<string, any>> extends DefaultAdapter<P, S> {
     notifyClick: (itemInfo: BreadcrumbItemInfo, event: any) => void;
-    expandCollapsed: (clickEvent?: any) => void;
+    expandCollapsed: (clickEvent?: any) => void
 }
 
 export default class BreadcrumbFoundation<P = Record<string, any>, S = Record<string, any>> extends BaseFoundation<BreadcrumbAdapter<P, S>, P, S> {
@@ -19,6 +18,15 @@ export default class BreadcrumbFoundation<P = Record<string, any>, S = Record<st
 
     handleExpand(clickEvent: any) {
         this._adapter.expandCollapsed(clickEvent);
+    }
+
+    /**
+     * A11y: simulate clear button click
+     */
+    handleExpandEnterPress(keyboardEvent: any) {
+        if (isEnterPress(keyboardEvent)) {
+            this.handleExpand(keyboardEvent);
+        }
     }
 
     genRoutes(routes: Array<Route>) {

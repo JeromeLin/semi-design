@@ -1,9 +1,8 @@
-/* eslint-disable max-len */
 import React from 'react';
 import BaseComponent from '../_base/baseComponent';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 
 import { cssClasses } from '@douyinfe/semi-foundation/table/constants';
 import TableSelectionCellFoundation, { TableSelectionCellAdapter, TableSelectionCellEvent } from '@douyinfe/semi-foundation/table/tableSelectionCellFoundation';
@@ -14,12 +13,13 @@ export interface TableSelectionCellProps {
     columnTitle?: string; // TODO: future api
     getCheckboxProps?: () => CheckboxProps;
     type?: string; // TODO: future api
-    onChange?: (value: any, e: TableSelectionCellEvent) => void;
+    onChange?: (checked: boolean, e: TableSelectionCellEvent) => void;
     selected?: boolean;
     disabled?: boolean;
     indeterminate?: boolean; // Intermediate state, shown as a solid horizontal line
     prefixCls?: string;
     className?: string;
+    'aria-label'?: React.AriaAttributes['aria-label']
 }
 
 /**
@@ -36,6 +36,7 @@ export default class TableSelectionCell extends BaseComponent<TableSelectionCell
         indeterminate: PropTypes.bool,
         prefixCls: PropTypes.string,
         className: PropTypes.string,
+        'aria-label': PropTypes.string,
     };
 
     static defaultProps = {
@@ -51,6 +52,7 @@ export default class TableSelectionCell extends BaseComponent<TableSelectionCell
         };
     }
 
+    foundation: TableSelectionCellFoundation;
     constructor(props: TableSelectionCellProps) {
         super(props);
         this.foundation = new TableSelectionCellFoundation(this.adapter);
@@ -60,6 +62,7 @@ export default class TableSelectionCell extends BaseComponent<TableSelectionCell
 
     render() {
         const { selected, getCheckboxProps, indeterminate, disabled, prefixCls, className } = this.props;
+        const ariaLabel = this.props['aria-label'];
         let checkboxProps = {
             onChange: this.handleChange,
             disabled,
@@ -81,7 +84,7 @@ export default class TableSelectionCell extends BaseComponent<TableSelectionCell
 
         return (
             <span className={wrapCls}>
-                <Checkbox {...checkboxProps} />
+                <Checkbox aria-label={ariaLabel} {...checkboxProps} />
             </span>
         );
     }

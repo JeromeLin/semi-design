@@ -1,10 +1,7 @@
-/* eslint-disable max-len */
-/* eslint-disable no-param-reassign */
-/* eslint-disable eqeqeq */
 import BaseFoundation, { DefaultAdapter } from '../base/foundation';
 import keyCode from '../utils/keyCode';
 import { numbers } from './constants';
-import { toNumber, toString } from 'lodash-es';
+import { toNumber, toString, get, isString } from 'lodash';
 import { minus as numberMinus } from '../utils/number';
 
 export interface InputNumberAdapter extends DefaultAdapter {
@@ -26,6 +23,14 @@ export interface InputNumberAdapter extends DefaultAdapter {
     restoreCursor: (str?: string) => boolean;
     fixCaret: (start: number, end: number) => void;
     setClickUpOrDown: (clicked: boolean) => void;
+    updateStates: (states: BaseInputNumberState, callback?: () => void) => void
+}
+
+export interface BaseInputNumberState {
+    value?: number | string;
+    number?: number | null;
+    focusing?: boolean;
+    hovering?: boolean
 }
 
 class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
@@ -126,6 +131,7 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
         }
         this._adapter.recordCursorPosition();
         this._adapter.setFocusing(true, null);
+        this._adapter.setClickUpOrDown(false);
         this._adapter.notifyFocus(e);
     }
 
@@ -168,7 +174,6 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
                     const dotBeginStr = dotIndex > -1 ? valueAfterParser.slice(dotIndex) : '';
                     formattedNum += dotBeginStr;
                 } else if (precLength < lengthAfterDot) {
-                    // eslint-disable-next-line max-depth
                     for (let i = 0; i < lengthAfterDot - precLength; i++) {
                         formattedNum += '0';
                     }
@@ -206,9 +211,9 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
         if (code === keyCode.UP || code === keyCode.DOWN) {
             this._adapter.setClickUpOrDown(true);
             this._adapter.recordCursorPosition();
-            const formatedVal = code === keyCode.UP ? this.add() : this.minus();
+            const formattedVal = code === keyCode.UP ? this.add(null, event) : this.minus(null, event);
 
-            this._doInput(formatedVal, event, () => {
+            this._doInput(formattedVal, event, () => {
                 this._adapter.restoreCursor();
             });
 
@@ -252,7 +257,6 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
                 }
 
                 if (willSetNum != null) {
-                    // eslint-disable-next-line max-depth
                     if (!this._isControlledComponent('value')) {
                         this._adapter.setNumber(willSetNum);
                     }
@@ -285,9 +289,13 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
     }
 
     handleUpClick(event: any) {
+        const { readonly } = this.getProps();
+        if (!this._isMouseButtonLeft(event) || readonly) {
+            return;
+        }
         this._adapter.setClickUpOrDown(true);
         if (event) {
-            event.persist();
+            this._persistEvent(event);
             event.stopPropagation();
             // Prevent native blurring events
             this._preventDefault(event);
@@ -302,9 +310,13 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
     }
 
     handleDownClick(event: any) {
+        const { readonly } = this.getProps();
+        if (!this._isMouseButtonLeft(event) || readonly) {
+            return;
+        }
         this._adapter.setClickUpOrDown(true);
         if (event) {
-            event.persist();
+            this._persistEvent(event);
             event.stopPropagation();
             this._preventDefault(event);
         }
@@ -316,9 +328,18 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
         });
     }
 
+    /**
+     * Whether it is a left mouse button click
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
+     */
+    _isMouseButtonLeft(event: any) {
+        return get(event, 'button') === numbers.MOUSE_BUTTON_LEFT;
+    }
+
     _preventDefault(event: any) {
         const keepFocus = this._adapter.getProp('keepFocus');
-        if (keepFocus) {
+        const innerButtons = this._adapter.getProp('innerButtons');
+        if (keepFocus || innerButtons) {
             event.preventDefault();
         }
     }
@@ -345,17 +366,21 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
         const { defaultValue, value } = this.getProps();
 
         const propsValue = this._isControlledComponent('value') ? value : defaultValue;
-        const tmpNumer = this.doParse(toString(propsValue), false, true, true);
+        const tmpNumber = this.doParse(toString(propsValue), false, true, true);
 
         let number = null;
-        if (typeof tmpNumer === 'number' && !isNaN(tmpNumer)) {
-            number = tmpNumer;
+        if (typeof tmpNumber === 'number' && !isNaN(tmpNumber)) {
+            number = tmpNumber;
         }
 
-        const formatedValue = typeof number === 'number' ? this.doFormat(number, true) : '';
+        const formattedValue = typeof number === 'number' ? this.doFormat(number, true) : '';
 
         this._adapter.setNumber(number);
-        this._adapter.setValue(formatedValue);
+        this._adapter.setValue(formattedValue);
+
+        if (isString(formattedValue) && formattedValue !== String(propsValue ?? '')) {
+            this.notifyChange(formattedValue, null);
+        }
     }
 
     add(step?: number, event?: any): string {
@@ -417,7 +442,7 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
 
     _adjustPrec(num: string | number) {
         const precision = this.getProp('precision');
-        if (typeof precision === 'number') {
+        if (typeof precision === 'number' && num !== '' && num !== null && !Number.isNaN(Number(num))) {
             num = Number(num).toFixed(precision);
         }
         return toString(num);
@@ -425,11 +450,11 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
 
     /**
      * format number to string
-     * @param {number} value
+     * @param {string|number} value
      * @param {boolean} needAdjustPrec
      * @returns {string}
      */
-    doFormat(value = 0, needAdjustPrec = true): string {
+    doFormat(value: string | number = 0, needAdjustPrec = true): string {
         // if (typeof value === 'string') {
         //     return value;
         // }
@@ -600,6 +625,10 @@ class InputNumberFoundation extends BaseFoundation<InputNumberAdapter> {
         if (this.isValidNumber(value) && value !== number) {
             this._adapter.notifyNumberChange(value, e);
         }
+    }
+
+    updateStates(states: BaseInputNumberState, callback?: () => void) {
+        this._adapter.updateStates(states, callback);
     }
 }
 

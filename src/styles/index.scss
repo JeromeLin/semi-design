@@ -12,6 +12,7 @@
 
 html,
 body {
+    height: 100vh;
     line-height: 20px;
     color: var(--semi-color-text-0);
     font-size: 14px;
@@ -64,7 +65,7 @@ body[theme-mode='dark'] {
         }
     }
 
-    .markdown pre {
+    .markdown pre:not(.semi-codeHighlight *) {
         background-color: var(--semi-color-bg-1);
         border-color: transparent;
     }
@@ -172,4 +173,9 @@ body[theme-mode='dark'] {
         }
     }
 }
-/* ---- Left side Nav start ---- */
+#side-nav {
+    .semi-navigation-item-text {
+        text-overflow: inherit;
+    }
+}
+/* ---- Left side Nav end ---- */

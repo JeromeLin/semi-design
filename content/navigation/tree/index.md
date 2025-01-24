@@ -1,6 +1,6 @@
 ---
 localeCode: zh-CN
-order: 40
+order: 56
 category: 导航类
 title:  Tree 树形控件
 icon: doc-tree
@@ -55,20 +55,20 @@ import { Tree } from '@douyinfe/semi-ui';
             value: 'North America',
             key: '1',
         }
-    ]
+    ];
     const style = {
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
     return (
         <Tree
             treeData={treeData}
             defaultExpandAll
             style={style}
         />
-    )
-}
+    );
+};
 ```
 
 ### 多选
@@ -144,7 +144,7 @@ import { Tree } from '@douyinfe/semi-ui';
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
     return (
         <Tree
             treeData={treeData}
@@ -152,8 +152,8 @@ import { Tree } from '@douyinfe/semi-ui';
             defaultExpandAll
             style={style}
         />
-    )
-}
+    );
+};
 ```
 
 ### 可搜索的
@@ -166,10 +166,10 @@ import { Tree, Switch } from '@douyinfe/semi-ui';
 
 class Demo extends React.Component {
     constructor() {
-        super()
+        super();
         this.state = {
             showFilteredOnly: false,
-        }
+        };
         this.onChange = this.onChange.bind(this);
     }
     onChange(showFilteredOnly) {
@@ -230,12 +230,12 @@ class Demo extends React.Component {
                     }
                 ]
             }
-        ]
+        ];
         const style = {
             width: 260,
             height: 420,
             border: '1px solid var(--semi-color-border)'
-        }
+        };
         const { showFilteredOnly } = this.state;
         return (
             <>
@@ -254,42 +254,199 @@ class Demo extends React.Component {
                     style={style}
                 />
             </>
-        )
+        );
     }
 }
 ```
 
+设置 `filterTreeNode` 属性开启搜索后，可以通过设置 `searchRender` 自定义搜索框的渲染方法，设置为`false`时可以隐藏搜索框。
+```jsx live=true
+import React from 'react';
+import { Tree, Input } from '@douyinfe/semi-ui';
+
+() => {
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
+
+    return (
+        <Tree
+            filterTreeNode
+            searchRender={({ prefix, ...restProps }) => (
+                <Input
+                    prefix='Search'
+                    {...restProps}
+                />
+            )}
+            treeData={treeData}
+        />
+    );
+};
+
+```
+
+### 手动触发搜索
+可以通过ref的方式获取tree的实例，调用tree的`search`方法进行搜索。注意需要同时设置`filterTreeNode`开启搜索，如果搜索框在tree外部，可以通过设置`searchRender=false`隐藏tree内部的搜索框。
+```jsx live=true
+import React from 'react';
+import { Tree, Input } from '@douyinfe/semi-ui';
+
+() => {
+    const ref = useRef();
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0',
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0',
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1',
+                },
+            ],
+        },
+    ];
+    return (
+        <div>
+            <Input aria-label='filter tree' prefix="Search" showClear onChange={v => ref.current.search(v)} />
+            <div style={{ marginTop: 20 }}>搜索结果如下：</div>
+            <Tree
+                ref={ref}
+                filterTreeNode
+                searchRender={false}
+                treeData={treeData}
+                blockNode={false}
+            />
+        </div>
+    );
+};
+```
+
 ### 简单 JSON 格式的数据
-可以通过 `treeDataSimpleJson` 传入 JSON 形式的 `treeNodes` 数据。此时 key-value 键值对中的 key 值将作为 `treeNode` 的 `key` 和 `label`，`value` 值将作为 `treeNode` 的 `value`。返回值为包含选中节点的 JSON 数据。
+可以通过 `treeDataSimpleJson` 传入 JSON 形式的 `treeNodes` 数据。此时 key-value 键值对中的 key 值将作为 `TreeNodeData` 的 `key` 和 `label`，`value` 值将作为 `TreeNodeData` 的 `value`。返回值为包含选中节点的 JSON 数据。
 
 ```jsx live=true hideInDSM
 import React from 'react';
 import { Tree } from '@douyinfe/semi-ui';
 
 () => {
-  const json = {
-    "Node1": {
-      "Child Node1": '0-0-1',
-      "Child Node2": '0-0-2',
-    },
-    "Node2": "0-1"
-  }
-  const style = {
-    width: 260,
-    height: 420,
-    border: '1px solid var(--semi-color-border)'
-  }
-  return (
-    <Tree
-      treeDataSimpleJson={json}
-      multiple
-      onChange={e => console.log('当前所有选中项: ', e)}
-      onSelect={e => console.log('当前选项: ', e)}
-      style={style}
-    />
+    const json = {
+        "Node1": {
+            "Child Node1": '0-0-1',
+            "Child Node2": '0-0-2',
+        },
+        "Node2": "0-1"
+    };
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeDataSimpleJson={json}
+            multiple
+            onChange={e => console.log('当前所有选中项: ', e)}
+            onSelect={e => console.log('当前选项: ', e)}
+            style={style}
+        />
 
-  )
-}
+    );
+};
 ```
 
 ### 行显示节点
@@ -355,7 +512,7 @@ import { Tree } from '@douyinfe/semi-ui';
                 }
             ]
         }
-    ]
+    ];
     return (
         <div>
             <Tree
@@ -371,12 +528,12 @@ import { Tree } from '@douyinfe/semi-ui';
                 blockNode={false}
             />
         </div>
-    )
-}
+    );
+};
 ```
 
 ### 自定义节点内容
-`treeNode` 的 label 属性支持传入 ReactNode 来自定义显示的节点内容。注意如果设置 `filterTreeNode` 开启搜索，默认是对 label 的值进行搜索，当 label 为节点时，需要自定义 `filterTreeNode` 的函数来满足搜索需求。
+`TreeNodeData` 的 label 属性支持传入 ReactNode 来自定义显示的节点内容。注意如果设置 `filterTreeNode` 开启搜索，默认是对 label 的值进行搜索，当 label 为节点时，需要自定义 `filterTreeNode` 的函数来满足搜索需求。
 
 在**v>=1.6.0**的版本中，你也可以使用 `renderLabel` 来传入自定义的渲染方法，此时搜索值仍为treeData中的相应的label属性。
 ```jsx live=true
@@ -397,18 +554,18 @@ import { Tree, ButtonGroup, Button } from '@douyinfe/semi-ui';
             <Button
                 onClick={e => {
                     Toast.info(opts);
-                    e.stopPropagation()
+                    e.stopPropagation();
                 }}
             >提示</Button>
             <Button>点击</Button>
         </ButtonGroup>
-    )
+    );
 
     const style = {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
-    }
+    };
 
     const treeDataWithNode = [
         {
@@ -448,14 +605,14 @@ import { Tree, ButtonGroup, Button } from '@douyinfe/semi-ui';
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
     return (
         <Tree
             treeData={treeDataWithNode}
             style={treeStyle}
         />
-    )
-}
+    );
+};
 ```
 
 过长省略。在**v>=1.6.0**的版本中，可以使用 `renderLabel` 来实现文本过长省略的效果。
@@ -465,59 +622,59 @@ import { Tree, Button, Typography } from '@douyinfe/semi-ui';
 import { IconMore } from '@douyinfe/semi-icons';
 
 () => {
-  const renderBtn = (content) => (
-    <Button
-      onClick={e => {
-        Toast.info({ content });
-        e.stopPropagation()
-      }}
-      icon={<IconMore />}
-      size="small"
-    />
-  )
-  const renderLabel = (label, item) => (
-    <div style={{ display: 'flex' }}>
-      <Typography.Text
-        ellipsis={{ showTooltip: true }}
-        style={{ width: 'calc(100% - 48px)' }}
-      >
-        {label}
-      </Typography.Text>
-      {renderBtn(item.key)}
-    </div>
-  );
-  const treeDataWithNode = [
-    {
-      label: '亚洲亚洲亚洲亚洲亚洲亚洲亚洲亚洲',
-      value: 'yazhou',
-      key: 'yazhou',
-      children: [
+    const renderBtn = (content) => (
+        <Button
+            onClick={e => {
+                Toast.info({ content });
+                e.stopPropagation();
+            }}
+            icon={<IconMore />}
+            size="small"
+        />
+    );
+    const renderLabel = (label, item) => (
+        <div style={{ display: 'flex' }}>
+            <Typography.Text
+                ellipsis={{ showTooltip: true }}
+                style={{ width: 'calc(100% - 48px)' }}
+            >
+                {label}
+            </Typography.Text>
+            {renderBtn(item.key)}
+        </div>
+    );
+    const treeDataWithNode = [
         {
-          label: '中国中国中国中国中国中国中国中国',
-          value: 'zhongguo',
-          key: 'zhongguo'
-        },
-        {
-          label: '日本日本日本日本日本日本日本日本',
-          value: 'riben',
-          key: 'riben',
-        },
-      ],
-    }
-  ];
-  const treeStyle = {
-    width: 260,
-    height: 420,
-    border: '1px solid var(--semi-color-border)'
-  }
-  return (
-    <Tree
-      treeData={treeDataWithNode}
-      renderLabel={renderLabel}
-      style={treeStyle}
-    />
-  )
-}
+            label: '亚洲亚洲亚洲亚洲亚洲亚洲亚洲亚洲',
+            value: 'yazhou',
+            key: 'yazhou',
+            children: [
+                {
+                    label: '中国中国中国中国中国中国中国中国',
+                    value: 'zhongguo',
+                    key: 'zhongguo'
+                },
+                {
+                    label: '日本日本日本日本日本日本日本日本',
+                    value: 'riben',
+                    key: 'riben',
+                },
+            ],
+        }
+    ];
+    const treeStyle = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeData={treeDataWithNode}
+            renderLabel={renderLabel}
+            style={treeStyle}
+        />
+    );
+};
 ```
 
 
@@ -530,40 +687,40 @@ import { Tree } from '@douyinfe/semi-ui';
 import { IconMapPin } from '@douyinfe/semi-icons';
 
 () => {
-  const treeData = [
-    {
-      label: 'Asia',
-      value: 'Asia',
-      key: '0',
-      icon: (<IconMapPin style={{ color: 'var(--semi-color-text-2)' }} />),
-      children: [
+    const treeData = [
         {
-          label: 'China',
-          value: 'China',
-          key: '0-0',
-          icon: (<IconMapPin style={{ color: 'var(--semi-color-text-2)' }} />)
-        },
-        {
-          label: 'Japan',
-          value: 'Japan',
-          key: '0-1',
-          icon: (<IconMapPin style={{ color: 'var(--semi-color-text-2)' }} />)
-        },
-      ],
-    }
-  ]
-  const style = {
-    width: 260,
-    height: 420,
-    border: '1px solid var(--semi-color-border)'
-  }
-  return (
-    <Tree
-      treeData={treeData}
-      style={style}
-    />
-  )
-}
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            icon: (<IconMapPin style={{ color: 'var(--semi-color-text-2)' }} />),
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    icon: (<IconMapPin style={{ color: 'var(--semi-color-text-2)' }} />)
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    icon: (<IconMapPin style={{ color: 'var(--semi-color-text-2)' }} />)
+                },
+            ],
+        }
+    ];
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeData={treeData}
+            style={style}
+        />
+    );
+};
 ```
 
 ### 目录树模式
@@ -629,20 +786,20 @@ import { Tree } from '@douyinfe/semi-ui';
                 }
             ]
         }
-    ]
+    ];
     const style = {
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
     return (
         <Tree
             treeData={treeData}
             directory
             style={style}
         />
-    )
-}
+    );
+};
 ```
 
 ### 禁用
@@ -710,12 +867,12 @@ import { Tree } from '@douyinfe/semi-ui';
                 }
             ]
         }
-    ]
+    ];
     const style = {
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
     return (
         <Tree
             treeData={treeData}
@@ -724,8 +881,95 @@ import { Tree } from '@douyinfe/semi-ui';
             disableStrictly
             style={style}
         />
-    )
-}
+    );
+};
+```
+
+### 节点选中关系
+版本：>= 2.5.0
+
+多选时，可以使用 `checkRelation` 来设置节点选中关系的类型，可选：'related'（默认）、'unRelated'。当选中关系为 'unRelated'，意味着节点之间的选中互不影响。
+
+```jsx live=true
+import React from 'react';
+import { Tree } from '@douyinfe/semi-ui';
+
+() => {
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                        {
+                            label: 'Chengdu',
+                            value: 'Chengdu',
+                            key: '0-0-2',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeData={treeData}
+            multiple
+            checkRelation='unRelated'
+            defaultExpandAll
+            style={style}
+        />
+    );
+};
 ```
 
 ### 默认展开
@@ -764,7 +1008,7 @@ import { Tree, Button } from '@douyinfe/semi-ui';
     };
     const [tree, setTree] = useState(json);
     const handleClick = () => {
-        setTree(json2)
+        setTree(json2);
     };
     return (
         <>
@@ -791,8 +1035,70 @@ import { Tree, Button } from '@douyinfe/semi-ui';
             </div>
         </>
     );
-}
+};
 
+```
+
+### 开启搜索的展开受控
+传入 `expandedKeys` 时即为展开受控组件，可以配合 `onExpand` 使用。当展开受控时，如果开启 `filterTreeNode` 并进行搜索是不会再自动展开节点的，此时，节点的展开完全由 `expandedKeys` 来控制。你可以利用 `onSearch` 的入参 `filteredExpandedKeys`（version: >= 2.38.0） 来实现展开受控时的搜索展开效果。
+
+```jsx live=true hideInDSM
+import React, { useState } from 'react';
+import { Tree } from '@douyinfe/semi-ui';
+
+() => {
+    const [expandedKeys, setExpandedKeys] = useState([]);
+    const treeData = [
+        {
+            label: '亚洲',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: '中国',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: '北京',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: '上海',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: '日本',
+                    value: 'Japan',
+                    key: '0-1',
+                },
+            ],
+        },
+        {
+            label: '北美洲',
+            value: 'North America',
+            key: '1',
+        }
+    ];
+    return (
+        <Tree
+            style={{ width: 300 }}
+            treeData={treeData}
+            filterTreeNode
+            expandedKeys={expandedKeys}
+            onExpand={expandedKeys => {
+                setExpandedKeys(expandedKeys);
+            }}
+            onSearch={(inputValue, filteredExpandedKeys) => {
+                setExpandedKeys([...filteredExpandedKeys]);
+            }}
+        />
+    );
+};
 ```
 
 ### 受控
@@ -804,13 +1110,13 @@ import { Tree } from '@douyinfe/semi-ui';
 
 class Demo extends React.Component {
     constructor() {
-        super()
+        super();
         this.state = {
             value: 'Shanghai'
         };
     }
     onChange(value) {
-        this.setState({value})
+        this.setState({ value });
     }
     render() {
         const treeData = [
@@ -848,7 +1154,7 @@ class Demo extends React.Component {
             width: 260,
             height: 420,
             border: '1px solid var(--semi-color-border)'
-        }
+        };
         return (
             <Tree
                 treeData={treeData}
@@ -856,7 +1162,7 @@ class Demo extends React.Component {
                 onChange={value => this.onChange(value)}
                 style={style}
             />
-        )
+        );
     }
 }
 ```
@@ -873,11 +1179,11 @@ class Demo extends React.Component {
     constructor() {
         super();
         this.state = {
-            expandedKeys: ['0','0-0']
+            expandedKeys: ['0', '0-0']
         };
     }
     onExpand(value) {
-        this.setState({expandedKeys: value});
+        this.setState({ expandedKeys: value });
     }
     render() {
         const treeData = [
@@ -915,7 +1221,7 @@ class Demo extends React.Component {
             width: 260,
             height: 420,
             border: '1px solid var(--semi-color-border)'
-        }
+        };
         return (
             <>
                 <div>
@@ -930,9 +1236,82 @@ class Demo extends React.Component {
                     style={style}
                 />
             </>
-        )
+        );
     }
 }
+```
+
+### 连接线
+
+通过 `showLine` 设置节点之间的连接线，默认为 false，从 2.50.0 开始支持
+
+```jsx live=true hideInDSM
+import React, { useState, useCallback } from 'react';
+import { Tree, Switch } from '@douyinfe/semi-ui';
+
+() => {
+    const [show, setShow] = useState(true);
+    const onChange = useCallback((value) => {
+        setShow(value);
+    }, []);
+    const treeData = useMemo(() => {
+        return [
+            {
+                label: 'parent-0',
+                key: 'parent-0',
+                children: [
+                    {
+                        label: 'leaf-0-0',
+                        key: 'leaf-0-0',
+                        children: [
+                            {
+                                label: 'leaf-0-0-0',
+                                key: 'leaf-0-0-0',
+                            },
+                            {
+                                label: 'leaf-0-0-1',
+                                key: 'leaf-0-0-1',
+                            },
+                            {
+                                label: 'leaf-0-0-2',
+                                key: 'leaf-0-0-2',
+                            },
+                        ]
+                    },
+                    {
+                        label: 'leaf-0-1',
+                        key: 'leaf-0-1',
+                    }
+                ]
+            },
+            {
+                label: 'parent-1',
+                key: 'parent-1',
+            }
+        ];
+    }, []);
+
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+
+    return (
+        <>
+            <div style={{ display: 'flex', alignItems: 'center', columnGap: 5, marginBottom: 5 }}>
+                <strong>showLine </strong>
+                <Switch checked={show} onChange={onChange} />
+            </div>
+            <Tree
+                showLine={show}
+                defaultExpandAll
+                treeData={treeData}
+                style={style}
+            />
+        </>
+    );
+};
 ```
 
 ### 虚拟化
@@ -955,7 +1334,7 @@ class Demo extends React.Component {
         this.state = {
             gData: [],
             total: 0,
-        }
+        };
         this.onGen = this.onGen.bind(this);
     }
 
@@ -1006,7 +1385,7 @@ class Demo extends React.Component {
         const style = {
             width: 260,
             border: '1px solid var(--semi-color-border)'
-        }
+        };
         return (
             <div style={{ padding: '0 20px' }}>
                 <Button onClick={this.onGen}>生成数据: </Button>
@@ -1040,14 +1419,14 @@ import { Tree, Button } from '@douyinfe/semi-ui';
 
 class Demo extends React.Component {
     constructor() {
-        super()
+        super();
         this.state = {
             treeData: [{
                 key: '0',
                 label: 'item-0',
                 value: '0'
             }],
-        }
+        };
         this.add = this.add.bind(this);
     }
     add() {
@@ -1059,7 +1438,7 @@ class Demo extends React.Component {
                     key: `${i}-${ci}`,
                     label: `Leaf-${i}-${ci}`,
                     value: `${i}-${ci}`
-                }
+                };
                 return child;
             });
             const item = {
@@ -1069,7 +1448,7 @@ class Demo extends React.Component {
                 children
             };
             return item;
-        })
+        });
         this.setState({ treeData });
     }
     render() {
@@ -1078,7 +1457,7 @@ class Demo extends React.Component {
             width: 260,
             height: 420,
             border: '1px solid var(--semi-color-border)'
-        }
+        };
         return (
             <div style={style}>
                 <Tree
@@ -1089,7 +1468,7 @@ class Demo extends React.Component {
                     动态改变数据
                 </Button>
             </div>
-        )
+        );
     }
 }
 ```
@@ -1167,9 +1546,39 @@ import { Tree } from '@douyinfe/semi-ui';
 ```
 
 ### 可拖拽的Tree
-**v>=1.8.0**  
+
 通过设置 draggable 配合 onDrop 可以实现 Tree 节点的拖拽。
-**目前不支持虚拟化**
+
+<Notice title='注意'>
+    拖拽功能于 v 1.8.0 后开始提供。目前不支持与虚拟化同时使用
+</Notice>
+
+拖拽事件的回调入参如下：
+```
+- onDragEnd: function({ event, node: DragTreeNode })
+- onDragEnter:function({ event, node: DragTreeNode, expandedKeys: string[] })
+- onDragLeave:function({ event, node: DragTreeNode })
+- onDragOver:function({ event, node: DragTreeNode })
+- onDragStart: function({ event, node: DragTreeNode })
+- onDrop:function({ event, node: DragTreeNode, dragNode: DragTreeNode, dragNodesKeys: string[], dropPosition: number, dropToGap: Boolean })
+```
+
+数据类型 DragTreeNode，除了包含 TreeNodeData 所有属性外，还包含 expanded 和 pos 属性，
+```
+DragTreeNode {
+    expanded: Boolean,
+    pos: string
+    value?: string | number;
+    label?: React.ReactNode;
+    disabled?: boolean;
+    isLeaf?: boolean;
+    [key: string]: any;
+}
+```
+- `pos` 指的是当前节点在整个 treeData 中的位置关系，如第0层第1个节点的第2个节点的第0个节点：'0-1-2-0'
+- `dropPosition` 指的是被拖拽节点在当前层级中被 drop 的位置，如插入在同级的第0个节点前则为 -1，在第0个节点后则为 1，落在其上则为 0，以此类推。配合 dropToGap 可以得到更完整的判断。
+- `dropToGap` 指的是被拖拽节点是否被 drop 在节点之间的位置，如果为 false 则是 drop 在某个节点上方
+
 
 ```jsx live=true hideInDSM
 import React, { useState } from 'react';
@@ -1250,43 +1659,43 @@ import { Tree } from '@douyinfe/semi-ui';
             data.forEach((item, ind, arr) => {
                 if (item.key === key) return callback(item, ind, arr);
                 if (item.children) return loop(item.children, key, callback);
-            })
-        }
+            });
+        };
         let dragObj;
         loop(data, dragKey, (item, ind, arr) => {
             arr.splice(ind, 1);
             dragObj = item;
-        })
+        });
 
         if (!dropToGap) {
             // inset into the dropPosition
             loop(data, dropKey, (item, ind, arr) => {
                 item.children = item.children || [];
-                item.children.push(dragObj)
-            })
+                item.children.push(dragObj);
+            });
         } else if (dropPosition === 1 && node.children && node.expanded) {
             // has children && expanded and drop into the node bottom gap
             // insert to the top 
             loop(data, dropKey, item => {
                 item.children = item.children || [];
-                item.children.unshift(dragObj)
-            })
+                item.children.unshift(dragObj);
+            });
         } else {
             let dropNodeInd;
             let dropNodePosArr;
             loop(data, dropKey, (item, ind, arr) => {
                 dropNodePosArr = arr;
                 dropNodeInd = ind;
-            })
+            });
             if (dropPosition === -1) {
                 // insert to top
-                dropNodePosArr.splice(dropNodeInd, 0, dragObj)
+                dropNodePosArr.splice(dropNodeInd, 0, dragObj);
             } else {
                 // insert to bottom
-                dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj)
+                dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj);
             }
         }
-        setTreeData(data)
+        setTreeData(data);
     }
 
     return <Tree
@@ -1301,6 +1710,51 @@ import { Tree } from '@douyinfe/semi-ui';
 **版本 v>=1.7.0**
 
 Tree 组件的 api 支持了大部分的渲染需求，但是如果有非常特殊的定制要求的话，可以使用 `renderFullLabel` 来接管整行 option 的渲染效果。
+
+renderFullLabel 参数类型如下：
+
+```ts
+type RenderFullLabelProps = {
+    /* 节点数据 */
+    data: BasicTreeNodeData;
+    /* 层级 */
+    level: number;
+    /* 虚拟化情况下，该 style 必须给到 DOM 节点上*/
+    style: any;
+     /* 样式类名，包括内置样式，如缩进、展开按钮、过滤器、禁用、选择等。 */
+    className: string;
+    /* 展开按钮 */
+    expandIcon: any;
+    /* 选中状态 */
+    checkStatus: {
+        /* 是否选中 */
+        checked: boolean;
+        /* 是否半选 */
+        halfChecked: boolean
+    };
+    /* 展开状态 */
+    expandStatus: {
+        /* 是否展开 */
+        expanded: boolean;
+        /* 是否加载中 */
+        loading: boolean
+    };
+    /* 该节点是否符合筛选条件 */
+    filtered: boolean | undefined;
+    /* 当前搜索框输入值 */
+    searchWord: string | undefined;
+    /* 点击回调 */
+    onClick: (e: MouseEvent) => void;
+    /* 多选点击回调 */
+    onCheck: (e: MouseEvent) => void;
+    /* 右键点击回调 */
+    onContextMenu: (e: MouseEvent) => void; 
+    /* 二次点击回调 */
+    onDoubleClick: (e: MouseEvent) => void;
+    /* 展开回调 */
+    onExpand: (e: MouseEvent) => void;
+}
+```
 
 <Notice type="primary" title="注意事项">
 <div>如果开启了虚拟化，需要将 style （虚拟化相关样式）赋予给渲染的 DOM 节点</div>
@@ -1330,11 +1784,11 @@ import { Tree, Checkbox } from '@douyinfe/semi-ui';
         return (
             <li
                 className={className}
-                role="treenode"
+                role="treeitem"
                 onClick={isLeaf ? onCheck : onExpand}
             >
                 {isLeaf ? null : expandIcon}
-                {isLeaf ? <div onClick={onCheck}>
+                {isLeaf ? <div onClick={onCheck} role='checkbox' tabIndex={0} aria-checked={checkStatus.checked}>
                     <Checkbox
                         indeterminate={checkStatus.halfChecked}
                         checked={checkStatus.checked}
@@ -1343,109 +1797,7 @@ import { Tree, Checkbox } from '@douyinfe/semi-ui';
                 </div> : null}
                 <span>{label}</span>
             </li>
-        )
-    }
-
-    const treeData = [
-        {
-            label: 'Asia',
-            value: 'Asia',
-            key: '0',
-            children: [
-                {
-                    label: 'China',
-                    value: 'China',
-                    key: '0-0',
-                    children: [
-                        {
-                            label: 'Beijing',
-                            value: 'Beijing',
-                            key: '0-0-0',
-                        },
-                        {
-                            label: 'Shanghai',
-                            value: 'Shanghai',
-                            key: '0-0-1',
-                        },
-                    ],
-                },
-                {
-                    label: 'Japan',
-                    value: 'Japan',
-                    key: '0-1',
-                    children: [
-                        {
-                            label: 'Osaka',
-                            value: 'Osaka',
-                            key: '0-1-0'
-                        }
-                    ]
-                },
-            ],
-        },
-        {
-            label: 'North America',
-            value: 'North America',
-            key: '1',
-            children: [
-                {
-                    label: 'United States',
-                    value: 'United States',
-                    key: '1-0'
-                },
-                {
-                    label: 'Canada',
-                    value: 'Canada',
-                    key: '1-1'
-                }
-            ]
-        }
-    ]
-
-    const treeStyle = {
-        width: 260,
-        height: 420,
-        border: '1px solid var(--semi-color-border)'
-    }
-    return (
-        <Tree
-            treeData={treeData}
-            renderFullLabel={renderLabel}
-            multiple
-            leafOnly
-            style={treeStyle}
-        />
-    )
-}
-```
-
-第二个是针对 “希望只有叶子节点可以单选，父节点只起到分组作用” 的场景。  
-- 你只需要点击父节点时不触发选中，点击叶子节点触发。
-
-```jsx live=true
-import React from 'react';
-import { Tree } from '@douyinfe/semi-ui';
-
-() => {
-    const renderLabel = ({
-        className,
-        onExpand,
-        onClick,
-        data,
-        expandIcon,
-    }) => {
-        const { label } = data;
-        const isLeaf = !(data.children && data.children.length);
-        return (
-            <li
-                className={className}
-                role="treenode"
-                onClick={isLeaf ? onClick : onExpand}
-            >
-                {isLeaf ? null : expandIcon}
-                <span>{label}</span>
-            </li>
-        )
+        );
     };
 
     const treeData = [
@@ -1508,7 +1860,109 @@ import { Tree } from '@douyinfe/semi-ui';
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
+    return (
+        <Tree
+            treeData={treeData}
+            renderFullLabel={renderLabel}
+            multiple
+            leafOnly
+            style={treeStyle}
+        />
+    );
+};
+```
+
+第二个是针对 “希望只有叶子节点可以单选，父节点只起到分组作用” 的场景。  
+- 你只需要点击父节点时不触发选中，点击叶子节点触发。
+
+```jsx live=true
+import React from 'react';
+import { Tree } from '@douyinfe/semi-ui';
+
+() => {
+    const renderLabel = ({
+        className,
+        onExpand,
+        onClick,
+        data,
+        expandIcon,
+    }) => {
+        const { label } = data;
+        const isLeaf = !(data.children && data.children.length);
+        return (
+            <li
+                className={className}
+                role="treeitem"
+                onClick={isLeaf ? onClick : onExpand}
+            >
+                {isLeaf ? null : expandIcon}
+                <span>{label}</span>
+            </li>
+        );
+    };
+
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
+
+    const treeStyle = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
     return (
         <Tree
             treeData={treeData}
@@ -1517,7 +1971,7 @@ import { Tree } from '@douyinfe/semi-ui';
             onChange={(...args) => console.log('change', ...args)}
         />
     );
-}
+};
 ```
 
 第三个是针对 “单选选中父节点同时也高亮子节点” 的场景。
@@ -1576,7 +2030,7 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
                 }
             ]
         }
-    ]
+    ];
     const findDescendantKeys = (node) => {
         let res = [node.key];
         const findChild = item => {
@@ -1592,12 +2046,12 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
         };
         findChild(node);
         return res;
-    }
+    };
     const handleSelect = (key, bool, node) => {
         setSelected(new Set([key]));
         const descendantKeys = findDescendantKeys(node);
         setSelectedThroughParent(new Set(descendantKeys));
-    }
+    };
     const renderLabel = ({
         className,
         data,
@@ -1611,11 +2065,11 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
                 ? 'rgba(var(--semi-blue-0), 1)'
                 : selectedThroughParent.has(key)
                     ? 'rgba(var(--semi-blue-0), .5)' : 'transparent'
-        }
+        };
         return (
             <li
                 className={className}
-                role="treenode"
+                role="treeitem"
                 onClick={onClick}
                 style={style}
             >
@@ -1623,14 +2077,14 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
                 {icon}
                 <span>{label}</span>
             </li>
-        )
-    }
+        );
+    };
 
     const treeStyle = {
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
 
     return (
         <Tree
@@ -1640,8 +2094,8 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
             style={treeStyle}
             defaultExpandAll
         />
-    )
-}
+    );
+};
 ```
 
 ### 可拖拽的高级定制
@@ -1703,7 +2157,7 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
                 }
             ]
         }
-    ]
+    ];
     const [treeData, setTreeData] = useState(defaultTreeData);
 
     const onDrop = (info) => {
@@ -1718,40 +2172,40 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
             data.forEach((item, ind, arr) => {
                 if (item.key === key) return callback(item, ind, arr);
                 if (item.children) return loop(item.children, key, callback);
-            })
-        }
+            });
+        };
 
         let dragObj;
         loop(data, dragKey, (item, ind, arr) => {
             arr.splice(ind, 1);
             dragObj = item;
-        })
+        });
 
         if (!dropToGap) {
             loop(data, dropKey, (item, ind, arr) => {
                 item.children = item.children || [];
-                item.children.push(dragObj)
-            })
+                item.children.push(dragObj);
+            });
         } else if (dropPosition === 1 && node.children && node.expanded) {
             loop(data, dropKey, item => {
                 item.children = item.children || [];
-                item.children.unshift(dragObj)
-            })
+                item.children.unshift(dragObj);
+            });
         } else {
             let dropNodeInd;
             let dropNodePosArr;
             loop(data, dropKey, (item, ind, arr) => {
                 dropNodePosArr = arr;
                 dropNodeInd = ind;
-            })
+            });
             if (dropPosition === -1) {
-                dropNodePosArr.splice(dropNodeInd, 0, dragObj)
+                dropNodePosArr.splice(dropNodeInd, 0, dragObj);
             } else {
-                dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj)
+                dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj);
             }
         }
-        setTreeData(data)
-    }
+        setTreeData(data);
+    };
 
     const findDescendantKeys = (node) => {
         const res = [node.key];
@@ -1768,13 +2222,13 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
         };
         findChild(node);
         return res;
-    }
+    };
 
     const handleSelect = (key, bool, node) => {
         setSelected(new Set([key]));
         const descendantKeys = findDescendantKeys(node);
         setSelectedThroughParent(new Set(descendantKeys));
-    }
+    };
 
     const renderLabel = ({
         className,
@@ -1789,11 +2243,11 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
                 ? 'rgba(var(--semi-blue-0), 1)'
                 : selectedThroughParent.has(key)
                     ? 'rgba(var(--semi-blue-0), .5)' : 'transparent'
-        }
+        };
         return (
             <li
                 className={className}
-                role="treenode"
+                role="treeitem"
                 onClick={onClick}
                 style={style}
             >
@@ -1801,14 +2255,14 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
                 {icon}
                 <span>{label}</span>
             </li>
-        )
-    }
+        );
+    };
 
     const treeStyle = {
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
 
 
     return <Tree
@@ -1832,11 +2286,13 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
 |-------------   | ----------- | -------------- | -------------- | --------|
 | autoExpandParent | 是否自动展开父节点，默认为 false，当组件初次挂载时为 true | boolean | false | 0.34.0 |
 | autoExpandWhenDragEnter | 是否允许拖拽到节点上时自动展开改节点 | boolean | true | 1.8.0 | 
+| autoMergeValue | 设置自动合并 value。具体而言是，开启后，当某个父节点被选中时，value 将包括该节点以及该子孙节点。（在leafOnly为false的情况下生效）| boolean | true | 2.61.0 | 
 | blockNode | 行显示节点 | boolean | true | - |
+| checkRelation | 多选时，节点之间选中状态的关系，可选：'related'、'unRelated' | string | 'related' | 2.5.0 |
 | className | 类名 | string | - | - |
 | defaultExpandAll | 设置在初始化时是否展开所有节点。而如果后续数据(`treeData`/`treeDataSimpleJson`)发生改变，这个 api 是无法影响节点的默认展开情况的，如果有这个需要可以使用 `expandAll` | boolean | false | - |
 | defaultExpandedKeys | 默认展开的节点，显示其直接子级 | string\[] | - | - |
-| defaultValue | 指定默认选中的条目 | string \| number \| TreeNode \| (string \| number \| TreeNode)[] | - | - |
+| defaultValue | 指定默认选中的条目 | string \| number \| TreeNodeData \| (string \| number \| TreeNodeData)[] | - | - |
 | directory | 目录树模式 | boolean | false | - |
 | disableStrictly | 当节点的disabled状态确定时，不可通过子级或者父级的关系选中 | boolean | false | 1.4.0 | 
 | disabled | 禁用整个树，不可选择 | boolean | false | 0.32.0 |
@@ -1845,48 +2301,51 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
 | expandAction             | 展开逻辑，可选 false, 'click', 'doubleClick'。默认值为 false，即仅当点击展开按钮时才会展开  | boolean \| string   | false | 0.35.0       |
 | expandAll | 设置是否默认展开所有节点，若后续数据(`treeData`/`treeDataSimpleJson`)发生改变，默认展开情况也是会受到这个 api 影响的 | boolean | false | 1.30.0 |
 | expandedKeys | （受控）展开的节点，默认展开节点显示其直接子级 | string[] | - | - |
-| filterTreeNode | 是否根据输入项进行筛选，默认用 `treeNodeFilterProp` 的值作为要筛选的 `TreeNode` 的属性值 | boolean \| ((inputValue: string, treeNodeString: string) => boolean) | false | - |
+| keyMaps | 自定义节点中 key、label、value 的字段 | object |  - | 2.47.0 |
+| filterTreeNode | 是否根据输入项进行筛选，默认用 `treeNodeFilterProp` 的值作为要筛选的 `TreeNodeData` 的属性值,  data 参数自 v2.28.0 开始提供 | boolean \| ((inputValue: string, treeNodeString: string, data?: TreeNodeData) => boolean) | false | - |
 | hideDraggingNode | 是否隐藏正在拖拽的节点的 dragImg | boolean | false | 1.8.0 | 
-| icon | 自定义图标 | ReactNode | - | - |
+| icon | 自定义图标 | ReactNode \| (props: TreeNodeProps)=>ReactNode | - | - |
 | labelEllipsis | 是否开启label的超出省略，默认虚拟化状态开启，如果有其他省略需求可以设置关闭 | boolean | false\|true(virtualized) | 1.8.0 |
 | leafOnly | 多选模式下是否开启 onChange 回调入参及展示标签只有叶子节点 | boolean | false | 1.18.0 |  
-| loadData | 异步加载数据，需要返回一个Promise | (treeNode?: TreeNode) => Promise< void > |- |  1.0.0|
+| loadData | 异步加载数据，需要返回一个Promise | (treeNode?: TreeNodeData) => Promise< void > |- |  1.0.0|
 | loadedKeys | （受控）已经加载的节点，配合 loadData 使用 | string[] | - | 1.0.0|
 | motion | 是否开启动画 | boolean | true | - |
 | multiple | 是否支持多选 | boolean | false | - |
-| renderDraggingNode | 自定义正在拖拽节点的 dragImg 的 Html 元素 | (nodeInstance: HTMLElement, node: TreeNode) => HTMLElement | - | 1.8.0 | 
+| preventScroll | 指示浏览器是否应滚动文档以显示新聚焦的元素，作用于组件内的 focus 方法 | boolean |  |  |
+| renderDraggingNode | 自定义正在拖拽节点的 dragImg 的 Html 元素 | (nodeInstance: HTMLElement, node: TreeNodeData) => HTMLElement | - | 1.8.0 | 
 | renderFullLabel | 完全自定义label的渲染函数 | (data: object) => ReactNode | - | 1.7.0 | 
-| renderLabel | 自定义label的渲染函数 | (label: ReactNode, data: TreeNode) => ReactNode |- |  1.6.0 | 
+| renderLabel | 自定义label的渲染函数, searchWord 参数自 2.65.0 开始支持 | <ApiType detail='(label: ReactNode, data: TreeNodeData, searchWord: string) => ReactNode'>(label, data, searchWord) => ReactNode</ApiType> |- |  1.6.0 | 
 | searchClassName | 搜索框的 `className` 属性 | string | - | - |
 | searchPlaceholder | 搜索框默认文字 | string | - | - |
 | searchRender | 自定义搜索框的渲染方法，为 false 时可以隐藏组件的搜索框(**V>=1.0.0**) | ((searchRenderProps: object) => ReactNode) \| false | - | 0.35.0 |
 | searchStyle | 搜索框的样式 | CSSProperties | - | - |
 | showClear | 支持清除搜索框 | boolean | true | 0.35.0 |
 | showFilteredOnly | 搜索状态下是否只展示过滤后的结果 | boolean | false | 0.32.0 |
+| showLine | 显示连接线 | boolean | false | 2.50.0 |
 | style | 样式  | CSSProperties | - | - |
-| treeData | treeNodes 数据，如果设置则不需要手动构造 `TreeNode` 节点（key值在整个树范围内唯一） | TreeNode[] | \[] | - |
-| treeDataSimpleJson | 简单 JSON 形式的 `treeNodes` 数据，如果设置则不需要手动构造 TreeNode 节点，返回值为包含选中节点的Json数据 | TreeDataSimpleJson | \{} | - |
-| treeNodeFilterProp | 搜索时输入项过滤对应的 `treeNode` 属性 | string | `label` | - |
-| value | 当前选中的节点的value值，传入该值时将作为受控组件 | string \| number \| TreeNode \| (string \| number \| TreeNode)[] | - | - |
+| treeData | treeNodes 数据，如果设置则不需要手动构造 TreeNode 节点（key值在整个树范围内唯一） | TreeNodeData[] | \[] | - |
+| treeDataSimpleJson | 简单 JSON 形式的 `TreeNodeData` 数据，如果设置则不需要手动构造 TreeNode 节点，返回值为包含选中节点的Json数据 | TreeDataSimpleJson | \{} | - |
+| treeNodeFilterProp | 搜索时输入项过滤对应的 `TreeNodeData` 属性 | string | `label` | - |
+| value | 当前选中的节点的value值，传入该值时将作为受控组件 | string \| number \| TreeNodeData \| (string \| number \| TreeNodeData)[] | - | - |
 | virtualize | 列表虚拟化，用于大量树节点的情况，由 height, width, itemSize 组成，参考 Virtualize Object。开启后将关闭动画效果。 | VirtualizeObj | - | 0.32.0 |
-| onChange | 选中树节点时调用此函数，默认返回值为当前所有选中项的value值 | (value?: string \| number \| TreeNode \| (string \| number \| TreeNode)[]) => void | - | - |
+| onChange | 选中树节点时调用此函数，默认返回值为当前所有选中项的value值 | (value?: string \| number \| TreeNodeData \| (string \| number \| TreeNodeData)[]) => void | - | - |
 | onChangeWithObject | 是否将选中项 option 的其他属性作为回调。设为 true 时，onChange 的入参类型会从 string 变为 object: { value, label, ...rest }。此时如果是受控，也需要把 value 设置成 object，且必须含有 value 的键值；defaultValue同理。 | boolean | false | - |
-| onDoubleClick | 双击事件的回调 | (e: MouseEvent, node: TreeNode) => void | - | 0.35.0 |
+| onDoubleClick | 双击事件的回调 | (e: MouseEvent, node: TreeNodeData) => void | - | 0.35.0 |
 | onDragEnd | onDragEnd 事件回调 | (dragProps: object) => void | - | 1.8.0 | 
 | onDragEnter | onDragEnter 事件回调 | (dragEnterProps: object) => void | - | 1.8.0 | 
 | onDragLeave | onDragLeave 事件回调 | (dragProps: object) => void | - | 1.8.0 | 
 | onDragOver | onDragOver 事件回调 | (dragProps: object) => void | - | 1.8.0 | 
 | onDragStart | onDragStart 事件回调 | (dragProps: object) => void | - | 1.8.0 | 
 | onDrop | onDrop 事件回调 | (onDragProps: object) => void | - | 1.8.0 | 
-| onExpand | 展示节点时调用 | (expandedKeys: string[], {expanded: boolean, node: TreeNode}) => void | - | - |
-| onLoad | 节点加载完毕时触发的回调 | (loadedKeys: Set<string/>, treeNode: TreeNode) => void |- |  1.0.0|
-| onContextMenu | 右键点击的回调 | (e: MouseEvent, node: TreeNode) => void | - | 0.35.0 |
-| onSearch | 文本框值变化时回调 | (sunInput: string) => void | - | - |
-| onSelect | 被选中时调用，返回值为当前事件选项的key值 | (selectedKey:string, selected: bool, selectedNode: TreeNode) => void | - | - |
+| onExpand | 展示节点时调用 | (expandedKeys: string[], {expanded: boolean, node: TreeNodeData}) => void | - | - |
+| onLoad | 节点加载完毕时触发的回调 | (loadedKeys: Set<string/>, treeNode: TreeNodeData) => void |- |  1.0.0|
+| onContextMenu | 右键点击的回调 | (e: MouseEvent, node: TreeNodeData) => void | - | 0.35.0 |
+| onSearch | 文本框值变化时回调, 入参 filteredExpandedKeys 表示因为搜索或 value / defaultValue 而展开的节点的 key, <br/>可以配合 expandedKeys 受控时使用。filteredExpandedKeys 在 2.38.0 中新增 | (sunInput: string, filteredExpandedKeys: string[]) => void | - | - |
+| onSelect | 被选中时调用，返回值为当前事件选项的key值 | (selectedKey:string, selected: bool, selectedNode: TreeNodeData) => void | - | - |
 
-### TreeNode
+### TreeNodeData
 
-> __不同 `TreeNode` 的 key 值要求必填且唯一。__`label` 允许重复。**v>=1.7.0** 之前 value 值要求必须必填且唯一。
+> __不同 `TreeNodeData` 的 key 值要求必填且唯一。__`label` 允许重复。**v>=1.7.0** 之前 value 值要求必须必填且唯一。
 > **v>=1.7.0** 之后 value 值非必填。此时 onChange, value, defaultValue 及 onChangeWithObject 中所取的 value 属性值将改为 key 值。
 > 为了保证行为的符合预期，treeData 中的 value 值或者全部不填写，或者全部填写且唯一，不建议混写。
 
@@ -1909,8 +2368,33 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
 | itemSize | 每行的treeNode的高度，必传 | number | - |
 | width | 宽度值 | number\|string | '100%' |
 
+## Methods
+
+绑定在组件实例上的方法，可以通过 ref 调用实现某些特殊交互
+
+|名称 | 描述 | 类型 | 版本  |
+|----|----|----|----|
+| search | 手动触发搜索 | (value: string) => void |-|
+| scrollTo | 在虚拟化 Tree 中，使得指定节点（该节点为当前树的已展开节点）滚动到视图 | （{key: string; align?: 'center' \| 'start' \| 'end' \| 'smart' \| 'auto';}) => void | 2.18.0 |
+## Accessibility
+
+### ARIA
+
+- Tree 支持传入 `aria-label` 来表示该 Tree 作用;
+- Tree 会自动为每个子节点分别设置 `aria-disabled`、`aria-checked`、`aria-selected`、`aria-level` 来表明节点状态及层级;
+- Tree 会自动为对应部分分别设置 `role` 为 `tree`、`treeitem`。
+
+示例:
+```typescript
+    <Tree
+        /* other attributes */
+        aria-label='example tree'
+    />
+```
+
+## 文案规范
+- 尽量使用短语，首字母大写
+- 平级之间保持用语形式一致，例如全是地名或者是国家名
+
 ## 设计变量
 <DesignToken/>
-
-### Ref 方法
-- search(sugInput) => void

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { Component } from 'react';
 import { Button, Row, Col, InputGroup as BasicInputGroup, AutoComplete } from '../../index';
-import { Form, useFormState, ArrayField, Label, withField } from '../index';
+import { Form, useFormState, ArrayField, withField } from '../index';
 import BasicSelect from '../../select/index';
 import BasicInput from '../../input/index';
 import BasicInputNumber from '../../inputNumber/index';
@@ -179,6 +179,7 @@ class BasicDemoWithInit extends Component {
                 <BasicSelect onChange={this.changeLabelPos} value={labelPosition}>
                     <BasicSelect.Option value='top'>top</BasicSelect.Option>
                     <BasicSelect.Option value='left'>left</BasicSelect.Option>
+                    <BasicSelect.Option value='inset'>inset</BasicSelect.Option>
                 </BasicSelect>
                 <BasicSelect onChange={this.changeLabelAlign} value={labelAlign}>
                     <BasicSelect.Option value='left'>left</BasicSelect.Option>
@@ -194,8 +195,10 @@ class BasicDemoWithInit extends Component {
                 initValues={formInitValue}
                 onReset={this.handleReset}
                 onValueChange={(v)=>console.log(v)}
-                style={{ padding: '10px', width: 600 }}
+                style={{ padding: '10px', width: 900 }}
                 autoScrollToError
+                aria-label='Demo Form'
+                id='demo-form-id'
                 >
                 <Form.Section text={'基本信息'}>
                     <Row>
@@ -265,13 +268,29 @@ class BasicDemoWithInit extends Component {
                     <Row>
                         <Col span={12}>
                             <Form.TimePicker
-                                treeData={treeData}
                                 field='time'
+                                helpText='原则上应当在 9:00 - 18:00 之间'
                                 label='时间选择'
                             >
-                            </Form.TimePicker>    
+                            </Form.TimePicker>
                         </Col>
-               
+                        <Col span={12}>
+                            <Form.AutoComplete
+                                field='typeData'
+                                label='类型选择'
+                                data={['1', '2' , '3']}
+                            >
+                            </Form.AutoComplete>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={12}>
+                            <Form.TagInput
+                                field='tags'
+                                label='tags'
+                            />
+                        </Col>
+                        
                     </Row>
                 </Form.Section>
                 <Form.Section text='资源详情'>
@@ -329,6 +348,23 @@ class BasicDemoWithInit extends Component {
                     </Col>
                     <Col span={12}>
                         <Form.Switch field='switch' label='开关(Switch)'/>
+                    </Col>
+                </Row>
+                <Form.CheckboxGroup field="cardCheckbox" label='卡片选择' style={{ width: '90%' }} type='card' initValue={['1', '3']} direction={'horizontal'} aria-label="CheckboxGroup 示例">
+                    <Form.Checkbox value={'1'} disabled extra='Semi Design 是由抖音前端团队与 UED 团队共同设计开发并维护的设计系统' style={{width:280}}>
+                        单选框标题
+                    </Form.Checkbox>
+                    <Form.Checkbox value={'2'} disabled extra='Semi Design 是由抖音前端团队与 UED 团队共同设计开发并维护的设计系统' style={{width:280}}>
+                        单选框标题
+                    </Form.Checkbox>
+                </Form.CheckboxGroup>
+                <Row>
+                    <Col span={12}>
+                        <Form.RadioGroup field='buttonRadio' type='button' buttonSize='middle' defaultValue={1} aria-label="单选组合示例">
+                            <Radio value={1}>即时推送</Radio>
+                            <Radio value={2}>定时推送</Radio>
+                            <Radio value={3}>动态推送</Radio>
+                        </Form.RadioGroup>
                     </Col>
                 </Row>
                 </Form.Section>

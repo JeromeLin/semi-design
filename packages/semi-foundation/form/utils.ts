@@ -1,11 +1,14 @@
-/* eslint-disable prefer-destructuring */
-/* eslint-disable prefer-const */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import AsyncValidator from 'async-validator';
-import { cloneDeep, toPath } from 'lodash-es';
+import { toPath, isUndefined } from 'lodash';
 import { FieldValidateTriggerType, BasicTriggerType, ComponentProps, WithFieldOption } from './interface';
+import { strings } from './constants';
+import copy from 'fast-copy';
 
-export function getDisplayName(WrappedComponent: React.ComponentType | any) {
+/**
+ * 
+ * @param WrappedComponent React.ComponentType | any
+ */
+export function getDisplayName(WrappedComponent: any) {
     const originName = WrappedComponent.displayName || WrappedComponent.name;
     return originName ? `SemiField${originName}` : 'SemiField';
 }
@@ -43,22 +46,49 @@ export function isValid(errors: any): boolean {
         errors.$$typeof.toString() === 'Symbol(react.element)'
     ) {
         // when error message is reactNode
+        // only work with React Adapter
         valid = false;
     }
     return valid;
 }
 
-// Compatible with String and Array
-function transformTrigger(trigger: FieldValidateTriggerType): Array<BasicTriggerType> {
-    let result: BasicTriggerType[] = [];
-    if (Array.isArray(trigger)) {
-        result = trigger;
+/**
+ * trigger transform rule
+    1. If the user has set fieldProps, follow the user's fieldProps
+    2. If the user does not set fieldProps, follow formProps
+    3. If there is no formProps, follow the change
+    4. If it is an array, follow the array, if it is not an array (pure string), convert it to a string array
+ */
+
+export function transformTrigger(fieldTrigger: FieldValidateTriggerType, formTrigger: FieldValidateTriggerType): Array<BasicTriggerType> {
+    let result: BasicTriggerType[] | FieldValidateTriggerType = [];
+    let finalResult = [];
+    if (!isUndefined(fieldTrigger)) {
+        result = fieldTrigger;
+    } else if (!isUndefined(formTrigger)) {
+        result = formTrigger;
+    } else {
+        result = strings.DEFAULT_TRIGGER as BasicTriggerType;
     }
 
-    if (typeof trigger === 'string') {
-        result[0] = trigger;
+    if (Array.isArray(result)) {
+        finalResult = result;
     }
-    return result;
+
+    if (typeof result === 'string') {
+        finalResult[0] = result;
+    }
+    return finalResult;
+}
+
+export function transformDefaultBooleanAPI(fieldProp: boolean, formProp: boolean, defaultVal = false) {
+    if (!isUndefined(fieldProp)) {
+        return fieldProp;
+    } else if (!isUndefined(formProp)) {
+        return formProp;
+    } else {
+        return defaultVal;
+    }
 }
 
 export function mergeOptions(opts: WithFieldOption, props: ComponentProps) {
@@ -83,7 +113,6 @@ export function mergeOptions(opts: WithFieldOption, props: ComponentProps) {
 
 export function mergeProps(props: any) {
     const defaultProps = {
-        trigger: 'change',
         // validateStatus: 'default',
         allowEmptyString: false,
         allowEmpty: false,
@@ -91,7 +120,6 @@ export function mergeProps(props: any) {
         noLabel: false,
         noErrorMessage: false,
         isInInputGroup: false,
-        stopValidateWithError: false,
     };
     let {
         field,
@@ -133,6 +161,7 @@ export function mergeProps(props: any) {
         extraText,
         extraTextPosition,
         pure,
+        id,
         ...rest
     }: any = { ...defaultProps, ...props };
     // Form中的任何类型组件，初始值都统一通过initValue字段来传入，同时将可能会导致组件行为错误的props抽取出来，防止透传到组件中
@@ -144,11 +173,11 @@ export function mergeProps(props: any) {
     delete rest.checked;
 
     if (typeof initValue !== 'undefined') {
-        initValue = cloneDeep(initValue);
+        initValue = copy(initValue);
     }
 
     const required = isRequired(rules);
-    trigger = transformTrigger(trigger);
+
     emptyValue = typeof emptyValue !== 'undefined' ? emptyValue : '';
     return {
         field,
@@ -183,6 +212,7 @@ export function mergeProps(props: any) {
         extraTextPosition,
         pure,
         rest,
+        id
     };
 }
 

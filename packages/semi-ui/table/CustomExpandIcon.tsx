@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 
 import { IconChevronRight, IconChevronDown, IconTreeTriangleDown, IconTreeTriangleRight } from '@douyinfe/semi-icons';
 import { cssClasses } from '@douyinfe/semi-foundation/table/constants';
+import isEnterPress from '@douyinfe/semi-foundation/utils/isEnterPress';
 
-import Rotate from '../motions/Rotate';
+import CSSAnimation from "../_cssAnimation";
 
 export interface CustomExpandIconProps {
     expanded?: boolean;
@@ -16,7 +17,7 @@ export interface CustomExpandIconProps {
     onMouseLeave?: (e: React.MouseEvent<HTMLSpanElement>) => void;
     expandIcon?: ((expanded?: boolean) => React.ReactNode) | React.ReactNode;
     prefixCls?: string;
-    motion?: boolean;
+    motion?: boolean
 }
 
 /**
@@ -56,19 +57,24 @@ export default function CustomExpandIcon(props: CustomExpandIconProps) {
     );
 
     if (motion) {
-        icon = (
-            <Rotate isOpen={expanded} enterDeg={90}>
-                {icon}
-            </Rotate>
-        );
+        const originIcon = icon;
+        icon = <CSSAnimation animationState={expanded?"enter":"leave"} startClassName={`${cssClasses.PREFIX}-expandedIcon-${expanded?'show':"hide"}`}>
+            {({ animationClassName })=>{
+                return React.cloneElement(originIcon, { className: (originIcon.props.className||"")+" "+animationClassName });
+            }}
+        </CSSAnimation>;
     }
 
     return (
         <span
+            role="button"
+            aria-label="Expand this row"
+            tabIndex={-1}
             onClick={handleClick}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             className={`${prefixCls}-expand-icon`}
+            onKeyPress={e => isEnterPress(e) && handleClick(e as any)}
         >
             {icon}
         </span>

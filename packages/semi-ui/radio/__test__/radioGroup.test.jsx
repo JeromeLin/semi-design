@@ -4,7 +4,6 @@ import Radio from '../index';
 import RadioGroup from '../radioGroup';
 import { BASE_CLASS_PREFIX } from '../../../semi-foundation/base/constants';
 
-// eslint-disable-next-line max-lines-per-function
 describe('RadioGroup', () => {
     function createRadioGroup(props) {
         return (
@@ -131,20 +130,55 @@ describe('RadioGroup', () => {
     });
 
     it('radioGroup card style', () => {
-        const radio = mount(
+        const radioGroup = mount(
             createRadioGroup({ type: 'card' })
         );
-        expect(radio.exists(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup`)).toEqual(true);
+        expect(radioGroup.exists(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup`)).toEqual(true);
+        radioGroup.unmount();
+
+        const disabledRadioGroup = mount(
+            createRadioGroup({ type: 'card', disabled: true, defaultValue: 'A' })
+        );
+        expect(
+            disabledRadioGroup
+                .find(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup`)
+                .at(0)
+                .exists(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup_checked_disabled`)
+        ).toEqual(true);
+        expect(
+            disabledRadioGroup
+                .find(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup`)
+                .at(1)
+                .exists(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup_checked_disabled`)
+        ).toEqual(false);
+        disabledRadioGroup.unmount();
     });
 
     it('radioGroup pure card style', () => {
-        const radio = mount(
+        const radioGroup = mount(
             createRadioGroup({ type: 'pureCard' })
         );
-        expect(radio.exists(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup`)).toEqual(true);
-        expect(radio.exists(`.${BASE_CLASS_PREFIX}-radio-inner-pureCardRadio`)).toEqual(true);
-    });
+        expect(radioGroup.exists(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup`)).toEqual(true);
+        expect(radioGroup.exists(`.${BASE_CLASS_PREFIX}-radio-inner-pureCardRadio`)).toEqual(true);
+        radioGroup.unmount();
 
+        const disabledRadioGroup = mount(
+            createRadioGroup({ type: 'pureCard', disabled: true, defaultValue: 'A' })
+        );
+        expect(
+            disabledRadioGroup
+                .find(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup`)
+                .at(0)
+                .exists(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup_checked_disabled`)
+        ).toEqual(true);
+        expect(
+            disabledRadioGroup
+                .find(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup`)
+                .at(1)
+                .exists(`.${BASE_CLASS_PREFIX}-radio-cardRadioGroup_checked_disabled`)
+        ).toEqual(false);
+        disabledRadioGroup.unmount();
+    });
 
     it('The buttonSize of the button type radio', () => {
         const smallRadio = mount(
@@ -160,5 +194,13 @@ describe('RadioGroup', () => {
         expect(smallRadio.exists(`.${BASE_CLASS_PREFIX}-radio-addon-buttonRadio-small`)).toEqual(true);
         expect(middleRadio.exists(`.${BASE_CLASS_PREFIX}-radio-addon-buttonRadio-middle`)).toEqual(true);
         expect(largeRadio.exists(`.${BASE_CLASS_PREFIX}-radio-addon-buttonRadio-large`)).toEqual(true);
+    });
+
+    it('does not trigger Maximum update exceeded when setting radio-group\'s value to NaN', () => {
+        const radioGroup = mount(
+            createRadioGroup({ value: NaN }),
+        );
+
+        expect(radioGroup.exists(`${BASE_CLASS_PREFIX}-radio-checked`)).toEqual(false);
     });
 });

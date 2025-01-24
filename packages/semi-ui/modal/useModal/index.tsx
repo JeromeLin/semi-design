@@ -1,9 +1,10 @@
 import React, { ReactNode } from 'react';
-import HookModal from './HookModal';
-import { withConfirm, withInfo, withSuccess, withError, withWarning, ConfirmProps } from '../confirm';
+import HookModal, { HookModalRef } from './HookModal';
+import { ConfirmProps, withConfirm, withError, withInfo, withSuccess, withWarning } from '../confirm';
 import { ModalReactProps } from '../Modal';
 
 let uuid = 0;
+
 function usePatchElement(): ([ReactNode[], (element: ReactNode) => () => void]) {
     const [elements, setElements] = React.useState<ReactNode[]>([]);
 
@@ -18,20 +19,23 @@ function usePatchElement(): ([ReactNode[], (element: ReactNode) => () => void]) 
     return [elements, patchElement];
 }
 
-export default function useModal() {
+type UseModalReturnHooksType = (config: ModalReactProps) => { destroy: () => void; update: (newConfig: ConfirmProps) => void };
+
+export default function useModal(): [{
+    info: UseModalReturnHooksType;
+    success: UseModalReturnHooksType;
+    error: UseModalReturnHooksType;
+    warning: UseModalReturnHooksType;
+    confirm: UseModalReturnHooksType
+}, ReactNode] {
     const [elements, patchElement] = usePatchElement();
 
-    // eslint-disable-next-line max-len
     function getConfirmFunc(withFunc: (typeof withConfirm | typeof withInfo | typeof withSuccess | typeof withError | typeof withWarning)) {
         return function hookConfirm(config: ModalReactProps) {
             uuid += 1;
 
-            const modalRef = React.createRef<{
-                destroy: () => void;
-                update: (newConfig: ConfirmProps) => void;
-            }>();
+            const modalRef = React.createRef<HookModalRef>();
 
-            // eslint-disable-next-line prefer-const
             let closeFunc: () => void;
             const modal = (
                 <HookModal

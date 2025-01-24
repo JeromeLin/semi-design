@@ -1,17 +1,13 @@
 ---
 localeCode: en-US
-order: 38
+order: 54
 category: Navigation
 title: Steps
 subTitle: Steps
 icon: doc-steps
 dir: column
-brief: When a long process needs to be step by step, use the step component to let the user know its current progress
+brief: Decompose complex tasks or tasks with prior relationships, use step components to guide users to operate according to the prescribed process, and let them know their current progress
 ---
-
-## When to use
-
-When the task is complex or has a sequential relationship, it is broken down into a series of steps to simplify the task.
 
 ## Demos
 
@@ -19,7 +15,7 @@ When the task is complex or has a sequential relationship, it is broken down int
 
 ```jsx
 import { Steps } from '@douyinfe/semi-ui';
-const Step = Steps. Step.;
+const Step = Steps.Step;
 ```
 
 ### Default step bar(Deprecated)
@@ -31,7 +27,7 @@ import React from 'react';
 import { Steps } from '@douyinfe/semi-ui';
 
 () => (
-    <Steps current={1}>
+    <Steps current={1} onChange={(i)=>console.log(i)}>
         <Steps.Step title="Finished" description="This is a description." />
         <Steps.Step title="In Progress" description="This is a description." />
         <Steps.Step title="Waiting" description="This is a description." />
@@ -48,12 +44,12 @@ import React from 'react';
 import { Steps } from '@douyinfe/semi-ui';
 
 () => (
-  <Steps type="basic" current={1}>
-      <Steps.Step title="Finished" description="This is a description" />
-      <Steps.Step title="In Progress" description="This is a description" />
-      <Steps.Step title="Waiting" description="This is a description" />
-  </Steps>
-)
+    <Steps type="basic" current={1} onChange={(i)=>console.log(i)}>
+        <Steps.Step title="Finished" description="This is a description" />
+        <Steps.Step title="In Progress" description="This is a description" />
+        <Steps.Step title="Waiting" description="This is a description" />
+    </Steps>
+);
 
 ```
 
@@ -73,15 +69,15 @@ import React from 'react';
 import { Steps } from '@douyinfe/semi-ui';
 
 () => (
-  <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Steps type="nav" current={1} style={{ margin: 'auto' }}>
-          <Steps.Step title="Register an account" />
-          <Steps.Step title="There is a lot of text in this project" />
-          <Steps.Step title="Product Usage" />
-          <Steps.Step title="Looking forward to trying out features" />
-      </Steps>
-  </div>
-)
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Steps type="nav" current={1} style={{ margin: 'auto' }} onChange={(i)=>console.log(i)}>
+            <Steps.Step title="Register an account" />
+            <Steps.Step title="There is a lot of text in this project" />
+            <Steps.Step title="Product Usage" />
+            <Steps.Step title="Looking forward to trying out features" />
+        </Steps>
+    </div>
+);
 ```
 
 ### Mini size step bar
@@ -93,12 +89,12 @@ import React from 'react';
 import { Steps } from '@douyinfe/semi-ui';
 
 () => (
-    <Steps type="basic" size="small" current={1}>
+    <Steps type="basic" size="small" current={1} onChange={(i)=>console.log(i)}>
         <Steps.Step title="Finished" description="This is a description" />
         <Steps.Step title="In Progress" description="This is a description" />
         <Steps.Step title="Waiting" description="This is a description" />
     </Steps>
-)
+);
 ```
 
 ```jsx live=true dir="column"
@@ -106,15 +102,15 @@ import React from 'react';
 import { Steps } from '@douyinfe/semi-ui';
 
 () => (
-  <div style={{ display: 'flex', justifyContent: 'center' }}>
-    <Steps type="nav" size="small" current={1} style={{ margin: 'auto' }}>
-        <Steps.Step title="Register an account" />
-        <Steps.Step title="There is a lot of text in this project" />
-        <Steps.Step title="Product Usage" />
-        <Steps.Step title="Looking forward to trying out features" />
-    </Steps>
-  </div>  
-)
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Steps type="nav" size="small" current={1} style={{ margin: 'auto' }} onChange={(i)=>console.log(i)}>
+            <Steps.Step title="Register an account" />
+            <Steps.Step title="There is a lot of text in this project" />
+            <Steps.Step title="Product Usage" />
+            <Steps.Step title="Looking forward to trying out features" />
+        </Steps>
+    </div>  
+);
 ```
 
 ### Processing progress
@@ -163,12 +159,12 @@ class App extends React.Component {
 
         return (
             <div>
-                <Steps type="basic" current={current}>
+                <Steps type="basic" current={current} onChange={(i)=>console.log(i)}>
                     {steps.map(item => (
                         <Step key={item.title} title={item.title} />
                     ))}
                 </Steps>
-                <div class Name="steps-content" style={{ marginTop: 4, marginBottom: 4 }}>
+                <div className Name="steps-content" style={{ marginTop: 4, marginBottom: 4 }}>
                     {steps[current].content}
                 </div>
                 <div className="steps-action">
@@ -203,12 +199,12 @@ import React from 'react';
 import { Steps } from '@douyinfe/semi-ui';
 
 () => (
-  <Steps direction="vertical" current={1} style={{ width: 300 }}>
-      <Steps.Step title="Finished" description="This is a description" />
-      <Steps.Step title="In Progress" description="This is a description" />
-      <Steps.Step title="Waiting" description="This is a description" />
-  </Steps>
-)
+    <Steps direction="vertical" current={1} style={{ width: 300 }} onChange={(i)=>console.log(i)}>
+        <Steps.Step title="Finished" description="This is a description" />
+        <Steps.Step title="In Progress" description="This is a description" />
+        <Steps.Step title="Waiting" description="This is a description" />
+    </Steps>
+);
 ```
 
 ```jsx live=true dir="column"
@@ -216,12 +212,12 @@ import React from 'react';
 import { Steps } from '@douyinfe/semi-ui';
 
 () => (
-  <Steps direction="vertical" type="basic" current={1}>
-      <Steps.Step title="Finished" description="This is a description" />
-      <Steps.Step title="In Progress" description="This is a description" />
-      <Steps.Step title="Waiting" description="This is a description" />
-  </Steps>
-)
+    <Steps direction="vertical" type="basic" current={1} onChange={(i)=>console.log(i)}>
+        <Steps.Step title="Finished" description="This is a description" />
+        <Steps.Step title="In Progress" description="This is a description" />
+        <Steps.Step title="Waiting" description="This is a description" />
+    </Steps>
+);
 ```
 
 ### Specify step status
@@ -233,12 +229,12 @@ import React from 'react';
 import { Steps } from '@douyinfe/semi-ui';
 
 () => (
-  <Steps type="basic" current={1} status="error">
-      <Steps.Step title="Finished" description="This is a description" />
-      <Steps.Step title="In Process" description="This is a description" />
-      <Steps.Step title="Waiting" description="This is a description" />
-  </Steps>
-)
+    <Steps type="basic" current={1} status="error" onChange={(i)=>console.log(i)}>
+        <Steps.Step title="Finished" description="This is a description" />
+        <Steps.Step title="In Process" description="This is a description" />
+        <Steps.Step title="Waiting" description="This is a description" />
+    </Steps>
+);
 ```
 
 ### Custom icons
@@ -251,13 +247,13 @@ import { Steps } from '@douyinfe/semi-ui';
 import { IconHome, IconLock, IconClear, IconTickCircle } from '@douyinfe/semi-icons';
 
 () => (
-  <Steps type="basic">
-    <Steps.Step status="finish" title="Login" icon={<IconHome />} />
-    <Steps.Step status="finish" title="Verification" icon={<IconLock />} />
-    <Steps.Step status="process" title="Pay" icon={<IconClear />} />
-    <Steps.Step status="wait" title="Done" icon={<IconTickCircle />} />
-  </Steps>
-)
+    <Steps type="basic" onChange={(i)=>console.log(i)}>
+        <Steps.Step status="finish" title="Login" icon={<IconHome />} />
+        <Steps.Step status="finish" title="Verification" icon={<IconLock />} />
+        <Steps.Step status="process" title="Pay" icon={<IconClear />} />
+        <Steps.Step status="wait" title="Done" icon={<IconTickCircle />} />
+    </Steps>
+);
 ```
 
 ### onChange CallBack
@@ -269,45 +265,45 @@ import React from 'react';
 import { Steps } from '@douyinfe/semi-ui';
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      current: 1,
-    };
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            current: 1,
+        };
+    }
 
-  onChange(index) {
-    this.setState({ current: index });
-  }
+    onChange(index) {
+        this.setState({ current: index });
+    }
 
-  render() {
-    const { current } = this.state;
-    const { Step } = Steps;
-    const steps = [
-      {
-        title: 'First',
-        content: 'First-content',
-      },
-      {
-        title: 'Second',
-        content: 'Second-content',
-      },
-      {
-        title: 'Last',
-        content: 'Last-content',
-      },
-    ];
+    render() {
+        const { current } = this.state;
+        const { Step } = Steps;
+        const steps = [
+            {
+                title: 'First',
+                content: 'First-content',
+            },
+            {
+                title: 'Second',
+                content: 'Second-content',
+            },
+            {
+                title: 'Last',
+                content: 'Last-content',
+            },
+        ];
 
-    return (
-      <div>
-        <Steps type="basic" current={current} onChange={index => this.onChange(index)}>
-          {steps.map(item => (
-            <Step key={item.title} title={item.title} />
-          ))}
-        </Steps>
-      </div>
-    );
-  }
+        return (
+            <div>
+                <Steps type="basic" current={current} onChange={index => this.onChange(index)}>
+                    {steps.map(item => (
+                        <Step key={item.title} title={item.title} />
+                    ))}
+                </Steps>
+            </div>
+        );
+    }
 }
 ```
 
@@ -334,12 +330,31 @@ Step in the step bar.
 
 | Parameters | Instructions | type | Default | Version |
 | --- | --- | --- | --- | --- |
+| aria-label | Container aria-label   | React.AriaAttributes["aria-label"] |  |   |
 | description | Detailed description of steps, optional | ReactNode |  | - |  |
 | icon | Type of step icon, optional | ReactNode |  | - |  |
+| role      | Container role  | React.AriaRole | -  |    |
 | status | Specify the state. When this property is not configured, the `current`of Steps is used to automatically specify the state. Optional: `wait`,`process`,`finish`,`error`,`warning` | string | wait |  |
 | style     | CSS Style                                                                          | CSSProperties |            |    |
 | title | Title | ReactNode |  | - |  |
 | onClick | Callback of click | function | - |  |
+| onKeyDown     | Callback ok keyDown  | function | -   |    |
+
+## Accessibility
+
+### ARIA
+
+- Steps and Step components support passing in the `aria-label` attribute to represent the description of Steps and Steps
+- Step component has an `aria-current` `step` attribute, indicating that this is a step in the step bar
+
+## Content Guidelines
+- Step title
+  - title should be kept concise, avoiding truncation and line breaks
+  - use sentence capitalization
+  - do not include punctuation
+- Step description
+  - supplementary contextual information for the title
+  - don't end with punctuation
 
 ## Design Tokens
 

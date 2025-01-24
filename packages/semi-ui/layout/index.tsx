@@ -1,4 +1,4 @@
-import React, { CSSProperties, ComponentClass } from 'react';
+import React, { AriaRole, ComponentClass, CSSProperties } from 'react';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
 import { cssClasses } from '@douyinfe/semi-foundation/layout/constants';
@@ -6,7 +6,7 @@ import '@douyinfe/semi-foundation/layout/layout.scss';
 import LayoutContext, { ContextType } from './layout-context';
 import Sider from './Sider';
 
-export { ResponsiveMap, SiderProps } from './Sider';
+export type { ResponsiveMap, SiderProps } from './Sider';
 
 const htmlTag = {
     Header: 'header',
@@ -15,12 +15,12 @@ const htmlTag = {
     Layout: 'section'
 };
 
-function generator<P extends { type?: string; tagName?: string }>(type: string): (ComponentType: ComponentClass<{ type?: string; tagName?: string } & P>) => ComponentClass<P> {
+function generator<P extends { type?: string; tagName?: string; role?: AriaRole; 'aria-label'?: string }>(type: string): (ComponentType: ComponentClass<{ type?: string; tagName?: string } & P>) => ComponentClass<P> {
     const tagName = htmlTag[type];
     const typeName = type.toLowerCase();
     return (BasicComponent): ComponentClass<P> => class Adapter extends React.PureComponent<P> {
         render() {
-            return <BasicComponent type={typeName} tagName={tagName} {...this.props} />;
+            return <BasicComponent role={this.props.role} aria-label={this.props['aria-label']} type={typeName} tagName={tagName} {...this.props} />;
         }
     };
 }
@@ -31,6 +31,7 @@ export interface BasicProps {
     className?: string;
     tagName?: keyof HTMLElementTagNameMap;
     type?: string;
+    children?: React.ReactNode | undefined
 }
 
 class Basic extends React.PureComponent<BasicProps> {
@@ -59,12 +60,13 @@ export interface BasicLayoutProps {
     prefixCls?: string;
     style?: CSSProperties;
     className?: string;
+    children?: React.ReactNode;
     hasSider?: boolean;
-    tagName?: keyof HTMLElementTagNameMap;
+    tagName?: keyof HTMLElementTagNameMap
 }
 
 export interface BasicLayoutState {
-    siders: Array<string>;
+    siders: Array<string>
 }
 
 class Layout extends React.Component<BasicLayoutProps, BasicLayoutState> {
@@ -109,7 +111,9 @@ class Layout extends React.Component<BasicLayoutProps, BasicLayoutState> {
         const { prefixCls, className, children, hasSider, tagName, ...others } = this.props;
         const { siders } = this.state;
         const classString = cls(className, prefixCls, {
-            [`${prefixCls}-has-sider`]: typeof hasSider === 'boolean' ? hasSider : siders.length > 0,
+            [`${prefixCls}-has-sider`]: typeof hasSider === 'boolean' && hasSider || siders.length > 0 || React.Children.toArray(children).some((child: React.ReactNode) => {
+                return React.isValidElement(child) && child.type && (child.type as any).elementType === "Layout.Sider";
+            }),
         });
         const Tag: any = tagName;
         return (

@@ -2,7 +2,7 @@ import Nav from '../index';
 import { clear } from 'jest-date-mock';
 import { genBeforeEach, genAfterEach, mount } from '@douyinfe/semi-ui/_test_/utils/tooltip';
 import { BASE_CLASS_PREFIX } from '../../../semi-foundation/base/constants';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 
 describe(`Navigation`, () => {
     beforeEach(() => {
@@ -36,7 +36,7 @@ describe(`Navigation`, () => {
                 onSelect={key => console.log(key)}
                 header={{
                     logo: <img src="https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwzthlaukjlkulzlp/root-web-sites/webcast_logo.svg" />,
-                    text: '直播运营后台',
+                    text: 'Semi 运营后台',
                 }}
                 footer={{
                     collapseButton: true,
@@ -71,7 +71,7 @@ describe(`Navigation`, () => {
                 onSelect={data => console.log('trigger onSelect: ', data)}
                 onClick={data => console.log('trigger onClick: ', data)}
             >
-                <Nav.Header logo={'bytedance_logo'} text={'直播运营后台'} />
+                <Nav.Header logo={'bytedance_logo'} text={'Semi 运营后台'} />
                 <Nav.Item itemKey={'union'} text={'公会中心'} icon={'star'} />
                 <Nav.Sub itemKey={'user'} text="用户管理" icon="user">
                     <Nav.Item itemKey={'golder'} text={'金主管理'} />
@@ -135,7 +135,7 @@ describe(`Navigation`, () => {
                 items={items}
                 header={{
                     logo: 'bytedance_logo',
-                    text: '直播运营后台',
+                    text: 'Semi 运营后台',
                 }}
                 footer={{ collapseButton: true }}
             />
@@ -201,7 +201,7 @@ describe(`Navigation`, () => {
                 onClick={onClick}
                 header={{
                     logo: <img src="https://sf6-cdn-tos.douyinstatic.com/obj/eden-cn/ptlz_zlp/ljhwzthlaukjlkulzlp/root-web-sites/webcast_logo.svg" />,
-                    text: '直播运营后台',
+                    text: 'Semi 运营后台',
                 }}
                 footer={{
                     collapseButton: true,
@@ -270,5 +270,45 @@ describe(`Navigation`, () => {
         collpaseBtn.simulate('click');
         expect(onCollapseChange.called).toBeTruthy();
         expect(onCollapseChange.getCall(0).args[0]).toEqual(true);
+    });
+
+    it(`test itemKey is a number type expansion`, async () => {
+        const onSelect = sinon.spy(noop);
+        const onOpenChange = sinon.spy(noop);
+        const onCollapseChange = sinon.spy(noop);
+        const onClick = sinon.spy(noop);
+
+        const nav = mount(
+            <Nav
+                bodyStyle={{ height: 320 }}
+                items={[
+                    { itemKey: 'user', text: '用户管理', icon: 'user' },
+                    { itemKey: 'union', text: '公会中心', icon: 'star' },
+                    {
+                        text: '任务平台',
+                        icon: 'setting',
+                        itemKey: 2,
+                        items: ['任务管理', '用户任务查询'],
+                    },
+                ]}
+                onSelect={onSelect}
+                onOpenChange={onOpenChange}
+                onCollapseChange={onCollapseChange}
+                onClick={onClick}
+                footer={{
+                    collapseButton: true,
+                }}
+            />
+        );
+
+        const subTitle = nav.find(`.${BASE_CLASS_PREFIX}-navigation-sub-title`);
+        subTitle.simulate('click');
+        expect(onClick.called).toBeTruthy();
+        expect(onOpenChange.called).toBeTruthy();
+        expect(onClick.getCall(0).args[0].itemKey).toEqual(2);
+        expect(onOpenChange.getCall(0).args[0].itemKey).toEqual(2);
+        expect(
+            document.querySelectorAll(`.${BASE_CLASS_PREFIX}-navigation-item-sub .${BASE_CLASS_PREFIX}-navigation-sub-open`).length > 0
+        ).toBeTruthy();
     });
 });

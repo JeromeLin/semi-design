@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* argus-disable unPkgSensitiveInfo */
 import {
     get as lodashGet,
     set as lodashSet,
@@ -10,13 +8,13 @@ import {
     isNumber,
     isObject,
     values
-} from 'lodash-es';
+} from 'lodash';
 
 type Many<T> = T | ReadonlyArray<T>;
 type PropertyName = string | number | symbol;
 type PropertyPath = Many<PropertyName>;
 
-type ObjctType = Record<string, any>;
+type ObjectType = Record<string, any>;
 
 const pathToArrayElem = (path: any) => {
     const pathArray = lodashToPath(path);
@@ -25,7 +23,7 @@ const pathToArrayElem = (path: any) => {
     return justNumber ? false : Number.isInteger(+pathArray[pathArray.length - 1]);
 };
 
-function isEmptyObject(target: ObjctType) {
+function isEmptyObject(target: ObjectType) {
 /**
  *  var a = {};
  *  var b = { c: undefined }
@@ -35,8 +33,8 @@ function isEmptyObject(target: ObjctType) {
  *  }
  *  the result of JSON.stringify(a/b/d) are same: '{}'
  *  We can use the above features to remove keys with empty values in Form
- *  But we cannot use JSON.stringify() directly, because if the input parameter of JSON.stringify includes fiberNode, it will cause an TypeError: 'Convering circular structure to JSON'
- *  So we have to mock it's behavihor, also, the form value cannot have Symbol or function type, it can be ignored
+ *  But we cannot use JSON.stringify() directly, because if the input parameter of JSON.stringify includes fiberNode, it will cause an TypeError: 'Converting circular structure to JSON'
+ *  So we have to mock it's behavior, also, the form value cannot have Symbol or function type, it can be ignored
  */
     if (!isObject(target)) {
         return false;
@@ -52,7 +50,7 @@ function isEmptyObject(target: ObjctType) {
     }
 }
 
-function cleanup(obj: ObjctType, path: string[], pull = true) {
+function cleanup(obj: ObjectType, path: string[], pull = true) {
     if (path.length === 0) {
         return;
     }
@@ -68,7 +66,6 @@ function cleanup(obj: ObjctType, path: string[], pull = true) {
     // }
 
     // Delete object if its empty
-    // eslint-disable-next-line
     if (Array.isArray(target) && target.every(e => e == null)) {
         lodashUnset(obj, path);
     } else if (isEmptyObject(target)) {
@@ -79,15 +76,15 @@ function cleanup(obj: ObjctType, path: string[], pull = true) {
     cleanup(obj, path.slice(0, path.length - 1), pull);
 }
 
-export function empty(object: ObjctType) {
+export function empty(object: ObjectType) {
     return lodashValues(object).length === 0;
 }
 
-export function get(object: ObjctType, path: PropertyPath) {
+export function get(object: ObjectType, path: PropertyPath) {
     return lodashGet(object, path);
 }
 
-export function remove(object: ObjctType, path: PropertyPath) {
+export function remove(object: ObjectType, path: PropertyPath) {
     lodashUnset(object, path);
     // a.b => [a, b]
     // arr[11].a => [arr, 11, a]
@@ -123,7 +120,7 @@ export function set(object: any, path: PropertyPath, value: any, allowEmpty?: bo
     }
 }
 
-export function has(object: ObjctType, path: PropertyPath) {
+export function has(object: ObjectType, path: PropertyPath) {
     return lodashHas(object, path);
 }
 
@@ -133,7 +130,7 @@ export function has(object: ObjctType, path: PropertyPath) {
  * @param {object|Function} srcObj
  * @returns {object|Function}
  */
-export function forwardStatics<T extends ObjctType | ((...arg: any) => any)>(obj: T, srcObj: ObjctType | ((...arg: any) => any)): T {
+export function forwardStatics<T extends ObjectType | ((...arg: any) => any)>(obj: T, srcObj: ObjectType | ((...arg: any) => any)): T {
     if (
         obj &&
         (typeof obj === 'function' || typeof obj === 'object') &&

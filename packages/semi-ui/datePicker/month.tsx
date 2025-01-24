@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-noninteractive-element-interactions */
 import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -6,7 +6,7 @@ import MonthFoundation, { MonthAdapter, MonthDayInfo, MonthFoundationProps, Mont
 import { cssClasses, numbers } from '@douyinfe/semi-foundation/datePicker/constants';
 import BaseComponent, { BaseProps } from '../_base/baseComponent';
 import { isBefore, isAfter, isBetween, isSameDay } from '@douyinfe/semi-foundation/datePicker/_utils/index';
-import { noop, stubFalse, isFunction } from 'lodash-es';
+import { noop, stubFalse, isFunction } from 'lodash';
 import { parseISO } from 'date-fns';
 import { Locale } from '../locale/interface';
 
@@ -15,7 +15,7 @@ const prefixCls = cssClasses.PREFIX;
 export interface MonthProps extends MonthFoundationProps, BaseProps {
     forwardRef: React.Ref<any>;
     locale: Locale['DatePicker'];
-    focusRecordsRef: React.RefObject<{ rangeStart: boolean; rangeEnd: boolean }>;
+    focusRecordsRef: React.RefObject<{ rangeStart: boolean; rangeEnd: boolean }>
 }
 
 export type MonthState = MonthFoundationState;
@@ -40,7 +40,8 @@ export default class Month extends BaseComponent<MonthProps, MonthState> {
         startDateOffset: PropTypes.func,
         endDateOffset: PropTypes.func,
         rangeInputFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-        focusRecordsRef: PropTypes.object
+        focusRecordsRef: PropTypes.object,
+        multiple: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -98,8 +99,9 @@ export default class Month extends BaseComponent<MonthProps, MonthState> {
     }
 
     getSingleDayStatus(options: Partial<MonthProps> & { fullDate: string; todayText: string }) {
+        const { rangeInputFocus } = this.props;
         const { fullDate, todayText, selected, disabledDate, rangeStart, rangeEnd } = options;
-        const disabledOptions = { rangeStart, rangeEnd };
+        const disabledOptions = { rangeStart, rangeEnd, rangeInputFocus };
         const isToday = fullDate === todayText;
         const isSelected = selected.has(fullDate);
 
@@ -147,7 +149,6 @@ export default class Month extends BaseComponent<MonthProps, MonthState> {
         const _isHoverDay = isSameDay(hoverDay, fullDate);
 
         // When one is selected
-        // eslint-disable-next-line one-var
         let _isHoverAfterStart, _isHoverBeforeEnd, isSelectedStart, isSelectedEnd, isHoverDayAroundOneSelected;
         if (rangeStart) {
             isSelectedStart = isSameDay(fullDate, rangeStart);
@@ -166,14 +167,12 @@ export default class Month extends BaseComponent<MonthProps, MonthState> {
             isHoverDayAroundOneSelected = _isHoverDay;
         }
 
-        // eslint-disable-next-line one-var
         let isHover;
         if (!_isOffsetDateRangeAnyExist) {
             isHover = _isHoverAfterStart || _isHoverBeforeEnd || _isHoverDay;
         }
 
         // Select all
-        // eslint-disable-next-line one-var
         let isInRange, isSelectedStartAfterHover, isSelectedEndBeforeHover, isHoverDayInStartSelection, isHoverDayInEndSelection, isHoverDayInRange;
         if (_isDateRangeSelected) {
             isInRange = isBetween(fullDate, { start: rangeStart, end: rangeEnd });
@@ -275,9 +274,9 @@ export default class Month extends BaseComponent<MonthProps, MonthState> {
         // i18n
         const weekdaysText = weekdays.map(key => locale.weeks[key]);
         return (
-            <div className={weekdayCls}>
+            <div role="row" className={weekdayCls}>
                 {weekdaysText.map((E, i) => (
-                    <div key={E + i} className={weekdayItemCls}>
+                    <div role="columnheader" key={E + i} className={weekdayItemCls}>
                         {E}
                     </div>
                 ))}
@@ -305,7 +304,7 @@ export default class Month extends BaseComponent<MonthProps, MonthState> {
     renderWeek(week: MonthDayInfo[], weekIndex: number) {
         const weekCls = cssClasses.WEEK;
         return (
-            <div className={weekCls} key={weekIndex}>
+            <div role="row" className={weekCls} key={weekIndex}>
                 {week.map((day, dayIndex) => this.renderDay(day, dayIndex))}
             </div>
         );
@@ -317,7 +316,7 @@ export default class Month extends BaseComponent<MonthProps, MonthState> {
         const { fullDate, dayNumber } = day;
         if (!fullDate) {
             return (
-                <div key={(dayNumber as number) + dayIndex} className={cssClasses.DAY}>
+                <div role="gridcell" tabIndex={-1} key={(dayNumber as number) + dayIndex} className={cssClasses.DAY}>
                     <span />
                 </div>
             );
@@ -356,6 +355,11 @@ export default class Month extends BaseComponent<MonthProps, MonthState> {
 
         return (
             <div
+                role="gridcell"
+                tabIndex={dayStatus.isDisabled ? -1 : 0}
+                aria-disabled={dayStatus.isDisabled}
+                aria-selected={dayStatus.isSelected}
+                aria-label={fullDate}
                 className={!customRender ? dayCls : cssClasses.DAY}
                 title={fullDate}
                 key={(dayNumber as number) + dayIndex}
@@ -373,13 +377,13 @@ export default class Month extends BaseComponent<MonthProps, MonthState> {
     }
 
     render() {
-        const { forwardRef } = this.props;
+        const { forwardRef, multiple } = this.props;
         const weekday = this.renderDayOfWeek();
         const weeks = this.renderWeeks();
         const monthCls = classNames(cssClasses.MONTH);
         const ref = forwardRef || this.monthRef;
         return (
-            <div ref={ref} className={monthCls}>
+            <div role="grid" aria-multiselectable={multiple} ref={ref} className={monthCls} >
                 {weekday}
                 {weeks}
             </div>

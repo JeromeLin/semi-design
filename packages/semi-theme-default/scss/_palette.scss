@@ -1,5 +1,4 @@
-body,
-body .semi-always-light {
+body, body .semi-always-light, :host, :host .semi-always-light {
     --semi-amber-0: 254,251,235;
     --semi-amber-1: 252,245,206;
     --semi-amber-2: 249,232,158;
@@ -16,7 +15,7 @@ body .semi-always-light {
     --semi-blue-2: 152,205,253;
     --semi-blue-3: 101,178,252;
     --semi-blue-4: 50,149,251;
-    --semi-blue-5: 0,119,250;
+    --semi-blue-5: 0,100,250;
     --semi-blue-6: 0,98,214;
     --semi-blue-7: 0,79,179;
     --semi-blue-8: 0,61,143;
@@ -164,8 +163,7 @@ body .semi-always-light {
     --semi-yellow-9: 83,72,0;
 }
 
-body[theme-mode="dark"],
-body .semi-always-dark {
+body[theme-mode="dark"], body .semi-always-dark, :host([theme-mode="dark"]), :host .semi-always-dark {
     --semi-red-0: 108,9,11;
     --semi-red-1: 144,17,16;
     --semi-red-2: 180,32,25;

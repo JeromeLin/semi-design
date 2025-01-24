@@ -1,13 +1,6 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable prefer-const */
-/* eslint-disable eqeqeq */
-/* eslint-disable import/no-duplicates */
-/* eslint-disable no-duplicate-imports */
 import React, { PureComponent, isValidElement, cloneElement, Children } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import '@douyinfe/semi-animation-styled';
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import { types as styledTypes, loops, delays, speeds } from '@douyinfe/semi-animation-styled';
 import noop from './utils/noop';
 import invokeFns from './utils/invokeFns';
@@ -27,7 +20,17 @@ export interface StyledAnimationProps {
     prefixCls?: string;
     timing?: string;
     duration?: string | number;
-    fillMode?: string;
+    fillMode?: string
+}
+
+export interface StyledAnimateStyleType {
+    animationTimingFunction: string;
+    animationName: any;
+    animationDuration: string | number;
+    animationDelay: string | number;
+    animationIterationCount: string | number;
+    animationDirection: string;
+    animationFillMode: string
 }
 
 const types: any = Object.values(styledTypes).reduce((arr, cur) => [...arr as any, ...cur as any], []);

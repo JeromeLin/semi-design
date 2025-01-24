@@ -1,6 +1,6 @@
 ---
 localeCode: zh-CN
-order: 35
+order: 51
 category: 导航类
 title:  Breadcrumb 面包屑
 icon: doc-breadcrumb
@@ -28,7 +28,7 @@ import { Breadcrumb } from '@douyinfe/semi-ui';
         <Breadcrumb.Item>Breadcrumb</Breadcrumb.Item>
         <Breadcrumb.Item>Default</Breadcrumb.Item>
     </Breadcrumb>
-)
+);
 ```
 
 ### 带图标的
@@ -46,7 +46,7 @@ import { IconHome, IconArticle } from '@douyinfe/semi-icons';
         <Breadcrumb.Item icon={<IconArticle size="small" />}>Breadcrumb</Breadcrumb.Item>
         <Breadcrumb.Item>With Icon</Breadcrumb.Item>
     </Breadcrumb>
-)
+);
 ```
 
 ### 尺寸
@@ -72,7 +72,7 @@ import { IconHome } from '@douyinfe/semi-icons';
             <Breadcrumb.Item>Loose</Breadcrumb.Item>
         </Breadcrumb>
     </div>
-)
+);
 ```
 
 ### 自定义的分隔符
@@ -81,7 +81,7 @@ import { IconHome } from '@douyinfe/semi-icons';
 
 ```jsx live=true
 import React from 'react';
-import { Breadcrumb } from '@douyinfe/semi-ui';
+import { Breadcrumb, Tag } from '@douyinfe/semi-ui';
 import { IconArrowRight } from '@douyinfe/semi-icons';
 
 () => (
@@ -98,7 +98,7 @@ import { IconArrowRight } from '@douyinfe/semi-icons';
             <Breadcrumb.Item>Default</Breadcrumb.Item>
         </Breadcrumb>
         <br/>
-        <Tag>v>=1.16.0</Tag>
+        <Tag>{`v>=1.16.0`}</Tag>
         <br/>
         <Breadcrumb size={'small'} >
             <Breadcrumb.Item separator=":">Semi-ui</Breadcrumb.Item>
@@ -106,7 +106,7 @@ import { IconArrowRight } from '@douyinfe/semi-icons';
             <Breadcrumb.Item>Default</Breadcrumb.Item>
         </Breadcrumb>
     </div>
-)
+);
 ```
 
 ### 截断逻辑
@@ -135,24 +135,24 @@ import { Breadcrumb, Typography } from '@douyinfe/semi-ui';
             <br/>
             <Text size="small">不截断</Text>
             <Breadcrumb
-                showTooltip={{width: 'auto'}}
+                showTooltip={{ width: 'auto' }}
                 routes={routes}
             />
             <br/>
             <Text size="small">从标题中间开始省略</Text>
             <Breadcrumb
-                showTooltip={{ellipsisPos: 'middle'}}
+                showTooltip={{ ellipsisPos: 'middle' }}
                 routes={routes}
             />
             <br/>
             <Text size="small">自定义 Tooltip 参数</Text>
             <Breadcrumb
-                showTooltip={{opts: {position: 'topLeft'}}}
+                showTooltip={{ opts: { position: 'topLeft' } }}
                 routes={routes}
             />
         </>
-    )
-}
+    );
+};
 ```
 
 当路径层级超过 4 个级别，则：第二层至倒数第三层省略，点击省略号展开显示全部级别；如果过长则自动换行。
@@ -172,7 +172,7 @@ import { Breadcrumb } from '@douyinfe/semi-ui';
         <Breadcrumb.Item>上一层</Breadcrumb.Item>
         <Breadcrumb.Item>详情页</Breadcrumb.Item>
     </Breadcrumb>
-)
+);
 ```
 
 ### 自定义省略号区域
@@ -193,7 +193,7 @@ import { Breadcrumb } from '@douyinfe/semi-ui';
         <Breadcrumb.Item>上一层</Breadcrumb.Item>
         <Breadcrumb.Item>详情页</Breadcrumb.Item>
     </Breadcrumb>
-)
+);
 ```
 
 如果想要为省略号区域自定义其他形式的渲染，则可以使用 `renderMore()` 方法。
@@ -221,7 +221,7 @@ function Demo() {
                     ))
                 }
             </>
-        )
+        );
         return (
             <Popover
                 content={content}
@@ -280,7 +280,7 @@ import { IconHome, IconArticle } from '@douyinfe/semi-icons';
                     },
                     {
                         path: '/breadcrumb',
-                        href: '/components/breadcrumb',
+                        href: '/zh-CN/navigation/breadcrumb',
                         name: 'breadcrumb',
                         icon: <IconArticle size="small" />
                     },
@@ -293,27 +293,28 @@ import { IconHome, IconArticle } from '@douyinfe/semi-icons';
             routes={['首页', '当这个页面标题很长时需要省略', '详情页']}
         />
     </div>
-)
+);
 ```
 
 ## API 参考
 
 ### Breadcrumb
 
-| 属性       | 说明                                                                                      | 类型                                       | 默认值 | 版本   |
-| ---------- | ----------------------------------------------------------------------------------------- | ------------------------------------------ | ------ | ------ |
-| autoCollapse      | 是否超出maxItemCount后自动折叠                                                                                     | boolean                                     | true     |    1.9.0   |
-| className  | 类名                                                                                      | string                                     | -      |        |
-| compact    | 显示尺寸，是否紧凑                                                                         | boolean                                    | true   |        |
-| maxItemCount      | 超出多少个进行自动折叠                                                                                      | number                                     | 4    | 1.9.0       |
-|moreType|内置的...区域的渲染类型，可选值为 'default'、'popover'|string|'default'|1.27.0|
-| renderItem | 自定义链接函数，配合 routes 使用                                                          | (Route: [Route](#Route)) => ReactNode             | -      | 0.27.0 |
-| renderMore|自定义...区域的渲染|(restItem: ReactNode[]) => ReactNode|-|1.27.0|
-| routes     | router 的路由信息，由路由对象或字符串组成的数组，路由对象格式参考: [Route](#Route) | Array<[Route](#Route) \| string\>                            | -      |        |
-| separator  | 自定义的分隔符                                                                            | ReactNode                          | '/'    |        |
-| showTooltip | 是否展示 Tooltip 及相关配置: width，溢出宽度；   ellipsisPos，截断方式，从中间/末尾截断；                         opts，透传给Tooltip的属性                              | boolean \| showToolTipProps             | {width: 150, ellipsisPos: 'end', opts: { autoAdjustOverflow: true, position: "bottomLeft" }}      | 0.34.0 |
-| style      | 内联样式                                                                                      | CSSProperties                                     | -      |        |
-| onClick    | 单击事件                                                                                  | (item: [Route](#Route) , e: Event) => void | -      | 0.27.0 |
+| 属性       | 说明                                                                                                      | 类型                                       | 默认值 | 版本   |
+| ---------- |---------------------------------------------------------------------------------------------------------| ------------------------------------------ | ------ | ------ |
+| activeIndex| 受控使用，当前选择的导航序号                                                                                          | - | 2.61.0 |
+| autoCollapse      | 是否超出maxItemCount后自动折叠                                                                                   | boolean                                     | true     |    1.9.0   |
+| className  | 类名                                                                                                      | string                                     | -      |        |
+| compact    | 显示尺寸，是否紧凑                                                                                               | boolean                                    | true   |        |
+| maxItemCount      | 超出多少个进行自动折叠                                                                                             | number                                     | 4    | 1.9.0       |
+|moreType| 内置的...区域的渲染类型，可选值为 'default'、'popover'                                                                  |string|'default'|1.27.0|
+| renderItem | 自定义链接函数，配合 routes 使用                                                                                    | (Route: [Route](#Route)) => ReactNode             | -      | 0.27.0 |
+| renderMore| 自定义...区域的渲染                                                                                             |(restItem: ReactNode[]) => ReactNode|-|1.27.0|
+| routes     | router 的路由信息，由路由对象或字符串组成的数组，路由对象格式参考: [Route](#Route)                                                   | Array<[Route](#Route) \| string\>                            | -      |        |
+| separator  | 自定义的分隔符                                                                                                 | ReactNode                          | '/'    |        |
+| showTooltip | 是否展示 Tooltip 及相关配置: width，溢出宽度；   ellipsisPos，截断方式，从中间/末尾截断；                         opts，透传给Tooltip的属性 | boolean \| showToolTipProps             | {width: 150, ellipsisPos: 'end', opts: { autoAdjustOverflow: true, position: "bottomLeft" }}      | 0.34.0 |
+| style      | 内联样式                                                                                                    | CSSProperties                                     | -      |        |
+| onClick    | 单击事件                                                                                                    | (item: [Route](#Route) , e: Event) => void | -      | 0.27.0 |
 
 ### Breadcrumb.Item
 
@@ -335,6 +336,16 @@ import { IconHome, IconArticle } from '@douyinfe/semi-icons';
 | path | 路由路径       | string            | -      |        |
 
 **v>=1.16.0** 之后 Route 支持 Breadcrumb.Item 上的相应属性。
+
+## Accessibility
+
+- Breadcrumb 支持传入 `aria-label` 来表示该 Breadcrumb 作用
+- Breadcrumb 会对当前项设置 `aria-current='page'`
+
+## 文案规范
+
+- 每个页面链接都应该很简短，并且清楚地反映它链接到的位置或链接的实体
+- 按句子大小写书写
 
 ## 设计变量
 <DesignToken/>

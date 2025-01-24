@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { AriaAttributes } from 'react';
 import BaseComponent from '../_base/baseComponent';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { noop, debounce, throttle, find, map, findIndex, times } from 'lodash-es';
+import { noop, debounce, throttle, find, map, findIndex, times } from 'lodash';
 
-import { cssClasses, numbers } from '@douyinfe/semi-foundation/scrollList/constants';
+import { cssClasses, numbers, strings } from '@douyinfe/semi-foundation/scrollList/constants';
 import ItemFoundation, { Item, ScrollItemAdapter } from '@douyinfe/semi-foundation/scrollList/itemFoundation';
 import animatedScrollTo from '@douyinfe/semi-foundation/scrollList/scrollTo';
 import isElement from '@douyinfe/semi-foundation/utils/isElement';
@@ -13,28 +13,31 @@ import { Motion } from '../_base/base';
 const msPerFrame = 1000 / 60;
 const blankReg = /^\s*$/;
 const wheelMode = 'wheel';
-
-export interface ScrollItemProps {
+interface DebounceSelectFn {
+    (e: React.UIEvent, newSelectedNode: HTMLElement): void;
+    cancel(): void
+}
+export interface ScrollItemProps<T extends Item> {
     mode?: string;
     cycled?: boolean;
-    list?: Item[];
+    list?: T[];
     selectedIndex?: number;
-    onSelect?: (data: Item) => void;
+    onSelect?: (data: T) => void;
     transform?: (value: any, text: string) => string;
     className?: string;
     motion?: Motion;
     style?: React.CSSProperties;
     type?: string | number; // used to identify the scrollItem, used internally by the semi component, and does not need to be exposed to the user
+    'aria-label'?: AriaAttributes['aria-label']
 }
 
 export interface ScrollItemState {
     prependCount: number;
-    appendCount: number;
+    appendCount: number
 }
-
-export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollItemState> {
+export default class ScrollItem<T extends Item> extends BaseComponent<ScrollItemProps<T>, ScrollItemState> {
     static propTypes = {
-        mode: PropTypes.string,
+        mode: PropTypes.oneOf(strings.MODE),
         cycled: PropTypes.bool,
         list: PropTypes.array,
         selectedIndex: PropTypes.number,
@@ -50,7 +53,7 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
         selectedIndex: 0,
         motion: true,
         // transform: identity,
-        list: [] as Item[],
+        list: [] as const,
         onSelect: noop,
         cycled: false,
         mode: wheelMode,
@@ -63,15 +66,8 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
     selector: unknown;
     scrollAnimation: any;
     scrolling: boolean;
-
-    throttledAdjustList = throttle((e, nearestNode) => {
-        this.foundation.adjustInfiniteList(this.list, this.wrapper, nearestNode);
-    }, msPerFrame);
-
-    debouncedSelect = debounce((e, nearestNode) => {
-        this._cacheSelectedNode(nearestNode);
-        this.foundation.selectNode(nearestNode, this.list);
-    }, msPerFrame * 5);
+    throttledAdjustList: DebounceSelectFn;
+    debouncedSelect: DebounceSelectFn;
 
     constructor(props = {}) {
         super(props);
@@ -93,13 +89,22 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
 
         // cache if select action comes from outside
 
-        this.foundation = new ItemFoundation(this.adapter);
+        this.foundation = new ItemFoundation<ScrollItemProps<T>, ScrollItemState, T>(this.adapter);
+
+        this.throttledAdjustList = throttle((e, nearestNode) => {
+            this.foundation.adjustInfiniteList(this.list, this.wrapper, nearestNode);
+        }, msPerFrame);
+
+        this.debouncedSelect = debounce((e, nearestNode) => {
+            this._cacheSelectedNode(nearestNode);
+            this.foundation.selectNode(nearestNode, this.list);
+        }, msPerFrame * 2);
     }
 
-    get adapter(): ScrollItemAdapter<ScrollItemProps, ScrollItemState> {
+    get adapter(): ScrollItemAdapter<ScrollItemProps<T>, ScrollItemState, T> {
         return {
             ...super.adapter,
-            setState: (states, callback) => this.setState({ ...states }, callback),
+            setState: (states, callback) => this.setState({ ...states } as ScrollItemState, callback),
             setPrependCount: prependCount => this.setState({ prependCount }),
             setAppendCount: appendCount => this.setState({ appendCount }),
             isDisabledIndex: this.isDisabledIndex,
@@ -108,7 +113,12 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
             scrollToCenter: this.scrollToCenter,
         };
     }
-
+    componentWillUnmount() {
+        if (this.props.cycled) {
+            this.throttledAdjustList.cancel();
+            this.debouncedSelect.cancel();
+        }
+    }
     componentDidMount() {
         this.foundation.init();
 
@@ -133,7 +143,7 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
         }
     }
 
-    componentDidUpdate(prevProps: ScrollItemProps) {
+    componentDidUpdate(prevProps: ScrollItemProps<T>) {
         const { selectedIndex } = this.props;
 
         // smooth scroll to selected option
@@ -168,6 +178,7 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
 
     _cacheWrapperNode = (wrapper: Element) => this._cacheNode('wrapper', wrapper);
 
+    /* istanbul ignore next */
     _isFirst = (node: Element) => {
         const { list } = this;
 
@@ -181,6 +192,8 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
         return false;
     };
 
+
+    /* istanbul ignore next */
     _isLast = (node: Element) => {
         const { list } = this;
 
@@ -262,7 +275,7 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
         return false;
     };
 
-    isDisabledData = (data: Item) => data && typeof data === 'object' && data.disabled;
+    isDisabledData = (data: T) => data && typeof data === 'object' && data.disabled;
 
     isWheelMode = () => this.props.mode === wheelMode;
 
@@ -305,7 +318,6 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
     scrollToIndex = (selectedIndex: number, duration?: number) => {
         // move to selected item
         duration = typeof duration === 'number' ? duration : numbers.DEFAULT_SCROLL_DURATION;
-        // eslint-disable-next-line
         selectedIndex = selectedIndex == null ? this.props.selectedIndex : selectedIndex;
 
         // this.isWheelMode() && this.addClassToNode();
@@ -316,7 +328,7 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
         const { wrapper } = this;
         const wrapperHeight = wrapper.offsetHeight;
         const itemHeight = this.getItmHeight(node);
-        const targetTop = node.offsetTop - (wrapperHeight - itemHeight) / 2;
+        const targetTop = (node.offsetTop || this.list.children.length * itemHeight / 2) - (wrapperHeight - itemHeight) / 2;
 
         this.scrollToPos(targetTop, duration);
     };
@@ -404,23 +416,21 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
             const { transform: itemTrans } = item;
 
             const transform = typeof itemTrans === 'function' ? itemTrans : commonTrans;
-
+            const selected = selectedIndex === index;
             const cls = classnames({
-                [`${cssClasses.PREFIX}-item-sel`]: selectedIndex === index && mode !== wheelMode,
+                [`${cssClasses.PREFIX}-item-sel`]: selected && mode !== wheelMode,
                 [`${cssClasses.PREFIX}-item-disabled`]: Boolean(item.disabled),
             });
 
             let text = '';
 
-            if (selectedIndex === index) {
+            if (selected) {
                 if (typeof transform === 'function') {
                     text = transform(item.value, item.text);
                 } else {
-                    // eslint-disable-next-line
                     text = item.text == null ? item.value : item.text;
                 }
             } else {
-                // eslint-disable-next-line
                 text = item.text == null ? item.value : item.text;
             }
 
@@ -432,7 +442,14 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
 
             return (
                 // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-                <li key={prefixKey + index} {...events} className={cls}>
+                <li
+                    key={prefixKey + index}
+                    {...events}
+                    className={cls}
+                    role="option"
+                    aria-selected={selected}
+                    aria-disabled={item.disabled}
+                >
                     {text}
                 </li>
             );
@@ -448,7 +465,14 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
 
         return (
             <div style={style} className={wrapperCls} ref={this._cacheWrapperNode}>
-                <ul ref={this._cacheListNode}>{inner}</ul>
+                <ul
+                    role="listbox"
+                    aria-multiselectable={false}
+                    aria-label={this.props['aria-label']}
+                    ref={this._cacheListNode}
+                >
+                    {inner}
+                </ul>
             </div>
         );
     };
@@ -461,13 +485,13 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
         const { prependCount, appendCount } = this.state;
 
         const prependList = times(prependCount).reduce((arr, num) => {
-            const items = this.renderItemList(`pre_${ num }_`);
+            const items = this.renderItemList(`pre_${num}_`);
             arr.unshift(...items);
 
             return arr;
         }, []);
         const appendList = times(appendCount).reduce((arr, num) => {
-            const items = this.renderItemList(`app_${ num }_`);
+            const items = this.renderItemList(`app_${num}_`);
             arr.push(...items);
             return arr;
         }, []);
@@ -491,7 +515,13 @@ export default class ScrollItem extends BaseComponent<ScrollItemProps, ScrollIte
                 <div className={selectorCls} ref={this._cacheSelectorNode} />
                 <div className={postShadeCls} />
                 <div className={listWrapperCls} ref={this._cacheWrapperNode} onScroll={this.scrollToSelectItem}>
-                    <ul ref={this._cacheListNode} onClick={this.clickToSelectItem}>
+                    <ul
+                        role="listbox"
+                        aria-label={this.props['aria-label']}
+                        aria-multiselectable={false}
+                        ref={this._cacheListNode}
+                        onClick={this.clickToSelectItem}
+                    >
                         {prependList}
                         {inner}
                         {appendList}

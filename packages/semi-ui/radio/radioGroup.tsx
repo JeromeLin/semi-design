@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 
 import { radioGroupClasses as css, strings } from '@douyinfe/semi-foundation/radio/constants';
 import RadioGroupFoundation, { RadioGroupAdapter } from '@douyinfe/semi-foundation/radio/radioGroupFoundation';
@@ -13,33 +13,41 @@ import Radio, { RadioType } from './radio';
 import Context, { RadioGroupButtonSize, RadioMode } from './context';
 
 export interface OptionItem {
-    label?: string;
-    value?: string;
+    label?: React.ReactNode;
+    value?: string | number;
     disabled?: boolean;
     extra?: React.ReactNode;
     style?: React.CSSProperties;
-    className?: string;
+    className?: string
 }
 export type Options = string[] | Array<OptionItem>;
 
 export type RadioGroupProps = {
-    defaultValue?: any;
+    defaultValue?: string | number;
     disabled?: boolean;
     name?: string;
     options?: Options;
-    value?: any;
+    value?: string | number;
     onChange?: (event: RadioChangeEvent) => void;
     className?: string;
+    children?: React.ReactNode;
     style?: React.CSSProperties;
     direction?: ArrayElement<typeof strings.DIRECTION_SET>;
     mode?: RadioMode;
     type?: RadioType;
     buttonSize?: RadioGroupButtonSize;
     prefixCls?: string;
+    'aria-label'?: React.AriaAttributes['aria-label'];
+    'aria-describedby'?: React.AriaAttributes['aria-describedby'];
+    'aria-errormessage'?: React.AriaAttributes['aria-errormessage'];
+    'aria-invalid'?: React.AriaAttributes['aria-invalid'];
+    'aria-labelledby'?: React.AriaAttributes['aria-labelledby'];
+    'aria-required'?: React.AriaAttributes['aria-required'];
+    id?: string
 };
 
 export interface RadioGroupState {
-    value?: any;
+    value?: any
 }
 
 class RadioGroup extends BaseComponent<RadioGroupProps, RadioGroupState> {
@@ -57,7 +65,14 @@ class RadioGroup extends BaseComponent<RadioGroupProps, RadioGroupState> {
         className: PropTypes.string,
         style: PropTypes.object,
         direction: PropTypes.oneOf(strings.DIRECTION_SET),
-        mode: PropTypes.oneOf(strings.MODE)
+        mode: PropTypes.oneOf(strings.MODE),
+        'aria-label': PropTypes.string,
+        'aria-describedby': PropTypes.string,
+        'aria-errormessage': PropTypes.string,
+        'aria-invalid': PropTypes.bool,
+        'aria-labelledby': PropTypes.string,
+        'aria-required': PropTypes.bool,
+        id: PropTypes.string,
     };
 
     static defaultProps: Partial<RadioGroupProps> = {
@@ -69,10 +84,11 @@ class RadioGroup extends BaseComponent<RadioGroupProps, RadioGroupState> {
         buttonSize: 'middle'
     };
 
+    foundation: RadioGroupFoundation;
     constructor(props: RadioGroupProps) {
         super(props);
         this.state = {
-            value: undefined,
+            value: props.value || props.defaultValue,
         };
         this.foundation = new RadioGroupFoundation(this.adapter);
     }
@@ -82,6 +98,15 @@ class RadioGroup extends BaseComponent<RadioGroupProps, RadioGroupState> {
     }
 
     componentDidUpdate(prevProps: RadioGroupProps) {
+        if (typeof prevProps.value === 'number'
+            && isNaN(prevProps.value)
+            && typeof this.props.value === 'number'
+            && isNaN(this.props.value)
+        ) {
+            // `NaN === NaN` returns false, and this will fail the next if check
+            // therefore triggering an infinite loop
+            return;
+        }
         if (prevProps.value !== this.props.value) {
             this.foundation.handlePropValueChange(this.props.value);
         }
@@ -121,7 +146,9 @@ class RadioGroup extends BaseComponent<RadioGroupProps, RadioGroupState> {
             style,
             direction,
             type,
-            buttonSize
+            buttonSize,
+            id,
+            ...rest
         } = this.props;
 
         const isButtonRadio = type === strings.TYPE_BUTTON;
@@ -177,7 +204,18 @@ class RadioGroup extends BaseComponent<RadioGroupProps, RadioGroupState> {
         }
 
         return (
-            <div className={prefixClsDisplay} style={style}>
+            <div
+                className={prefixClsDisplay}
+                style={style}
+                id={id}
+                aria-label={this.props['aria-label']}
+                aria-invalid={this.props['aria-invalid']}
+                aria-errormessage={this.props['aria-errormessage']}
+                aria-labelledby={this.props['aria-labelledby']}
+                aria-describedby={this.props['aria-describedby']}
+                aria-required={this.props['aria-required']}
+                {...this.getDataAttr(rest)}
+            >
                 <Context.Provider
                     value={{
                         radioGroup: {

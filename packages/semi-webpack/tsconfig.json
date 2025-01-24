@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "baseUrl": "./",
         "outDir": "lib",
         "sourceMap": true,
         "allowJs": true,
         "module": "commonjs",
-        "lib": ["es7", "dom"],
+        "lib": ["es2020", "dom"],
         "moduleResolution": "node",
+        "declaration": true,
         "noImplicitAny": true,
         "suppressImplicitAnyIndexErrors": true,
         "forceConsistentCasingInFileNames": true,
@@ -20,5 +21,5 @@
         "skipLibCheck": true,
     },
     "include": ["**/*.ts"],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules", "lib"]
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
 import { cssClasses, strings } from '@douyinfe/semi-foundation/list/constants';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 import '@douyinfe/semi-foundation/list/list.scss';
 import LocaleConsumer from '../locale/localeConsumer';
 import { Locale } from '../locale/interface';
@@ -12,11 +12,12 @@ import Spin from '../spin';
 import ListContext, { Grid } from './list-context';
 import BaseComponent from '../_base/baseComponent';
 
-export { ListItemProps } from './item';
+export type { ListItemProps } from './item';
 
-export interface ListProps {
+export interface ListProps<T> {
     style?: React.CSSProperties;
     className?: string;
+    children?: React.ReactNode;
     bordered?: boolean;
     footer?: React.ReactNode;
     header?: React.ReactNode;
@@ -24,18 +25,18 @@ export interface ListProps {
     size?: 'small' | 'large' | 'default';
     split?: boolean;
     emptyContent?: React.ReactNode;
-    dataSource?: any[];
-    renderItem?: (item: any, ind: number) => React.ReactNode;
+    dataSource?: T[];
+    renderItem?: (item: T, ind: number) => React.ReactNode;
     grid?: Grid;
     loading?: boolean;
     loadMore?: React.ReactNode;
     onClick?: React.MouseEventHandler<HTMLLIElement>;
-    onRightClick?: React.MouseEventHandler<HTMLLIElement>;
+    onRightClick?: React.MouseEventHandler<HTMLLIElement>
 }
 
 const prefixCls = cssClasses.PREFIX;
 
-class List extends BaseComponent<ListProps> {
+class List<T = any> extends BaseComponent<ListProps<T>> {
     static Item = ListItem;
 
     static propTypes = {
@@ -70,7 +71,11 @@ class List extends BaseComponent<ListProps> {
     renderEmpty = () => {
         const { emptyContent } = this.props;
         if (emptyContent) {
-            return (<div className={`${cssClasses.PREFIX}-empty`}>{emptyContent}</div>);
+            return (
+                <div className={`${cssClasses.PREFIX}-empty`} x-semi-prop="emptyContent">
+                    {emptyContent}
+                </div>
+            );
         } else {
             return (
                 <LocaleConsumer componentName="List">
@@ -125,7 +130,8 @@ class List extends BaseComponent<ListProps> {
             bordered,
             dataSource,
             renderItem,
-            children
+            children,
+            ...rest
         } = this.props;
         const wrapperCls = cls(prefixCls, className, {
             [`${prefixCls}-flex`]: layout === 'horizontal',
@@ -150,20 +156,28 @@ class List extends BaseComponent<ListProps> {
             childrenList = this.renderEmpty();
         }
         return (
-            <div className={wrapperCls} style={style}>
-                {header ? <div className={`${cssClasses.PREFIX}-header`}>{header}</div> : null}
+            <div className={wrapperCls} style={style} {...this.getDataAttr(rest)}>
+                {header ? (
+                    <div className={`${cssClasses.PREFIX}-header`} x-semi-prop="header">
+                        {header}
+                    </div>
+                ) : null}
                 <ListContext.Provider
                     value={{
                         grid,
                         onRightClick,
-                        onClick
+                        onClick,
                     }}
                 >
                     <Spin spinning={loading} size="large">
                         {this.wrapChildren(childrenList, children)}
                     </Spin>
                 </ListContext.Provider>
-                {footer ? <div className={`${cssClasses.PREFIX}-footer`}>{footer}</div> : null}
+                {footer ? (
+                    <div className={`${cssClasses.PREFIX}-footer`} x-semi-prop="footer">
+                        {footer}
+                    </div>
+                ) : null}
                 {loadMore ? loadMore : null}
             </div>
         );

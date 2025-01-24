@@ -1,3 +1,4 @@
+@import "./animation.scss";
 @import "./variables.scss";
 
 $module: #{$prefix}-input;
@@ -12,6 +13,8 @@ $module: #{$prefix}-input;
     border-radius: $radius-input_wrapper;
     vertical-align: bottom;
     background-color: $color-input_default-bg-default;
+    transition: background-color $transition_duration-input-bg $transition_function-input-bg $transition_delay-input-bg,
+    border $transition_duration-input-border $transition_function-input-border $transition_delay-input-border;
 
     &:hover {
         background-color: $color-input_default-bg-hover;
@@ -55,11 +58,7 @@ $module: #{$prefix}-input;
         }
     }
 
-    &-readonly {
-        cursor: default;
-    }
-
-    &-disabled {
+    &-disabled, &-readonly {
         cursor: not-allowed;
         // border: $border-thickness-control $color-input_disabled-border-default solid;
         color: $color-input_disabled-text-default;
@@ -72,6 +71,10 @@ $module: #{$prefix}-input;
         &::placeholder {
             color: $color-input_disabled-text-default;
         }
+    }
+
+    &-readonly {
+        cursor: text;
     }
 
     &-error {
@@ -90,7 +93,7 @@ $module: #{$prefix}-input;
 
         &:active {
             background-color: $color-input_danger-bg-active;
-            border-color: $color-input_danger-border-active;
+            border-color: $color-input_danger-border-focus;
         }
     }
 
@@ -110,7 +113,7 @@ $module: #{$prefix}-input;
 
         &:active {
             background-color: $color-input_warning-bg-active;
-            border-color: $color-input_warning-border-active;
+            border-color: $color-input_warning-border-focus;
         }
     }
 
@@ -136,12 +139,15 @@ $module: #{$prefix}-input;
     background-color: transparent;
     border: $width-textarea-border solid $color-textarea-border-default;
     vertical-align: bottom;
-
     width: 100%;
     outline: none;
     cursor: text;
     box-sizing: border-box;
     color: $color-input_default-text-default;
+
+    &:hover {
+        border-color: $color-textarea-border-hover;
+    }
 
     &::placeholder {
         color: $color-input_placeholder-text-default;
@@ -151,7 +157,7 @@ $module: #{$prefix}-input;
         padding-right: $spacing-textarea_withShowClear-paddingRight;
     }
 
-    &-disabled {
+    &-disabled, &-readonly {
         cursor: not-allowed;
         color: $color-input_disabled-text-default;
         background-color: transparent;
@@ -165,10 +171,14 @@ $module: #{$prefix}-input;
         }
     }
 
+    &-readonly {
+        cursor: text;
+    }
+
     &-autosize {
         overflow: hidden;
     }
-    
+
     &-counter {
         @include font-size-small;
         display: flex;
@@ -183,6 +193,40 @@ $module: #{$prefix}-input;
             color: $color-input_counter_danger-text-default;
         }
     }
+}
+
+.#{$module}-textarea-borderless{
+    &:not(:focus-within):not(:hover){
+        background-color:transparent;
+        border-color: transparent;
+    }
+
+    &:focus-within:not(:active){
+        background-color:transparent;
+    }
+
+    &.#{$module}-textarea-wrapper-error:not(:focus-within){
+        border-color: $color-input_danger-border-focus;
+    }
+
+
+
+    &.#{$module}-textarea-wrapper-warning:not(:focus-within){
+        border-color: $color-input_warning-border-focus;
+    }
+
+    &.#{$module}-textarea-wrapper-error{
+            .#{$module}-textarea-counter{
+                color: $color-input_danger-border-focus;
+            }
+    }
+
+    &.#{$module}-textarea-wrapper-warning{
+        .#{$module}-textarea-counter{
+            color: $color-input_warning-border-focus;
+        }
+    }
+
 }
 
 @import "./rtl.scss";

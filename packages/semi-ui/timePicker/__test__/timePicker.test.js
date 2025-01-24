@@ -3,7 +3,7 @@ import Button from '../../button';
 import TimePicker from '../TimePicker';
 import Locale from '../../locale/source/zh_CN';
 import { clear } from 'jest-date-mock';
-import * as _ from 'lodash-es';
+import * as _ from 'lodash';
 import { IconClose } from '@douyinfe/semi-icons';
 import { genAfterEach, genBeforeEach, mount, sleep, trigger } from '../../_test_/utils';
 import { isTimeFormatLike } from '@douyinfe/semi-foundation/timePicker/utils';
@@ -22,16 +22,18 @@ describe(`TimePicker`, () => {
         const defaultMinute = 24;
         const defaultSeconds = 18;
 
-        const onFoucs = sinon.spy();
+        const onFocus = sinon.spy();
+        const onChange = sinon.spy();
 
         const elem = mount(
             <TimePicker
-                onFocus={onFoucs}
+                onChange={onChange}
+                onFocus={onFocus}
                 panelHeader={<strong>Select Time</strong>}
                 locale={Locale.TimePicker}
                 localeCode={Locale.code}
                 defaultOpen={true}
-                scrollItemProps={{ cycled: false }}
+                scrollItemProps={{ mode: 'wheel', cycled: false }}
                 format={'HH:mm:ss'}
                 defaultValue={`${defaultHour}:${defaultMinute}:${defaultSeconds}`}
                 panelFooter={<strong>Select Time</strong>}
@@ -59,7 +61,7 @@ describe(`TimePicker`, () => {
         // focus
         elem.find(`input`).simulate('focus');
         await sleep(200);
-        expect(onFoucs.calledOnce).toBeTruthy();
+        expect(onFocus.calledOnce).toBeTruthy();
 
         // input value
         const newInputHour = 10;
@@ -82,6 +84,12 @@ describe(`TimePicker`, () => {
 
         await sleep(200);
         expect(elem.state('open')).toBe(false);
+
+        expect(onChange.called).toBeTruthy();
+        const args = onChange.getCall(0).args;
+        expect(args[0] instanceof Date).toBe(true);
+        expect(typeof args[1]).toBe('string');
+        elem.unmount();
     });
 
     it(`test controlled value`, async () => {
@@ -113,6 +121,7 @@ describe(`TimePicker`, () => {
         let currentDate0 = elem0.state('value')[0];
 
         expect(currentDate0.getMinutes()).toBe(defaultMinute);
+        elem0.unmount();
     });
 
     it(`test controlled value with onchange`, async () => {
@@ -149,6 +158,7 @@ describe(`TimePicker`, () => {
 
         let currentDate1 = elem1.state('value')[0];
         expect(currentDate1.getMinutes()).toBe(newInputMinute);
+        elem1.unmount();
     });
 
     it(`test controlled open`, async () => {
@@ -209,6 +219,8 @@ describe(`TimePicker`, () => {
                 defaultValue={defaultValue}
                 scrollItemProps={{ cycled: false, mode: 'normal' }}
                 defaultOpen
+                panelHeader={['start header', 'end header']}
+                panelFooter={['start footer', 'end footer']}
             />
         );
 
@@ -216,6 +228,38 @@ describe(`TimePicker`, () => {
 
         const all = elem.find(`.${BASE_CLASS_PREFIX}-scrolllist`);
         expect(all.length).toBe(2);
+        
+        // pannel
+        const startItem = all.at(0);
+        const endItem = all.at(1);
+        // start header
+        expect(
+            startItem
+                .find(`.${BASE_CLASS_PREFIX}-scrolllist-header`)
+                .getDOMNode()
+                .textContent
+        ).toEqual('start header');
+        // start footer
+        expect(
+            startItem
+                .find(`.${BASE_CLASS_PREFIX}-scrolllist-footer`)
+                .getDOMNode()
+                .textContent
+        ).toEqual('start footer');
+        // end header
+        expect(
+            endItem
+                .find(`.${BASE_CLASS_PREFIX}-scrolllist-header`)
+                .getDOMNode()
+                .textContent
+        ).toEqual('end header');
+        // end footer
+        expect(
+            endItem
+                .find(`.${BASE_CLASS_PREFIX}-scrolllist-footer`)
+                .getDOMNode()
+                .textContent
+        ).toEqual('end footer');
 
         // click hour list to change hour to 11
         const newHour = 9;
@@ -227,6 +271,7 @@ describe(`TimePicker`, () => {
         nextSelectedLi.simulate('click');
         await sleep(200);
         expect(elem.state('value')[0].getHours()).toBe(newHour);
+        elem.unmount();
     });
 
     it('test isTimeFormatLike function', () => {
@@ -279,5 +324,33 @@ describe(`TimePicker`, () => {
         const args = onChange.getCall(0).args;
         expect(args[0]).toBe(undefined);
         expect(args[1]).toBe('');
+        elem.unmount();
+    });
+
+    it('test onChangeWithDateFirst=false', async () => {
+        const onChange = sinon.spy();
+        let props = {
+            defaultValue: "10:23:15",
+            onChange,
+            defaultOpen: true,
+            onChangeWithDateFirst: false,
+            autofocus: true,
+            locale: Locale.TimePicker,
+            localeCode: Locale.code,
+            scrollItemProps: { mode: 'wheel', cycled: false }
+        };
+        const elem = mount(<TimePicker {...props} />);
+        // click minute
+        const minuteUl = elem.find(`.${BASE_CLASS_PREFIX}-timepicker-panel-list-minute .${BASE_CLASS_PREFIX}-scrolllist-list-outer ul`);
+        const minuteLis = minuteUl.find(`li`);
+
+        minuteUl.simulate('click', { target: minuteLis.at(0).getDOMNode(), nativeEvent: null });
+        await sleep(200);
+
+        expect(onChange.called).toBeTruthy();
+        const args = onChange.getCall(0).args;
+        expect(typeof args[0]).toBe('string');
+        expect(args[1] instanceof Date).toBe(true);
+        elem.unmount();
     });
 });

@@ -1,6 +1,6 @@
 ---
 localeCode: en-US
-order: 44
+order: 60
 category: Show
 title:  Card
 subTitle: Card
@@ -24,21 +24,21 @@ import React from 'react';
 import { Card, Typography } from '@douyinfe/semi-ui';
 
 function Demo() {
-  const { Text } = Typography;
+    const { Text } = Typography;
   
-  return (
-    <Card 
-      title='Semi Design' 
-      style={{ maxWidth: 360 }}
-      headerExtraContent={
-        <Text link>
-          More
-        </Text>
-      }
-    >
-        Semi Design is a design system developed and maintained by IES-FE & IES-UED. The design system includes a design language and a set of reusable front-end components, helping designers and developers to more easily create high-quality, consistent user experience, design-compliant Web applications.
-    </Card>
-  );
+    return (
+        <Card 
+            title='Semi Design' 
+            style={{ maxWidth: 360 }}
+            headerExtraContent={
+                <Text link>
+                    More
+                </Text>
+            }
+        >
+            Semi Design is a design system developed and maintained by IES-FE & IES-UED. The design system includes a design language and a set of reusable front-end components, helping designers and developers to more easily create high-quality, consistent user experience, design-compliant Web applications.
+        </Card>
+    );
 }
 
 ```
@@ -53,45 +53,46 @@ import { Card, Popover, Avatar } from '@douyinfe/semi-ui';
 import { IconInfoCircle } from '@douyinfe/semi-icons';
 
 function Demo() {
-  const { Meta } = Card;
+    const { Meta } = Card;
 
-  return (
-    <>
-      <Card style={{ maxWidth: 360 }} >
-        Semi Design is a design system developed and maintained by IES-FE & IES-UED.
-      </Card>
-      <br />
-      <Card 
-        style={{ maxWidth: 360 }} 
-        bodyStyle={{ 
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Meta 
-          title="Semi Doc" 
-          avatar={
-            <Avatar 
-              size="default"
-              src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
-            />
-          }
-        />
-        <Popover
-          position='top'
-          showArrow
-          content={
-              <article style={{ padding: 6 }}>
-                  This is a card.
-              </article>
-          }
-        >
-            <IconInfoCircle style={{color:'var(--semi-color-primary)'}}/>
-        </Popover>
-      </Card>
-    </>
-  );
+    return (
+        <>
+            <Card style={{ maxWidth: 360 }} >
+                Semi Design is a design system developed and maintained by IES-FE & IES-UED.
+            </Card>
+            <br />
+            <Card 
+                style={{ maxWidth: 360 }} 
+                bodyStyle={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}
+            >
+                <Meta 
+                    title="Semi Doc" 
+                    avatar={
+                        <Avatar 
+                            alt='Card meta img'
+                            size="default"
+                            src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
+                        />
+                    }
+                />
+                <Popover
+                    position='top'
+                    showArrow
+                    content={
+                        <article style={{ padding: 6 }}>
+                            This is a card.
+                        </article>
+                    }
+                >
+                    <IconInfoCircle style={{ color: 'var(--semi-color-primary)' }}/>
+                </Popover>
+            </Card>
+        </>
+    );
 }
 
 ```
@@ -105,21 +106,21 @@ import React from 'react';
 import { Card } from '@douyinfe/semi-ui';
 
 function Demo() {
-  const { Meta } = Card;
+    const { Meta } = Card;
 
-  return (
-    <Card
-      style={{ maxWidth: 300 }}
-      cover={ 
-        <img 
-          alt="example" 
-          src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/card-cover-docs-demo2.jpeg" 
-        />
-      }
-    >
-      <Meta title="Card cover" />
-    </Card>
-  );
+    return (
+        <Card
+            style={{ maxWidth: 300 }}
+            cover={ 
+                <img 
+                    alt="example" 
+                    src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/card-cover-docs-demo2.jpeg" 
+                />
+            }
+        >
+            <Meta title="Card cover" />
+        </Card>
+    );
 }
 
 ```
@@ -133,24 +134,24 @@ import React from 'react';
 import { Card } from '@douyinfe/semi-ui';
 
 function Demo() {
-  return (
-    <div 
-      style={{
-        display: 'inline-block',
-        padding: 20,
-        backgroundColor: 'var(--semi-color-fill-0)'
-      }}
-    >
-      <Card 
-        style={{ maxWidth: 360 }}
-        bordered={false}
-        headerLine={true}
-        title='Semi Design'
-      >
-        Semi Design is a design system developed and maintained by IES-FE & IES-UED. The design system includes a design language and a set of reusable front-end components, helping designers and developers to more easily create high-quality, consistent user experience, design-compliant Web applications.
-      </Card>
-    </div>
-  );
+    return (
+        <div 
+            style={{
+                display: 'inline-block',
+                padding: 20,
+                backgroundColor: 'var(--semi-color-fill-0)'
+            }}
+        >
+            <Card 
+                style={{ maxWidth: 360 }}
+                bordered={false}
+                headerLine={true}
+                title='Semi Design'
+            >
+                Semi Design is a design system developed and maintained by IES-FE & IES-UED. The design system includes a design language and a set of reusable front-end components, helping designers and developers to more easily create high-quality, consistent user experience, design-compliant Web applications.
+            </Card>
+        </div>
+    );
 }
 
 ```
@@ -166,73 +167,75 @@ import { Card, Avatar, Popover } from '@douyinfe/semi-ui';
 import { IconInfoCircle } from '@douyinfe/semi-icons';
 
 function Demo() {
-  const { Meta } = Card;
+    const { Meta } = Card;
 
-  return (
-    <div>
-      <Card 
-        shadows='hover'
-        style={{ maxWidth: 360 }} 
-        bodyStyle={{ 
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Meta 
-          title="Semi Doc" 
-          avatar={
-            <Avatar 
-              size="default"
-              src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
-            />
-          }
-        />
-        <Popover
-          position='top'
-          showArrow
-          content={
-              <article style={{ padding: 6 }}>
-                  This is a card.
-              </article>
-          }
-        >
-            <IconInfoCircle style={{color:'var(--semi-color-primary)'}}/>
-        </Popover>
-      </Card>
-      <br/>
-      <Card 
-        shadows='always'
-        style={{ maxWidth: 360 }} 
-        bodyStyle={{ 
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Meta 
-          title="Semi Doc" 
-          avatar={
-            <Avatar 
-              size="default"
-              src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
-            />
-          }
-        />
-        <Popover
-          position='top'
-          showArrow
-          content={
-              <article style={{ padding: 6 }}>
-                  This is a card.
-              </article>
-          }
-        >
-            <IconInfoCircle style={{color:'var(--semi-color-primary)'}}/>
-        </Popover>
-      </Card>
-    </div>
-  );
+    return (
+        <div>
+            <Card 
+                shadows='hover'
+                style={{ maxWidth: 360 }} 
+                bodyStyle={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}
+            >
+                <Meta 
+                    title="Semi Doc" 
+                    avatar={
+                        <Avatar 
+                            alt='Card meta img'
+                            size="default"
+                            src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
+                        />
+                    }
+                />
+                <Popover
+                    position='top'
+                    showArrow
+                    content={
+                        <article style={{ padding: 6 }}>
+                            This is a card.
+                        </article>
+                    }
+                >
+                    <IconInfoCircle style={{ color: 'var(--semi-color-primary)' }}/>
+                </Popover>
+            </Card>
+            <br/>
+            <Card 
+                shadows='always'
+                style={{ maxWidth: 360 }} 
+                bodyStyle={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}
+            >
+                <Meta 
+                    title="Semi Doc" 
+                    avatar={
+                        <Avatar 
+                            alt='Card meta img'
+                            size="default"
+                            src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
+                        />
+                    }
+                />
+                <Popover
+                    position='top'
+                    showArrow
+                    content={
+                        <article style={{ padding: 6 }}>
+                            This is a card.
+                        </article>
+                    }
+                >
+                    <IconInfoCircle style={{ color: 'var(--semi-color-primary)' }}/>
+                </Popover>
+            </Card>
+        </div>
+    );
 }
 
 ```
@@ -246,47 +249,48 @@ import React from 'react';
 import { Card, Avatar, Space, Button, Typography } from '@douyinfe/semi-ui';
 
 function Demo() {
-  const { Meta } = Card;
-  const { Text } = Typography;
+    const { Meta } = Card;
+    const { Text } = Typography;
 
-  return (
-    <Card
-      style={{ maxWidth: 360 }}
-      title={
-        <Meta 
-          title="Semi Doc" 
-          description="Easily manage your project icons and easily upload, update and share a series of project icons." 
-          avatar={
-            <Avatar 
-              size="default"
-              src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
-            />
-          }
-        />
-      }
-      headerExtraContent={
-        <Text link>
-            More
-        </Text>
-      }
-      cover={ 
-        <img 
-          alt="example" 
-          src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/card-cover-docs-demo.jpeg" 
-        />
-      }
-      footerLine={ true }
-      footerStyle={{ display: 'flex', justifyContent: 'flex-end' }}
-      footer={
-        <Space>
-          <Button theme='borderless' type='primary'>Featured Case</Button>
-          <Button theme='solid' type='primary'>Start</Button>
-        </Space>
-      }
-    >
-      Semi Design is a design system developed and maintained by IES-FE & IES-UED. 
-    </Card>
-  );
+    return (
+        <Card
+            style={{ maxWidth: 360 }}
+            title={
+                <Meta 
+                    title="Semi Doc" 
+                    description="Easily manage your project icons and easily upload, update and share a series of project icons." 
+                    avatar={
+                        <Avatar 
+                            alt='Card meta img'
+                            size="default"
+                            src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
+                        />
+                    }
+                />
+            }
+            headerExtraContent={
+                <Text link>
+                    More
+                </Text>
+            }
+            cover={ 
+                <img 
+                    alt="example" 
+                    src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/card-cover-docs-demo.jpeg" 
+                />
+            }
+            footerLine={ true }
+            footerStyle={{ display: 'flex', justifyContent: 'flex-end' }}
+            footer={
+                <Space>
+                    <Button theme='borderless' type='primary'>Featured Case</Button>
+                    <Button theme='solid' type='primary'>Start</Button>
+                </Space>
+            }
+        >
+            Semi Design is a design system developed and maintained by IES-FE & IES-UED. 
+        </Card>
+    );
 }
 
 ```
@@ -301,33 +305,33 @@ import React from 'react';
 import { Card, Typography } from '@douyinfe/semi-ui';
 
 function Demo() {
-  const { Text } = Typography;
+    const { Text } = Typography;
   
-  return (
-    <Card title='Card title' >
-      <Card 
-        title='Inner Card title'
-        style={{ marginBottom: 20 }}
-        headerExtraContent={
-          <Text link>
-            More
-          </Text>
-        }
-      >
-        Inner Card content
-      </Card>
-      <Card 
-        title='Inner Card title'
-        headerExtraContent={
-          <Text link>
-            More
-          </Text>
-        }
-      >
-        Inner Card content
-      </Card>
-    </Card>
-  );
+    return (
+        <Card title='Card title' >
+            <Card 
+                title='Inner Card title'
+                style={{ marginBottom: 20 }}
+                headerExtraContent={
+                    <Text link>
+                        More
+                    </Text>
+                }
+            >
+                Inner Card content
+            </Card>
+            <Card 
+                title='Inner Card title'
+                headerExtraContent={
+                    <Text link>
+                        More
+                    </Text>
+                }
+            >
+                Inner Card content
+            </Card>
+        </Card>
+    );
 }
 
 ```
@@ -341,44 +345,44 @@ import React from 'react';
 import { Card, Row, Col } from '@douyinfe/semi-ui';
 
 function Demo() {
-  return (
-    <div 
-      style={{
-        backgroundColor: 'var(--semi-color-fill-0)', 
-        padding: 20
-      }}
-    >
-      <Row gutter={[16,16]}>
-        <Col span={8}>
-          <Card title='Card Title' bordered={false} >
-              Card Content
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card title='Card Title' bordered={false} >
-              Card Content
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card title='Card Title' bordered={false} >
-              Card Content
-          </Card>
-        </Col>
-      </Row>
-      <Row gutter={[16,16]}>
-        <Col span={16}>
-          <Card title='Card Title' bordered={false} >
-              Card Content
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card title='Card Title' bordered={false} >
-              Card Content
-          </Card>
-        </Col>
-      </Row>
-    </div>
-  );
+    return (
+        <div 
+            style={{
+                backgroundColor: 'var(--semi-color-fill-0)', 
+                padding: 20
+            }}
+        >
+            <Row gutter={[16, 16]}>
+                <Col span={8}>
+                    <Card title='Card Title' bordered={false} >
+                        Card Content
+                    </Card>
+                </Col>
+                <Col span={8}>
+                    <Card title='Card Title' bordered={false} >
+                        Card Content
+                    </Card>
+                </Col>
+                <Col span={8}>
+                    <Card title='Card Title' bordered={false} >
+                        Card Content
+                    </Card>
+                </Col>
+            </Row>
+            <Row gutter={[16, 16]}>
+                <Col span={16}>
+                    <Card title='Card Title' bordered={false} >
+                        Card Content
+                    </Card>
+                </Col>
+                <Col span={8}>
+                    <Card title='Card Title' bordered={false} >
+                        Card Content
+                    </Card>
+                </Col>
+            </Row>
+        </div>
+    );
 }
 
 ```
@@ -392,25 +396,25 @@ import React, { useState } from 'react';
 import { Card, Switch } from '@douyinfe/semi-ui';
 
 function Demo() {
-  const [loading, setLoading] = useState(true);
-  const { Meta } = Card;
+    const [loading, setLoading] = useState(true);
+    const { Meta } = Card;
 
-  return (
-    <>
-      <Switch onChange={ v => setLoading(!v) } />
-      <br />
-      <br />
-      <Card 
-        style={{ maxWidth: 360 }}
-        loading={ loading }
-      >
-        <Meta 
-          title="Semi Design" 
-          description="Semi Design is a design system developed and maintained by IES-FE & IES-UED."
-        />
-      </Card>
-    </>
-  );
+    return (
+        <>
+            <Switch onChange={ v => setLoading(!v) } />
+            <br />
+            <br />
+            <Card 
+                style={{ maxWidth: 360 }}
+                loading={ loading }
+            >
+                <Meta 
+                    title="Semi Design" 
+                    description="Semi Design is a design system developed and maintained by IES-FE & IES-UED."
+                />
+            </Card>
+        </>
+    );
 }
 
 ```
@@ -424,70 +428,71 @@ import React, { useState } from 'react';
 import { Card, Switch, Skeleton, Typography, Avatar } from '@douyinfe/semi-ui';
 
 function Demo() {
-  const [loading, setLoading] = useState(true);
-  const { Meta } = Card;
-  const { Title, Paragraph, Image } = Skeleton;
+    const [loading, setLoading] = useState(true);
+    const { Meta } = Card;
+    const { Title, Paragraph, Image } = Skeleton;
 
-  return (
-    <>
-      <Switch onChange={ v => setLoading(!v) } />
-      <br />
-      <br />
-      <Card
-        style={{ maxWidth: 360 }}
-        title={
-          <Meta 
-            title={
-              <Skeleton
-                style={{width:80}}
-                placeholder={<Title />}
-                loading={loading}
-              >
-                <Typography.Title heading={5}>
-                  Semi Design
-                </Typography.Title>
-              </Skeleton>
-            } 
-            description={
-              <Skeleton 
-                style={{width:150, marginTop: 12}} 
-                placeholder={<Paragraph rows={1} />} 
-                loading={loading}
-              >
-                  <Typography.Text>
-                    Semi Design is a design system developed and maintained by IES-FE & IES-UED.
-                  </Typography.Text>
-              </Skeleton>
-            }
-            avatar={
-              <Skeleton placeholder={<Skeleton.Avatar />} loading={loading}>
-                <Avatar 
-                  size="default"
-                  src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
-                />
-              </Skeleton>
-            }
-          />
-        }
-        headerExtraContent={
-          <Skeleton style={{width: 50}} placeholder={<Paragraph rows={1} />} loading={loading}>
-            <Typography.Text link>
-                More
-            </Typography.Text>
-          </Skeleton>
-        }
-        cover={ 
-          <Skeleton style={{maxWidth: '100%', height: 260}} placeholder={<Image />} loading={loading}>
-            <img 
-              alt="example" 
-              src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/card-cover-docs-demo.jpeg" 
-            />
-          </Skeleton> 
-        }
-      >
-      </Card>
-    </>
-  );
+    return (
+        <>
+            <Switch onChange={ v => setLoading(!v) } />
+            <br />
+            <br />
+            <Card
+                style={{ maxWidth: 360 }}
+                title={
+                    <Meta 
+                        title={
+                            <Skeleton
+                                style={{ width: 80 }}
+                                placeholder={<Title />}
+                                loading={loading}
+                            >
+                                <Typography.Title heading={5}>
+                                    Semi Design
+                                </Typography.Title>
+                            </Skeleton>
+                        } 
+                        description={
+                            <Skeleton 
+                                style={{ width: 150, marginTop: 12 }} 
+                                placeholder={<Paragraph rows={1} />} 
+                                loading={loading}
+                            >
+                                <Typography.Text>
+                                    Semi Design is a design system developed and maintained by IES-FE & IES-UED.
+                                </Typography.Text>
+                            </Skeleton>
+                        }
+                        avatar={
+                            <Skeleton placeholder={<Skeleton.Avatar />} loading={loading}>
+                                <Avatar 
+                                    alt='Card meta img'
+                                    size="default"
+                                    src='https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/card-meta-avatar-docs-demo.jpg'
+                                />
+                            </Skeleton>
+                        }
+                    />
+                }
+                headerExtraContent={
+                    <Skeleton style={{ width: 50 }} placeholder={<Paragraph rows={1} />} loading={loading}>
+                        <Typography.Text link>
+                            More
+                        </Typography.Text>
+                    </Skeleton>
+                }
+                cover={ 
+                    <Skeleton style={{ maxWidth: '100%', height: 260 }} placeholder={<Image />} loading={loading}>
+                        <img 
+                            alt="example" 
+                            src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/card-cover-docs-demo.jpeg" 
+                        />
+                    </Skeleton> 
+                }
+            >
+            </Card>
+        </>
+    );
 }
 
 ```
@@ -501,28 +506,28 @@ import React from 'react';
 import { Card, Tabs, TabPane } from '@douyinfe/semi-ui';
 
 function demo() {
-  return (
-    <Card title='Card title'>
-      <Tabs 
-        type="line" 
-        style={{
-          marginTop: -20,
-          marginBottom: -20
-        }}
-      >
-        <TabPane tab="Tab 1" itemKey="1">
-          <p>content1</p>
-          <p>content1</p>
-          <p>content1</p>
-        </TabPane>
-        <TabPane tab="Tab 2" itemKey="2">
-          <p>content2</p>
-          <p>content2</p>
-          <p>content2</p>
-        </TabPane>
-      </Tabs>
-    </Card>
-  );
+    return (
+        <Card title='Card title'>
+            <Tabs 
+                type="line" 
+                style={{
+                    marginTop: -20,
+                    marginBottom: -20
+                }}
+            >
+                <TabPane tab="Tab 1" itemKey="1">
+                    <p>content1</p>
+                    <p>content1</p>
+                    <p>content1</p>
+                </TabPane>
+                <TabPane tab="Tab 2" itemKey="2">
+                    <p>content2</p>
+                    <p>content2</p>
+                    <p>content2</p>
+                </TabPane>
+            </Tabs>
+        </Card>
+    );
 }
 
 ```
@@ -536,28 +541,29 @@ import React from 'react';
 import { Card, Rating } from '@douyinfe/semi-ui';
 
 function Demo() {
-  const { Meta } = Card;
+    const { Meta } = Card;
 
-  return (
-    <Card
-      style={{ maxWidth: 360 }}
-      actions={[    
-        <Rating size='small' defaultValue={4}/>
-      ]}
-      headerLine={ false }
-      cover={ 
-        <img 
-          alt="example" 
-          src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/card-cover-docs-demo.jpeg" 
-        />
-      }
-    >
-      <Meta 
-        title="Semi Doc" 
-        description="Easily manage your project icons and easily upload, update and share a series of project icons." 
-      />
-    </Card>
-  );
+    return (
+        <Card
+            style={{ maxWidth: 360 }}
+            actions={[    
+                // eslint-disable-next-line react/jsx-key
+                <Rating size='small' defaultValue={4}/>
+            ]}
+            headerLine={ false }
+            cover={ 
+                <img 
+                    alt="example" 
+                    src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/root-web-sites/card-cover-docs-demo.jpeg" 
+                />
+            }
+        >
+            <Meta 
+                title="Semi Doc" 
+                description="Easily manage your project icons and easily upload, update and share a series of project icons." 
+            />
+        </Card>
+    );
 }
 
 ```
@@ -571,42 +577,42 @@ import React, { useState } from 'react';
 import { Card, CardGroup, Typography, Slider } from '@douyinfe/semi-ui';
 
 function Demo() {
-  const { Text } = Typography;
-  const [ spacing, setSpacing ] = useState(12);
+    const { Text } = Typography;
+    const [ spacing, setSpacing ] = useState(12);
 
-  return (
-    <>
-      <Text>Slide to adjust the card spacing</Text>
-      <Slider 
-        defaultValue={12}
-        max={40}
-        min={10}
-        style={{ width:360 }}
-        onChange={v=> setSpacing(v)}
-      />
-      <br />
-      <CardGroup spacing={spacing}>
-          {
-            new Array(8).fill(null).map((v,idx)=>(
-              <Card 
-                key={idx}
-                shadows='hover'
-                title='Card title'
-                headerLine={false}
-                style={{ width:260 }}
-                headerExtraContent={
-                  <Text link>
-                    More
-                  </Text>
+    return (
+        <>
+            <Text>Slide to adjust the card spacing</Text>
+            <Slider 
+                defaultValue={12}
+                max={40}
+                min={10}
+                style={{ width: 360 }}
+                onChange={v=> setSpacing(v)}
+            />
+            <br />
+            <CardGroup spacing={spacing}>
+                {
+                    new Array(8).fill(null).map((v, idx)=>(
+                        <Card 
+                            key={idx}
+                            shadows='hover'
+                            title='Card title'
+                            headerLine={false}
+                            style={{ width: 260 }}
+                            headerExtraContent={
+                                <Text link>
+                                    More
+                                </Text>
+                            }
+                        >
+                            <Text>Card content</Text>
+                        </Card>
+                    ))
                 }
-              >
-                <Text>Card content</Text>
-              </Card>
-            ))
-          }
-      </CardGroup>
-    </>
-  );
+            </CardGroup>
+        </>
+    );
 }
 
 ```
@@ -620,30 +626,30 @@ import React from 'react';
 import { Card, CardGroup, Typography } from '@douyinfe/semi-ui';
 
 function Demo() {
-  const { Text } = Typography;
+    const { Text } = Typography;
 
-  return (
-    <CardGroup type='grid'>
-      {
-        new Array(7).fill(null).map((v,idx)=>(
-          <Card 
-            key={idx}
-            shadows='hover'
-            title='Card title'
-            headerLine={false}
-            style={{ width:260 }}
-            headerExtraContent={
-              <Text link>
-                More
-              </Text>
-            }
-          >
-            <Text>Card content</Text>
-          </Card>
-        ))
-      }     
-    </CardGroup>
-  );
+    return (
+        <CardGroup type='grid'>
+            {
+                new Array(7).fill(null).map((v, idx)=>(
+                    <Card 
+                        key={idx}
+                        shadows='hover'
+                        title='Card title'
+                        headerLine={false}
+                        style={{ width: 260 }}
+                        headerExtraContent={
+                            <Text link>
+                                More
+                            </Text>
+                        }
+                    >
+                        <Text>Card content</Text>
+                    </Card>
+                ))
+            }     
+        </CardGroup>
+    );
 }
 
 ```
@@ -690,6 +696,29 @@ function Demo() {
 |style      |Meta style            |CSSProperties|-       |1.21.0 |
 |title      |title                 |ReactNode    |-       |1.21.0 |
 
+## Accessibility
+
+- Card supports the input of `aria-label` to indicate the function of the Card
+- When Card loading, `aria-busy` will be turned on
+- Card is a container-type component, and any elements inside the card need to follow their respective accessibility guidelines
+
+## Content Guidelines
+
+- Card title
+  - Card titles should be informative and focus on the most important information
+  - try to limit the title to 1 phrase or segment
+  - Card titles should be written in sentence case
+  - do not end with punctuation marks (except question marks)
+- Text
+  - Actionable: Use imperative sentences instead of "you can" to describe the body, which better tells the user what can be done
+  
+| ✅ Recommended usage | ❌ Deprecated usage |   
+| --- | --- | 
+| Get order progress for details | You can get order progress for details |
+
+- Always say the most important information first
+- Use "Need to" instead of "must"
+
 ## Design Tokens
 <DesignToken/>
 
@@ -698,3 +727,5 @@ function Demo() {
 ```material
 41,55,64,74,219,73,84,99,179
 ``` -->
+## Related Material
+<semi-material-list code="41, 179"></semi-material-list>

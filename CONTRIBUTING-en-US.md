@@ -22,8 +22,12 @@ cd semi-design
 git checkout -b <TOPIC_BRANCH_NAME>
 ```
 >Before installing the enviroment,make sure that there is a dependency of `lerna` and `yarn` locally, if not, should run:
+```base
+corepack enable
+```
+
 ```bash
-npm install --global lerna yarn
+npm install --global lerna
 ```
  - Install the dependencies
 ```bash
@@ -37,7 +41,8 @@ npm run test:unit
 ```
  - Open a Pull Request against `release` of source repo
 
-We may ask or help you to modify the PR according to the situation. For inappropriate PR, we will close it with an explanation.
+We may ask or help you to modify the PR according to the situation. For inappropriate PR, we will close it with an explanation.  
+If your changes involve style changes or Design Token changes, please read [Semi SCSS Variable Writing/File Citation Specification](https://bytedance.feishu.cn/docx/doxcnsFphF1yOqQJRSGqw6zkxTh)
 
 ## Help Improve the Docs
 The documentation site is based on [gatsby](https://www.gatsbyjs.com/), and the code is in the `src` directory.

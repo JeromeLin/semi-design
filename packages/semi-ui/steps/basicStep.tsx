@@ -1,5 +1,5 @@
 import React from 'react';
-import { isFunction } from 'lodash-es';
+import { isFunction } from 'lodash';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { stepsClasses as css } from '@douyinfe/semi-foundation/steps/constants';
@@ -7,6 +7,7 @@ import { IconTickCircle, IconAlertCircle, IconAlertTriangle } from '@douyinfe/se
 
 export type Status = 'wait' | 'process' | 'finish' | 'error' | 'warning';
 export type Size = 'default' | 'small';
+
 export interface BasicStepProps {
     description?: React.ReactNode;
     icon?: React.ReactNode;
@@ -21,7 +22,11 @@ export interface BasicStepProps {
     done?: boolean;
     onChange?: () => void;
     onClick?: React.MouseEventHandler<HTMLDivElement>;
+    onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
+    "role"?: React.AriaRole;
+    "aria-label"?: React.AriaAttributes["aria-label"]
 }
+
 export enum stepSizeMapIconSize {
     small = 'large',
     default = 'extra-large'
@@ -42,7 +47,7 @@ const BasicStep = (props: BasicStepProps) => {
         stepNumber,
         onClick,
         onChange,
-        ...restProps
+        onKeyDown,
     } = props;
     const renderIcon = () => {
         let inner, progress;
@@ -54,7 +59,7 @@ const BasicStep = (props: BasicStepProps) => {
         } else if ('status' in props) {
             switch (status) {
                 case 'error':
-                    inner = <IconAlertCircle size={stepSizeMapIconSize[size]} />;
+                    inner = <IconAlertCircle size={stepSizeMapIconSize[size]}/>;
                     break;
                 case 'wait':
                     inner = <span className={`${prefixCls}-number-icon`}>{stepNumber}</span>;
@@ -64,10 +69,10 @@ const BasicStep = (props: BasicStepProps) => {
                     progress = true;
                     break;
                 case 'finish':
-                    inner = <IconTickCircle size={stepSizeMapIconSize[size]} />;
+                    inner = <IconTickCircle size={stepSizeMapIconSize[size]}/>;
                     break;
                 case 'warning':
-                    inner = <IconAlertTriangle size={stepSizeMapIconSize[size]} />;
+                    inner = <IconAlertTriangle size={stepSizeMapIconSize[size]}/>;
                     break;
                 default:
                     inner = null;
@@ -82,18 +87,26 @@ const BasicStep = (props: BasicStepProps) => {
 
         return inner ? <span className={cls}>{inner}</span> : null;
     };
-    const classString = classnames(prefixCls, className, `${prefixCls}-${status}`, {
+    const classString = classnames(prefixCls, `${prefixCls}-${status}`, {
         [`${prefixCls}-active`]: active,
-        [`${prefixCls}-done`]: done
-    });
-    const handleClick = (e: React.MouseEvent) => {
-        if (isFunction(onClick)) {
-            onClick(e);
+        [`${prefixCls}-done`]: done,
+        [`${prefixCls}-hover`]: onChange || props.onClick,
+        [`${prefixCls}-clickable`]: (onChange || onClick),
+        [`${prefixCls}-${status}-hover`]: onChange || props.onClick,
+    }, className);
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        onClick?.(e);
+        onChange?.();
+    };
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            onKeyDown?.(e);
+            onChange?.();
         }
-        onChange();
     };
     return (
-        <div {...restProps} className={classString} style={style} onClick={e => handleClick(e)}>
+        <div role={props["role"]} aria-label={props["aria-label"]} tabIndex={0} aria-current="step"
+            className={classString} style={style} onClick={e => handleClick(e)} onKeyDown={handleKeyDown}>
             <div className={`${prefixCls}-container`}>
                 <div className={`${prefixCls}-left`}>{renderIcon()}</div>
                 <div className={`${prefixCls}-content`}>

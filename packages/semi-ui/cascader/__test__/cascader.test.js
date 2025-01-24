@@ -16,13 +16,13 @@ const getPopupContainer = () => document.querySelector(`.${BASE_CLASS_PREFIX}-ca
 const treeData = [
     {
         label: '亚洲',
-        value: 'Yazhou',
-        key: 'yazhou',
+        value: 'Asia',
+        key: 'Asia',
         children: [
             {
                 label: '中国',
-                value: 'Zhongguo',
-                key: 'zhongguo',
+                value: 'China',
+                key: 'China',
                 children: [
                     {
                         label: '北京',
@@ -40,18 +40,18 @@ const treeData = [
     },
     {
         label: '北美洲',
-        value: 'Beimeizhou',
-        key: 'beimeizhou',
+        value: 'North America',
+        key: 'North America',
         children: [
             {
                 label: '美国',
-                value: 'Meiguo',
-                key: 'meiguo',
+                value: 'United States',
+                key: 'United States',
             },
             {
                 label: '加拿大',
-                value: 'Jianada',
-                key: 'jianada',
+                value: 'Canada',
+                key: 'Canada',
             },
         ],
     },
@@ -60,13 +60,13 @@ const treeData = [
 const treeDataWithDisabled = [
     {
         label: '亚洲',
-        value: 'Yazhou',
-        key: 'yazhou',
+        value: 'Asia',
+        key: 'Asia',
         children: [
             {
                 label: '中国',
-                value: 'Zhongguo',
-                key: 'zhongguo',
+                value: 'China',
+                key: 'China',
                 disabled: true,
                 children: [
                     {
@@ -87,6 +87,38 @@ const treeDataWithDisabled = [
                 key: 'hanguo',
             }
         ],
+    }
+];
+
+const treeDataWithReactNode = [
+    {
+        label: <strong>亚洲</strong>,
+        value: 'Asia',
+        key: 'Asia',
+        children: [
+            {
+                label: '中国',
+                value: 'China',
+                key: 'China',
+                children: [
+                    {
+                        label: '北京',
+                        value: 'Beijing',
+                        key: 'beijing',
+                    },
+                    {
+                        label: <div>上海</div>,
+                        value: 'Shanghai',
+                        key: 'shanghai',
+                    },
+                ],
+            }
+        ],
+    },
+    {
+        label: <p>北美洲</p>,
+        value: 'North America',
+        key: 'North America',
     }
 ];
 
@@ -195,6 +227,30 @@ describe('Cascader', () => {
         // done();
     });
 
+    it('dynamic treeData in multiple and uncontrolled mode', () => {
+        const cascader = render({
+            defaultValue: 'Asia',
+            multiple: true,
+        });
+        const opt = document.querySelectorAll(`.${BASE_CLASS_PREFIX}-cascader-selection-multiple .${BASE_CLASS_PREFIX}-tag`);
+        expect(opt.length).toEqual(1);
+        cascader.setProps({ treeData: treeDataWithDisabled });
+        cascader.update();
+        expect(opt.length).toEqual(1);
+    });
+
+    it('dynamic treeData in multiple and controlled mode', () => {
+        const cascader = render({
+            value: 'Asia',
+            multiple: true,
+        });
+        const opt = document.querySelectorAll(`.${BASE_CLASS_PREFIX}-cascader-selection-multiple .${BASE_CLASS_PREFIX}-tag`);
+        expect(opt.length).toEqual(1);
+        cascader.setProps({ treeData: treeDataWithDisabled });
+        cascader.update();
+        expect(opt.length).toEqual(1);
+    });
+
     it('getPopupContainer', () => {
         let cascader = render({
             getPopupContainer: getPopupContainer,
@@ -236,7 +292,7 @@ describe('Cascader', () => {
 
     it('defaultValue', () => {
         let cascader = render({
-            defaultValue: ['Yazhou', 'Zhongguo', 'Beijing'],
+            defaultValue: ['Asia', 'China', 'Beijing'],
             defaultOpen: true,
         });
         // await sleep();
@@ -258,30 +314,76 @@ describe('Cascader', () => {
 
     it('displayProp', () => {
         let cascader = render({
-            defaultValue: ['Yazhou', 'Zhongguo', 'Beijing'],
+            defaultValue: ['Asia', 'China', 'Beijing'],
             displayProp: 'value',
         });
         expect(cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection`).getDOMNode().textContent).toEqual(
-            'Yazhou / Zhongguo / Beijing'
+            'Asia / China / Beijing'
         );
     });
 
     it('displayRender', () => {
         let spyOnRender = sinon.spy(() => {});
         let cascader = render({
-            defaultValue: ['Yazhou', 'Zhongguo', 'Beijing'],
+            defaultValue: ['Asia', 'China', 'Beijing'],
             displayRender: spyOnRender,
         });
         expect(spyOnRender.calledWithMatch(['亚洲', '中国', '北京'])).toEqual(true);
         cascader.unmount();
 
         let cusRender = render({
-            defaultValue: ['Yazhou', 'Zhongguo', 'Beijing'],
+            defaultValue: ['Asia', 'China', 'Beijing'],
             displayRender: list => '已选择：' + list.join(' -> '),
         });
         expect(cusRender.find(`.${BASE_CLASS_PREFIX}-cascader-selection`).getDOMNode().textContent).toEqual(
             '已选择：亚洲 -> 中国 -> 北京'
         );
+    });
+
+    it('label is ReactNode when unsearchable and single-selection mode', () => {
+        const cascader = render({
+            defaultValue: ['Asia', 'China', 'Shanghai'],
+            treeData: treeDataWithReactNode
+        });
+        expect(cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection span strong`).getDOMNode().textContent).toEqual(
+            '亚洲'
+        );
+        expect(cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection span div`).getDOMNode().textContent).toEqual(
+            '上海'
+        );
+        expect(cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection span`).getDOMNode().textContent).toEqual(
+            '亚洲 / 中国 / 上海'
+        );
+
+        cascader.unmount();
+
+        const cascader2 = render({
+            defaultValue: ['North America'],
+            treeData: treeDataWithReactNode,
+        });
+        expect(cascader2.find(`.${BASE_CLASS_PREFIX}-cascader-selection span p`).getDOMNode().textContent).toEqual(
+            '北美洲'
+        );
+        expect(cascader2.find(`.${BASE_CLASS_PREFIX}-cascader-selection span`).getDOMNode().textContent).toEqual(
+            '北美洲'
+        );
+        cascader2.unmount();
+
+        const cascader3 = render({
+            defaultValue: ['Asia', 'China', 'Shanghai'],
+            treeData: treeDataWithReactNode,
+            separator: ' - '
+        });
+        expect(cascader3.find(`.${BASE_CLASS_PREFIX}-cascader-selection span strong`).getDOMNode().textContent).toEqual(
+            '亚洲'
+        );
+        expect(cascader3.find(`.${BASE_CLASS_PREFIX}-cascader-selection span div`).getDOMNode().textContent).toEqual(
+            '上海'
+        );
+        expect(cascader3.find(`.${BASE_CLASS_PREFIX}-cascader-selection span`).getDOMNode().textContent).toEqual(
+            '亚洲 - 中国 - 上海'
+        );
+        cascader3.unmount();
     });
 
     it('disabled', () => {
@@ -306,7 +408,7 @@ describe('Cascader', () => {
         const cascaderWithSingle = render({
             treeData: treeDataWithDisabled,
             changeOnSelect: true,
-            defaultValue:['Yazhou', 'Zhongguo']
+            defaultValue:['Asia', 'China']
         });
         expect(
             cascaderWithSingle
@@ -321,20 +423,20 @@ describe('Cascader', () => {
             treeData: treeDataWithDisabled,
             changeOnSelect: true,
             filterTreeNode: true,
-            defaultValue:['Yazhou', 'Zhongguo']
+            defaultValue:['Asia', 'China']
         });
         expect(
             cascaderWithSingleFilter
-            .find(`.${BASE_CLASS_PREFIX}-cascader-search-wrapper .${BASE_CLASS_PREFIX}-input`)
+            .find(`.${BASE_CLASS_PREFIX}-cascader-search-wrapper span`)
             .getDOMNode()
-            .getAttribute('value')
-        ).toEqual('亚洲 / 中国');
+            .textContent
+            ).toEqual('亚洲 / 中国');
         cascaderWithSingleFilter.unmount();
 
         const cascaderWithSingleControlled = render({
             treeData: treeDataWithDisabled,
             changeOnSelect: true,
-            value: ['Yazhou', 'Zhongguo'],
+            value: ['Asia', 'China'],
         });
         expect(cascaderWithSingleControlled.find(`.${BASE_CLASS_PREFIX}-cascader-selection span`).getDOMNode().textContent).toEqual(
             '亚洲 / 中国'
@@ -344,7 +446,7 @@ describe('Cascader', () => {
         const cascaderWithMultiple = render({
             treeData: treeDataWithDisabled,
             multiple: true,
-            defaultValue:['Yazhou', 'Zhongguo']
+            defaultValue:['Asia', 'China']
         });
         expect(
             cascaderWithMultiple
@@ -359,7 +461,7 @@ describe('Cascader', () => {
             treeData: treeDataWithDisabled,
             multiple: true,
             filterTreeNode: true,
-            defaultValue:['Yazhou', 'Zhongguo']
+            defaultValue:['Asia', 'China']
         });
         expect(
             cascaderWithMultipleFilter
@@ -373,7 +475,7 @@ describe('Cascader', () => {
         const cascaderWithMultipleControlled = render({
             treeData: treeDataWithDisabled,
             multiple: true,
-            value:['Yazhou', 'Zhongguo']
+            value:['Asia', 'China']
         });
         expect(
             cascaderWithMultipleControlled
@@ -426,7 +528,7 @@ describe('Cascader', () => {
         expect(spyOnSelect.calledOnce).toBe(true);
         expect(spyOnChange.calledOnce).toBe(true);
         expect(spyOnSelect.calledWithMatch('Beijing')).toEqual(true);
-        expect(spyOnChange.calledWithMatch(['Yazhou', 'Zhongguo', 'Beijing'])).toEqual(true);
+        expect(spyOnChange.calledWithMatch(['Asia', 'China', 'Beijing'])).toEqual(true);
         expect(
             lists[2]
                 .querySelectorAll(`.${BASE_CLASS_PREFIX}-cascader-option`)[0]
@@ -448,10 +550,10 @@ describe('Cascader', () => {
         expect(searchWrapper.exists()).toEqual(true);
         expect(
             searchWrapper
-                .find('input')
-                .instance()
-                .getAttribute('placeholder')
-        ).toEqual('placeholder');
+                .find('span')
+                .getDOMNode()
+                .textContent
+            ).toEqual('placeholder');
     });
 
     it('onSearch', () => {
@@ -461,10 +563,11 @@ describe('Cascader', () => {
             filterTreeNode: true,
             onSearch: spyOnSearch,
         });
-        const searchWrapper = cascader.find(`.${BASE_CLASS_PREFIX}-cascader-search-wrapper`);
         let searchValue = '${BASE_CLASS_PREFIX}';
         let event = { target: { value: searchValue } };
-        searchWrapper.find('input').simulate('change', event);
+        cascader.simulate('click');
+        const input = cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection input`);
+        input.simulate('change', event);
         expect(spyOnSearch.calledOnce).toBe(true);
         expect(spyOnSearch.calledWithMatch(searchValue)).toBe(true);
     });
@@ -483,8 +586,8 @@ describe('Cascader', () => {
         lists[0].querySelectorAll('li')[0].click();
         expect(spyOnSelect.calledOnce).toBe(true);
         expect(spyOnChange.calledOnce).toBe(true);
-        expect(spyOnSelect.calledWithMatch('Yazhou')).toEqual(true);
-        expect(spyOnChange.calledWithMatch(['Yazhou'])).toEqual(true);
+        expect(spyOnSelect.calledWithMatch('Asia')).toEqual(true);
+        expect(spyOnChange.calledWithMatch(['Asia'])).toEqual(true);
         expect(
             lists[0]
                 .querySelectorAll(`.${BASE_CLASS_PREFIX}-cascader-option`)[0]
@@ -494,8 +597,8 @@ describe('Cascader', () => {
 
         lists = document.querySelectorAll(`.${BASE_CLASS_PREFIX}-cascader-option-list`);
         lists[1].querySelectorAll('li')[0].click();
-        expect(spyOnSelect.calledWithMatch('Zhongguo')).toEqual(true);
-        expect(spyOnChange.calledWithMatch(['Yazhou', 'Zhongguo'])).toEqual(true);
+        expect(spyOnSelect.calledWithMatch('China')).toEqual(true);
+        expect(spyOnChange.calledWithMatch(['Asia', 'China'])).toEqual(true);
         expect(
             lists[0]
                 .querySelectorAll(`.${BASE_CLASS_PREFIX}-cascader-option`)[0]
@@ -550,7 +653,7 @@ describe('Cascader', () => {
 
         // await sleep();
         let resList = document.querySelectorAll(`.${BASE_CLASS_PREFIX}-cascader-option-label-highlight`);
-        expect(resList.length).toEqual(3);
+        expect(resList.length).toEqual(1);
         // debugger
         // expect(resList[0].textContent).toEqual('亚洲/中国/北京');
         // done();
@@ -591,7 +694,7 @@ describe('Cascader', () => {
 
     it('controlled: value shows correct', () => {
         let cascader = render({
-            value: ['Yazhou', 'Zhongguo', 'Beijing'],
+            value: ['Asia', 'China', 'Beijing'],
         });
         expect(cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection`).getDOMNode().textContent).toEqual(
             '亚洲 / 中国 / 北京'
@@ -601,7 +704,7 @@ describe('Cascader', () => {
     it('controlled: fire onChange and ui not update', () => {
         let spyOnChange = sinon.spy(() => {});
         let cascader = render({
-            value: ['Yazhou', 'Zhongguo', 'Beijing'],
+            value: ['Asia', 'China', 'Beijing'],
             defaultOpen: true,
             onChange: spyOnChange,
             changeOnSelect: true,
@@ -657,13 +760,13 @@ describe('Cascader', () => {
             spyOnChange.calledWithMatch([
                 {
                     label: '亚洲',
-                    value: 'Yazhou',
-                    key: 'yazhou',
+                    value: 'Asia',
+                    key: 'Asia',
                     children: [
                         {
                             label: '中国',
-                            value: 'Zhongguo',
-                            key: 'zhongguo',
+                            value: 'China',
+                            key: 'China',
                             children: [
                                 {
                                     label: '北京',
@@ -681,8 +784,8 @@ describe('Cascader', () => {
                 },
                 {
                     label: '中国',
-                    value: 'Zhongguo',
-                    key: 'zhongguo',
+                    value: 'China',
+                    key: 'China',
                     children: [
                         {
                             label: '北京',
@@ -729,13 +832,13 @@ describe('Cascader', () => {
             spyOnChange.calledWithMatch([
                 {
                     label: '亚洲',
-                    value: 'Yazhou',
-                    key: 'yazhou',
+                    value: 'Asia',
+                    key: 'Asia',
                     children: [
                         {
                             label: '中国',
-                            value: 'Zhongguo',
-                            key: 'zhongguo',
+                            value: 'China',
+                            key: 'China',
                             children: [
                                 {
                                     label: '北京',
@@ -766,13 +869,13 @@ describe('Cascader', () => {
             value: [
                 {
                     label: '亚洲',
-                    value: 'Yazhou',
-                    key: 'yazhou',
+                    value: 'Asia',
+                    key: 'Asia',
                     children: [
                         {
                             label: '中国',
-                            value: 'Zhongguo',
-                            key: 'zhongguo',
+                            value: 'China',
+                            key: 'China',
                             children: [
                                 {
                                     label: '北京',
@@ -790,8 +893,8 @@ describe('Cascader', () => {
                 },
                 {
                     label: '中国',
-                    value: 'Zhongguo',
-                    key: 'zhongguo',
+                    value: 'China',
+                    key: 'China',
                     children: [
                         {
                             label: '北京',
@@ -821,7 +924,7 @@ describe('Cascader', () => {
     it('onClear and showClear', () => {
         const spyOnClear = sinon.spy(() => { });
         const cascader = render({
-            defaultValue: ['Yazhou', 'Zhongguo', 'Beijing'],
+            defaultValue: ['Asia', 'China', 'Beijing'],
             showClear: true,
             onClear: spyOnClear,
             placeholder: "请选择所在地区"
@@ -965,25 +1068,25 @@ describe('Cascader', () => {
             defaultValue: [
                 {
                     label: '北美洲',
-                    value: 'Beimeizhou',
-                    key: 'beimeizhou',
+                    value: 'North America',
+                    key: 'North America',
                     children: [
                         {
                             label: '美国',
-                            value: 'Meiguo',
-                            key: 'meiguo',
+                            value: 'United States',
+                            key: 'United States',
                         },
                         {
                             label: '加拿大',
-                            value: 'Jianada',
-                            key: 'jianada',
+                            value: 'Canada',
+                            key: 'Canada',
                         },
                     ],
                 },
                 {
                     label: '美国',
-                    value: 'Meiguo',
-                    key: 'meiguo',
+                    value: 'United States',
+                    key: 'United States',
                 }
             ]
         });
@@ -996,4 +1099,318 @@ describe('Cascader', () => {
             .textContent
         ).toEqual('美国');
     });
+
+    it('multiple select enableLeafClick', () => {
+        const cascaderWithMultiple = render({
+            multiple: true,
+            enableLeafClick: true,
+            treeData: [
+                {
+                    label: '北美洲',
+                    value: 'North America',
+                    key: 'North America',
+                    children: [
+                        {
+                            label: '美国',
+                            value: 'United States',
+                            key: 'United States',
+                        },
+                        {
+                            label: '加拿大',
+                            value: 'Canada',
+                            key: 'Canada',
+                        },
+                    ],
+                },
+                {
+                    label: '南美洲',
+                    value: 'Nanmeiguo',
+                    key: 'Nanmeiguo',
+                }
+            ]
+        })
+        const selectBox = cascaderWithMultiple.find(`.${BASE_CLASS_PREFIX}-cascader-selection`).at(0);
+        selectBox.simulate('click');
+        // click checkbox
+        cascaderWithMultiple
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option-list`)
+            .at(0)
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option`)
+            .at(1)
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option-label`)
+            .at(0)
+            .find(`.${BASE_CLASS_PREFIX}-checkbox`)
+            .at(0)
+            .simulate('click');
+        expect(cascaderWithMultiple.state().checkedKeys.size).toEqual(1);
+        // click option cancel checked
+        cascaderWithMultiple
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option-list`)
+            .at(0)
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option`)
+            .at(1)
+            .simulate('click')
+        expect(cascaderWithMultiple.state().checkedKeys.size).toEqual(0);
+        // click option select
+        cascaderWithMultiple
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option-list`)
+            .at(0)
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option`)
+            .at(0)
+            .simulate('click')
+        cascaderWithMultiple
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option-list`)
+            .at(1)
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option`)
+            .at(0)
+            .simulate('click')
+        expect(cascaderWithMultiple.state().checkedKeys.size).toEqual(1);
+        const states = cascaderWithMultiple.state()
+        cascaderWithMultiple.unmount();
+    })
+
+    it('multiple select disable enableLeafClick', () => {
+        const cascaderWithMultiple = render({
+            multiple: true,
+            treeData: [
+                {
+                    label: '北美洲',
+                    value: 'North America',
+                    key: 'North America',
+                    children: [
+                        {
+                            label: '美国',
+                            value: 'United States',
+                            key: 'United States',
+                        },
+                        {
+                            label: '加拿大',
+                            value: 'Canada',
+                            key: 'Canada',
+                        },
+                    ],
+                },
+                {
+                    label: '南美洲',
+                    value: 'Nanmeiguo',
+                    key: 'Nanmeiguo',
+                }
+            ]
+        })
+        const selectBox = cascaderWithMultiple.find(`.${BASE_CLASS_PREFIX}-cascader-selection`).at(0);
+        selectBox.simulate('click');
+        // click checkbox
+        cascaderWithMultiple
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option-list`)
+            .at(0)
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option`)
+            .at(1)
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option-label`)
+            .at(0)
+            .find(`.${BASE_CLASS_PREFIX}-checkbox`)
+            .at(0)
+            .simulate('click');
+        expect(cascaderWithMultiple.state().checkedKeys.size).toEqual(1);
+        // click option can't cancel checked
+        cascaderWithMultiple
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option-list`)
+            .at(0)
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option`)
+            .at(1)
+            .simulate('click')
+        expect(cascaderWithMultiple.state().checkedKeys.size).toEqual(1);
+        cascaderWithMultiple.unmount();
+    })
+
+    it('separator', () => {
+        const cascader = render({
+            filterTreeNode: true,
+            defaultValue: ['Asia', 'China', 'Beijing'],
+            separator: ' > ',
+            defaultOpen: true,
+        });
+        const span = cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection span`);
+        expect(span.getDOMNode().textContent).toEqual('亚洲 > 中国 > 北京'); 
+        cascader.simulate('click');
+        const input = cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection input`);
+        const event = { target: { value: '中国' } };
+        input.simulate('change', event);
+        expect(
+            cascader
+            .find(`.${BASE_CLASS_PREFIX}-cascader-option-list li`)
+            .at(0)
+            .getDOMNode()
+            .textContent
+        ).toEqual('亚洲 > 中国 > 北京');
+        cascader.unmount();
+    });
+
+    it('search ref method', () => {
+        let r;
+        const cascader = render({
+            ref: (ref) => { r = ref },
+            filterTreeNode: true,
+            searchPosition: 'custom',
+            defaultOpen: true,
+        });
+        r.search('北京');
+        expect(cascader.state().inputValue).toEqual('北京');
+        expect(
+            document.querySelectorAll(`.${BASE_CLASS_PREFIX}-cascader-option-label-highlight`)[0]
+            .textContent
+        ).toEqual('北京');
+        cascader.unmount();
+    });
+
+    it('triggerRender', () => {
+        const spyTriggerRender = sinon.spy(() => <span>123</span>);
+        const cascaderAutoMerge = render({
+            multiple: true,
+            triggerRender: spyTriggerRender,
+            defaultValue: 'Asia'
+        });
+        cascaderAutoMerge.simulate('click');
+        const firstCall = spyTriggerRender.getCall(0);
+        const args = firstCall.args[0]; 
+        /* check arguments of triggerRender */
+        expect(args.value.size).toEqual(1);
+        expect(args.value).toEqual(new Set('0'));
+        cascaderAutoMerge.unmount();
+
+        const spyTriggerRender2 = sinon.spy(() => <span>123</span>);
+        const cascaderNoAutoMerge = render({
+            multiple: true,
+            triggerRender: spyTriggerRender2,
+            defaultValue: 'Asia',
+            autoMergeValue: false,
+        });
+        cascaderNoAutoMerge.simulate('click');
+        const firstCall2 = spyTriggerRender2.getCall(0);
+        const args2 = firstCall2.args[0]; 
+        /* check arguments of triggerRender */
+        expect(args2.value.size).toEqual(4);
+        expect(args2.value).toEqual(new Set(['0','0-0','0-0-1','0-0-0']));
+        cascaderNoAutoMerge.unmount();
+    });
+
+    it('autoMergeValue', () => {
+        const cascader = render({
+            multiple: true,
+            autoMergeValue: false,
+            defaultValue: 'Asia',
+        });
+        const tags = cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection .${BASE_CLASS_PREFIX}-tag`)
+        expect(tags.length).toEqual(4);
+        cascader.unmount();
+
+        const cascaderAutoMerge = render({
+            multiple: true,
+            autoMergeValue: true,
+            defaultValue: 'Asia',
+        });
+        const tags2 = cascaderAutoMerge.find(`.${BASE_CLASS_PREFIX}-cascader-selection .${BASE_CLASS_PREFIX}-tag`)
+        expect(tags2.length).toEqual(1);
+        expect(
+            tags2
+                .find(`.${BASE_CLASS_PREFIX}-tag-content`)
+                .getDOMNode()
+                .textContent
+        ).toEqual('亚洲');
+        cascaderAutoMerge.unmount();
+    });
+
+    it('leafOnly', () => {
+        /* autoMergeValue and leafOnly are both false */
+        const cascader = render({
+            multiple: true,
+            autoMergeValue: false,
+            leafOnly: false,
+            defaultValue: 'Asia',
+        });
+        const tags = cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection .${BASE_CLASS_PREFIX}-tag`)
+        expect(tags.length).toEqual(4);
+        cascader.unmount();
+
+        /* autoMergeValue and leafOnly are both true */
+        const cascader2 = render({
+            multiple: true,
+            autoMergeValue: true,
+            leafOnly: true,
+            defaultValue: 'Asia',
+        });
+        const tags2 = cascader2.find(`.${BASE_CLASS_PREFIX}-cascader-selection .${BASE_CLASS_PREFIX}-tag`)
+        expect(tags2.length).toEqual(2);
+        cascader2.unmount();
+
+        /* autoMergeValue is false, leafOnly is true */
+        const cascader3 = render({
+            multiple: true,
+            autoMergeValue: false,
+            leafOnly: true,
+            defaultValue: 'Asia',
+        });
+        const tags3 = cascader3.find(`.${BASE_CLASS_PREFIX}-cascader-selection .${BASE_CLASS_PREFIX}-tag`)
+        expect(tags3.length).toEqual(2);
+        cascader3.unmount();
+
+        /* autoMergeValue is true, leafOnly is false */
+        const cascader4 = render({
+            multiple: true,
+            autoMergeValue: true,
+            leafOnly: false,
+            defaultValue: 'Asia',
+        });
+        const tags4 = cascader4.find(`.${BASE_CLASS_PREFIX}-cascader-selection .${BASE_CLASS_PREFIX}-tag`)
+        expect(tags4.length).toEqual(1);
+        expect(
+            tags4
+                .find(`.${BASE_CLASS_PREFIX}-tag-content`)
+                .getDOMNode()
+                .textContent
+        ).toEqual('亚洲');
+        cascader4.unmount();
+    });
+
+    it('ref method', () => {
+        let r;
+        let props = {
+            ref: (ref) => { r = ref },
+            filter: true,
+            multiple: true,
+        };
+
+        let select = render(props);
+        r.open();
+        expect(select.state().isOpen).toEqual(true);
+
+        r.close();
+        expect(select.state().isOpen).toEqual(false);
+    });
+
+    it('autoMerge false & value []', () => {
+        const cascader = render({
+            multiple: true,
+            autoMergeValue: false,
+            value: [],
+            placeholder: "autoMergeValue 为 false"
+        });
+
+        const placeholder = cascader.find(`.${BASE_CLASS_PREFIX}-cascader-selection-placeholder`)
+        expect(placeholder.getDOMNode().textContent).toEqual('autoMergeValue 为 false');
+        cascader.unmount();
+    })
+
+    it('value not in TreeData', () => {
+        const cascader = render({
+            multiple: true,
+            value: [ "value", "notIn",  "treeData"],
+            placeholder: "value not in treeData, show placeholder",
+            autoMergeValue: false,
+            filterTreeNode: true,
+        });
+
+        const placeholder = cascader.find(`.${BASE_CLASS_PREFIX}-input`)
+        expect(placeholder.getDOMNode().placeholder).toEqual('value not in treeData, show placeholder');
+        cascader.unmount();
+    })
 });

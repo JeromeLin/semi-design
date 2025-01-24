@@ -1,9 +1,9 @@
-import React, { CSSProperties } from 'react';
+import React, { AriaRole, CSSProperties } from 'react';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
 import { cssClasses, strings } from '@douyinfe/semi-foundation/layout/constants';
 import getDataAttr from '@douyinfe/semi-foundation/utils/getDataAttr';
-import LayoutContext from './layout-context';
+import LayoutContext, { ContextType } from './layout-context';
 import { registerMediaQuery } from '../_utils';
 
 const responsiveMap: ResponsiveMap = {
@@ -21,7 +21,7 @@ export interface ResponsiveMap {
     md: string;
     lg: string;
     xl: string;
-    xxl: string;
+    xxl: string
 }
 
 const generateId = ((): () => string => {
@@ -38,8 +38,11 @@ export interface SiderProps {
     prefixCls?: string;
     style?: CSSProperties;
     className?: string;
+    children?: React.ReactNode;
     breakpoint?: Array<keyof ResponsiveMap>;
     onBreakpoint?: (screen: keyof ResponsiveMap, match: boolean) => void;
+    'aria-label'?: React.AriaAttributes['aria-label'];
+    'role'?: React.AriaRole
 }
 
 class Sider extends React.PureComponent<SiderProps> {
@@ -49,6 +52,8 @@ class Sider extends React.PureComponent<SiderProps> {
         className: PropTypes.string,
         breakpoint: PropTypes.arrayOf(PropTypes.oneOf(bpt)),
         onBreakpoint: PropTypes.func,
+        'aria-label': PropTypes.string,
+        role: PropTypes.string,
     };
 
     static defaultProps = {
@@ -56,8 +61,10 @@ class Sider extends React.PureComponent<SiderProps> {
     };
 
     static contextType = LayoutContext;
+    static elementType = "Layout.Sider"
 
     unRegisters: Array<() => void> = [];
+    context: ContextType;
     uniqueId = '';
 
     constructor(props: SiderProps) {
@@ -67,7 +74,7 @@ class Sider extends React.PureComponent<SiderProps> {
 
     componentDidMount(): void {
         const { breakpoint } = this.props;
-        const matchBpt: Array<keyof ResponsiveMap> = Object.keys(responsiveMap).filter((item: keyof ResponsiveMap) => breakpoint && breakpoint.indexOf(item) !== -1) as any;
+        const matchBpt: Array<keyof ResponsiveMap> = (Object.keys(responsiveMap) as (keyof ResponsiveMap)[]).filter((item) => breakpoint && breakpoint.indexOf(item) !== -1) as any;
         const unRegisters = matchBpt.map(screen => registerMediaQuery(responsiveMap[screen], {
             match: () => {
                 this.responsiveHandler(screen, true);
@@ -104,7 +111,7 @@ class Sider extends React.PureComponent<SiderProps> {
             [`${prefixCls}-sider`]: true,
         });
         return (
-            <aside className={classString} style={style} {...getDataAttr(others)}>
+            <aside className={classString} aria-label={this.props['aria-label']} style={style} {...getDataAttr(others)}>
                 <div className={`${prefixCls}-sider-children`}>
                     {children}
                 </div>

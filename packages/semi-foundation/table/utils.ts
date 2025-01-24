@@ -1,8 +1,4 @@
-/* eslint-disable max-len */
-/* eslint-disable no-param-reassign */
-/* eslint-disable eqeqeq */
 import {
-    cloneDeepWith,
     isEqualWith,
     get,
     filter,
@@ -13,21 +9,14 @@ import {
     findIndex,
     some,
     includes,
-    toString
-} from 'lodash-es';
+    toString,
+    isFunction
+} from 'lodash';
 import { strings, numbers } from './constants';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
+import Logger from '../utils/Logger';
+import type { BaseEllipsis } from './foundation';
 
-export function cloneDeep(value: any, customizer?: (v: any) => any) {
-    return cloneDeepWith(value, v => {
-        if (typeof v === 'function') {
-            return v;
-        } else if (typeof customizer === 'function') {
-            return customizer(v);
-        }
-        return undefined;
-    });
-}
 
 export function equalWith(value: any, other: any, customizer?: (...args: any[]) => boolean) {
     return isEqualWith(value, other, (objVal, othVal, ...rest) => {
@@ -56,31 +45,6 @@ export function getColumnKey(column: any, keyPropNames: any[]): any {
     });
 
     return key;
-}
-
-export function mergeColumns(oldColumns: any[] = [], newColumns: any[] = [], keyPropNames: any[] = null, deep = true) {
-    const finalColumns: any[] = [];
-    const clone = deep ? cloneDeep : lodashClone;
-
-    map(newColumns, newColumn => {
-        newColumn = { ...newColumn };
-        const key = getColumnKey(newColumn, keyPropNames);
-
-        const oldColumn = key != null && find(oldColumns, item => getColumnKey(item, keyPropNames) === key);
-
-        if (oldColumn) {
-            finalColumns.push(
-                clone({
-                    ...oldColumn,
-                    ...newColumn,
-                })
-            );
-        } else {
-            finalColumns.push(clone(newColumn));
-        }
-    });
-
-    return finalColumns;
 }
 
 /**
@@ -163,7 +127,7 @@ export function isSelectionColumn(column: Record<string, any>) {
     return get(column, 'key') === strings.DEFAULT_KEY_COLUMN_SELECTION;
 }
 
-export function filterColumns(columns: Record<string, any>[], ignoreKeys = [strings.DEFAULT_KEY_COLUMN_SCROLLBAR]) {
+export function filterColumns(columns: Record<string, any>[], ignoreKeys = [strings.DEFAULT_KEY_COLUMN_SCROLLBAR as string]) {
     return filter(columns, col => !ignoreKeys.includes(col.key));
 }
 
@@ -265,6 +229,7 @@ export function flattenColumns(cols: Record<string, any>[], childrenColumnName =
             if (Array.isArray(col[childrenColumnName]) && col[childrenColumnName].length) {
                 list.push(...flattenColumns(col[childrenColumnName], childrenColumnName));
             } else {
+                warnIfNoDataIndex(col);
                 list.push(col);
             }
         }
@@ -277,7 +242,9 @@ export function assignColumnKeys(columns: Record<string, any>[], childrenColumnN
     const sameLevelCols: Record<string, any>[] = [];
     each(columns, (column, index) => {
         if (column.key == null) {
-            column.key = `${level}-${index}`;
+            // if user give column a dataIndex, use it for backup
+            const _index = column.dataIndex || index;
+            column.key = `${level}-${_index}`;
         }
         if (Array.isArray(column[childrenColumnName]) && column[childrenColumnName].length) {
             sameLevelCols.push(...column[childrenColumnName]);
@@ -394,7 +361,7 @@ export type ExpandBtnShouldInRowProps = {
     dataSource: Record<string, any>[];
     hideExpandedColumn: boolean;
     childrenRecordName: string;
-    rowExpandable: (record?: Record<string, any>) => boolean;
+    rowExpandable: (record?: Record<string, any>) => boolean
 };
 
 /**
@@ -426,7 +393,7 @@ export function mergeQueries(query: Record<string, any>, queries: Record<string,
  * @param {Object[]} newColumns
  */
 export function withResizeWidth(columns: Record<string, any>[], newColumns: Record<string, any>[]) {
-    const _newColumns = cloneDeep(newColumns);
+    const _newColumns = [ ...newColumns ];
     for (const column of columns) {
         if (!isNullOrUndefined(column.width)) {
             const currentColumn = column.key;
@@ -469,5 +436,75 @@ export interface GetAllDisabledRowKeysProps {
     dataSource: Record<string, any>[];
     getCheckboxProps: (record?: Record<string, any>) => any;
     childrenRecordName?: string;
-    rowKey?: string | number | ((record: Record<string, any>) => string | number);
+    rowKey?: string | number | ((record: Record<string, any>) => string | number)
+}
+
+export function warnIfNoDataIndex(column: Record<string, any>) {
+    if (typeof column === 'object' && column !== null) {
+        const { filters, sorter, dataIndex, onFilter } = column;
+        const logger = new Logger('[@douyinfe/semi-ui Table]');
+        if ((Array.isArray(filters) || isFunction(onFilter) || isFunction(sorter)) && isNullOrUndefined(dataIndex) ) {
+            logger.warn(`The column with sorter or filter must pass the 'dataIndex' prop`);
+        }
+    }
+}
+/**
+ * Whether is tree table
+ */
+export function isTreeTable({ dataSource, childrenRecordName = 'children' }: { dataSource: Record<string, any>; childrenRecordName?: string }) {
+    let flag = false;
+    if (Array.isArray(dataSource)) {
+        for (const data of dataSource) {
+            const children = get(data, childrenRecordName);
+            if (Array.isArray(children) && children.length) {
+                flag = true;
+                break;
+            }
+        }
+    }
+    return flag;
+}
+
+export function getRTLAlign(align: typeof strings.ALIGNS[number], direction?: 'ltr' | 'rtl'): typeof strings.ALIGNS[number] {
+    if (direction === 'rtl') {
+        switch (align) {
+            case 'left':
+                return 'right';
+            case 'right':
+                return 'left';
+            default:
+                return align;
+        }
+    }
+    return align;
+}
+
+export function getRTLFlexAlign(align: typeof strings.ALIGNS[number], direction?: 'ltr' | 'rtl'): typeof strings.JUSTIFY_CONTENT[number] {
+    if (direction === 'rtl') {
+        switch (align) {
+            case 'left':
+                return 'flex-end';
+            case 'right':
+                return 'flex-start';
+            default:
+                return align;
+        }
+    }
+    else
+    {
+        switch (align) {
+            case 'left':
+                return 'flex-start';
+            case 'right':
+                return 'flex-end';
+            default:
+                return align;
+        }
+    }
+}
+
+
+export function shouldShowEllipsisTitle(ellipsis: BaseEllipsis) {
+    const shouldShowTitle = ellipsis === true || get(ellipsis, 'showTitle', true);
+    return shouldShowTitle;
 }

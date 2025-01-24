@@ -1,7 +1,10 @@
 import { Form, Select } from '../../index';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 import { func } from 'prop-types';
 import { BASE_CLASS_PREFIX } from '../../../semi-foundation/base/constants';
+import { sleep as baseSleep } from '../../_test_/utils/index';
+
+const sleep = (ms = 200) => baseSleep(ms);
 
 function getForm(props) {
     return mount(<Form {...props}></Form>);
@@ -215,7 +218,7 @@ describe('Form-field', () => {
             expect(formApi.getError('name')).toEqual(undefined);
             expect(form.exists(`.${BASE_CLASS_PREFIX}-form-field-error-message`)).toEqual(false);
             done();
-        }, 400);
+        }, 800);
     });
     it('rules', done => {
         // rules work
@@ -412,6 +415,48 @@ describe('Form-field', () => {
         expect(fieldsDOM.at(3).instance().value).toEqual('d');
         expect(fieldsDOM.at(4).instance().value).toEqual('e');
         expect(fieldsDOM.at(5).instance().value).toEqual('f');
+    });
+
+    it('validate race condition', async () => {
+        let formApi = null;
+        let asyncValidatorCallback = null;
+
+        const fieldProps = {
+            field: 'text',
+            rules: [
+                { type: 'string', max: 10 },
+                {
+                    asyncValidator(rule, value, callback) {
+                        if (!asyncValidatorCallback) {
+                            asyncValidatorCallback = callback;
+                        } else {
+                            callback();
+                        }
+                    }
+                }
+            ]
+        }
+        const props = {
+            getFormApi(api) {
+                formApi = api;
+            },
+            children: getInput(fieldProps),
+        };
+        const form = getForm(props);
+
+        const event1 = { target: { value: 'semi' } };
+        form.find(`.${BASE_CLASS_PREFIX}-input`).simulate('change', event1);
+        await sleep(200);
+        form.update();
+        expect(formApi.getError('text')).toBeUndefined();
+
+        const event2 = { target: { value: 'Prefer knowledge to wealth, for the one is transitory, the other perpetual.' } };
+        form.find(`.${BASE_CLASS_PREFIX}-input`).simulate('change', event2);
+        await sleep(200);
+        asyncValidatorCallback();
+        await sleep(200);
+        form.update();
+        expect(formApi.getError('text')).not.toBeUndefined();
     });
 
     // TODO

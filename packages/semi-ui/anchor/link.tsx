@@ -1,20 +1,24 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
 import BaseComponent from '../_base/baseComponent';
 import { cssClasses } from '@douyinfe/semi-foundation/anchor/constants';
 import LinkFoundation, { LinkAdapter } from '@douyinfe/semi-foundation/anchor/linkFoundation';
-import AnchorContext from './anchor-context';
+import AnchorContext, { AnchorContextType } from './anchor-context';
 import Typography from '../typography/index';
+import { isObject } from 'lodash';
 
 const prefixCls = cssClasses.PREFIX;
 
 export interface LinkProps {
     href?: string;
-    title?: string | React.ReactNode;
+    title?: ReactNode;
     className?: string;
+    children?: ReactNode;
     style?: React.CSSProperties;
     disabled?: boolean;
+    level?: number;
+    direction?: 'ltr' | 'rtl'
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -36,9 +40,12 @@ export default class Link extends BaseComponent<LinkProps, {}> {
 
     foundation: LinkFoundation;
 
+    context!: AnchorContextType;
+
     constructor(props: LinkProps) {
         super(props);
         this.foundation = new LinkFoundation(this.adapter);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     get adapter(): LinkAdapter {
@@ -65,6 +72,12 @@ export default class Link extends BaseComponent<LinkProps, {}> {
         this.foundation.handleUpdateLink(href, prevHref);
     }
 
+    handleClick(e: React.KeyboardEvent | React.MouseEvent) {
+        const { disabled, href } = this.props;
+        const { onClick } = this.context;
+        !disabled && onClick(e as any, href);
+    }
+
     componentDidMount() {
         this.handleAddLink();
     }
@@ -88,12 +101,17 @@ export default class Link extends BaseComponent<LinkProps, {}> {
             [`${prefixCls}-link-tooltip-active`]: active,
             [`${prefixCls}-link-tooltip-disabled`]: disabled,
         });
-        const toolTipOpt = position ? { position } : {};
         if (showTooltip) {
+            const showTooltipObj = isObject(showTooltip) ? 
+                Object.assign({ opts: {} }, showTooltip) : { opts: {} };
+            // The position can be set through showTooltip, here it is compatible with the position API
+            if (position) {
+                showTooltipObj.opts['position'] = position;
+            }
             return (
                 <Typography.Text
                     size={size === 'default' ? 'normal' : 'small'}
-                    ellipsis={{ showTooltip: { opts: { ...toolTipOpt } } }}
+                    ellipsis={{ showTooltip: showTooltipObj }}
                     type={'tertiary'}
                     className={linkTitleCls}
                 >
@@ -109,24 +127,46 @@ export default class Link extends BaseComponent<LinkProps, {}> {
         const { activeLink, childMap } = this.context;
         const { href, children } = this.props;
         if (!this.context.autoCollapse) {
-            return this.props.children;
+            return <div role="list">{children}</div>;
         }
-        return activeLink === href || (childMap[href] && childMap[href].has(activeLink)) ? children : null;
+        return activeLink === href || (childMap[href] && childMap[href].has(activeLink)) ? (
+            <div role="list">{children}</div>
+        ) : null;
     };
 
     render() {
-        const { href, className, style, disabled = false } = this.props;
-        const { activeLink, onClick } = this.context;
+        const { href, className, style, disabled = false, title, level, direction } = this.props;
+        const { activeLink, showTooltip } = this.context;
         const active = activeLink === href;
         const linkCls = cls(`${prefixCls}-link`, className);
         const linkTitleCls = cls(`${prefixCls}-link-title`, {
             [`${prefixCls}-link-title-active`]: active,
             [`${prefixCls}-link-title-disabled`]: disabled,
         });
+        const paddingAttributeKey = direction === 'rtl' ? 'paddingRight' : 'paddingLeft';
+        const ariaProps = {
+            'aria-disabled': disabled,
+            style: {
+                [paddingAttributeKey]: 8 * level,
+            },
+        };
+        if (active) {
+            ariaProps['aria-details'] = 'active';
+        }
+        if (!showTooltip && typeof title === 'string') {
+            ariaProps['title'] = title;
+        }
 
         return (
-            <div className={linkCls} style={style}>
-                <div className={linkTitleCls} onClick={e => !disabled && onClick(e, href)}>
+            <div className={linkCls} style={style} role="listitem">
+                <div
+                    role="link"
+                    tabIndex={0}
+                    {...ariaProps}
+                    className={linkTitleCls}
+                    onClick={e => this.handleClick(e)}
+                    onKeyPress={e => this.handleClick(e)}
+                >
                     {this.renderTitle()}
                 </div>
                 {this.renderChildren()}

@@ -1,14 +1,23 @@
 import loaderUtils from 'loader-utils';
-import { get } from 'lodash';
 import resolve from 'enhanced-resolve';
+import componentVariablePathList from './componentName';
 
 export default function SemiThemeLoader(source: string) {
     const query = loaderUtils.getOptions ? loaderUtils.getOptions(this) : loaderUtils.parseQuery(this.query);
-    const theme = get(query, 'name', '@douyinfe/semi-theme-default');
+    const cssLayer = query.cssLayer ?? false as boolean;
+    const theme = query.name || '@douyinfe/semi-theme-default';
     // always inject
     const scssVarStr = `@import "~${theme}/scss/index.scss";\n`;
     // inject once
     const cssVarStr = `@import "~${theme}/scss/global.scss";\n`;
+    let animationStr = `@import "~${theme}/scss/animation.scss";\n`;
+
+    try {
+        resolve.sync(this.context, `${theme}/scss/animation.scss`);
+    } catch (e) {
+        animationStr = ''; // fallback to empty string
+    }
+
 
     const shouldInject = source.includes('semi-base');
 
@@ -17,17 +26,18 @@ export default function SemiThemeLoader(source: string) {
     let componentVariables: string | boolean;
     try {
         componentVariables = resolve.sync(this.context, `${theme}/scss/local.scss`);
-    } catch(e) {}
+    } catch (e) {
+    }
 
-    if (get(query, 'include') || get(query, 'variables') || componentVariables) {
+    if (query.include || query.variables || componentVariables) {
         let localImport = '';
         if (componentVariables) {
             localImport += `\n@import "~${theme}/scss/local.scss";`;
         }
-        if (get(query, 'include')) {
+        if (query.include) {
             localImport += `\n@import "${query.include}";`;
         }
-        if (get(query, 'variables')) {
+        if (query.variables) {
             localImport += `\n${query.variables}`;
         }
         try {
@@ -37,18 +47,51 @@ export default function SemiThemeLoader(source: string) {
                 fileSplit.splice(fileSplit.length - 1, 0, localImport);
                 fileStr = fileSplit.join('');
             }
-        } catch (error) {}
+        } catch (error) {
+        }
+
     }
 
+
     // inject prefix
-    const prefixCls = get(query, 'prefixCls', 'semi');
+    const prefixCls = query.prefixCls || 'semi';
 
     const prefixClsStr = `$prefix: '${prefixCls}';\n`;
 
+    let finalCSS: string = "";
     if (shouldInject) {
-        return `${cssVarStr}${scssVarStr}${prefixClsStr}${fileStr}`;
+
+        const customStr = (() => {
+            let customStr = '';
+            try {
+                if (!resolve.sync(this.context, `${theme}/scss/custom.scss`)) {
+                    return '';
+                }
+                const collectAllVariablesPath: string[] = [
+                    ...componentVariablePathList,
+                ];
+                if (componentVariables) {
+                    collectAllVariablesPath.push(`${theme}/scss/local.scss`);
+                }
+                collectAllVariablesPath.push(`${theme}/scss/custom.scss`);
+                customStr = collectAllVariablesPath.map(p => {
+                    return `@import "~${p}";`;
+                }).join('\n') + '\n' + customStr;
+
+            } catch (e) {
+                customStr = ''; // fallback to empty string
+            }
+            return `body:not(:not(body)){${customStr}};`;
+        })();
+
+        finalCSS = `${animationStr}${cssVarStr}${scssVarStr}${prefixClsStr}${fileStr}${customStr}`;
     } else {
-        return `${scssVarStr}${prefixClsStr}${fileStr}`;
+        finalCSS = `${scssVarStr}${prefixClsStr}${fileStr}`;
     }
+
+    if (cssLayer) {
+        finalCSS = `@layer semi{${finalCSS}}`;
+    }
+    return finalCSS;
 }
 

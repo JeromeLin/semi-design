@@ -1,6 +1,6 @@
 ---
 localeCode: zh-CN
-order: 42
+order: 58
 category: 展示类
 title:  Badge 徽章
 icon: doc-badge
@@ -28,7 +28,6 @@ import { IconLock } from '@douyinfe/semi-icons';
         width: '42px',
         height: '42px',
         borderRadius: '4px',
-        display: 'inline-block',
     };
     return (
         <div>
@@ -42,7 +41,7 @@ import { IconLock } from '@douyinfe/semi-icons';
             </Badge>
             <br/>
             <br/>
-            <Badge count={<IconLock style={{color:'var(--semi-color-primary)'}}/>}>
+            <Badge count={<IconLock style={{ color: 'var(--semi-color-primary)' }}/>}>
                 <Avatar color='light-blue' shape='square' style={style}>XZ</Avatar>
             </Badge>
             <br/>
@@ -52,7 +51,7 @@ import { IconLock } from '@douyinfe/semi-icons';
             </Badge>
         </div>
     );  
-}
+};
 ```
 
 ### 设置显示数字最大值
@@ -68,7 +67,6 @@ import { Badge, Avatar } from '@douyinfe/semi-ui';
         width: '42px',
         height: '42px',
         borderRadius: '4px',
-        display: 'inline-block',
     };
     return (
         <div>
@@ -92,7 +90,7 @@ import { Badge, Avatar } from '@douyinfe/semi-ui';
             </Badge>
         </div>
     );
-}
+};
 ```
 
 ### 设置徽标位置
@@ -108,7 +106,6 @@ import { Badge, Avatar } from '@douyinfe/semi-ui';
         width: '42px',
         height: '42px',
         borderRadius: '4px',
-        display: 'inline-block',
     };
     return (
         <div>
@@ -132,7 +129,7 @@ import { Badge, Avatar } from '@douyinfe/semi-ui';
             </Badge>
         </div>
     );
-}
+};
 ```
 
 ### 设置徽标样式
@@ -151,10 +148,9 @@ import { Badge, Avatar } from '@douyinfe/semi-ui';
         width: '42px',
         height: '42px',
         borderRadius: '4px',
-        display: 'inline-block',
     };
     return (
-        <div style={{display: 'flex'}}>
+        <div style={{ display: 'flex' }}>
             <div style={bgStyle}>
                 <Badge count={5} theme='solid' >
                     <Avatar color='indigo' shape='square' style={style}>XZ</Avatar>
@@ -181,14 +177,14 @@ import { Badge, Avatar } from '@douyinfe/semi-ui';
                     <Avatar color='lime' shape='square' style={style}>HW</Avatar>
                 </Badge>
             </div>
-            <div style={{padding: '8px', borderRadius:'4px', backgroundColor: 'var(--semi-color-fill-0)'}}>
+            <div style={{ padding: '8px', borderRadius: '4px', backgroundColor: 'var(--semi-color-fill-0)' }}>
                 <Badge dot theme='inverted' >
                     <Avatar color='lime' shape='square' style={style}>XM</Avatar>
                 </Badge>
             </div>
         </div>
     );
-}
+};
 ```
 
 `type` 支持如下类型：`primary`，`secondary`，`tertiary`，`warning` 和 `danger`。默认类型为 `primary`。
@@ -205,10 +201,9 @@ import { Badge, Avatar } from '@douyinfe/semi-ui';
         width: '42px',
         height: '42px',
         borderRadius: '4px',
-        display: 'inline-block',
     };
     return (
-        <div style={{display: 'flex'}}>
+        <div style={{ display: 'flex' }}>
             <div style={bgStyle}>
                 <Badge count={5} type='primary' >
                     <Avatar color='violet' shape='square' style={style}>MR</Avatar>
@@ -226,7 +221,7 @@ import { Badge, Avatar } from '@douyinfe/semi-ui';
             </div>
             <br/>
             <div style={bgStyle}>
-                <Badge count={5}  type='warning' >
+                <Badge count={5} type='warning' >
                     <Avatar color='red' shape='square' style={style}>JL</Avatar>
                 </Badge>
             </div>
@@ -242,7 +237,7 @@ import { Badge, Avatar } from '@douyinfe/semi-ui';
             </div>
         </div>
     );
-}
+};
 ```
 
 ### 独立使用
@@ -268,7 +263,7 @@ import { Badge } from '@douyinfe/semi-ui';
         <br/>
         <span><Badge dot type='tertiary' /> 信息 info</span>
         <br/>
-        <span><Badge dot style={{ backgroundColor: 'var(--semi-color-success)'}} /> 成功 success</span>
+        <span><Badge dot type='success' /> 成功 success</span>
         <br/>
         <span><Badge dot type='warning' /> 提醒 warning</span>
         <br/>
@@ -279,16 +274,21 @@ import { Badge } from '@douyinfe/semi-ui';
 
 ## API参考
 
-| 属性  | 说明        | 类型   | 默认值 |
-|-------|-------------|-----------------|--------|
-| children | 徽章的 base | ReactNode | 无 | 
-| count  | 展示的内容 | ReactNode  | 无  |
-| dot  | 不展示数字，显示小圆点 | boolean  | false |
-| overflowCount | 最大的展示数字值 | number | 无 |
-| position | 徽章位置，可选 `leftTop`、 `leftBottom`、 `rightTop`、 `rightBottom` | string | `rightTop`  |
-| style | 徽章的样式 | CSSProperties | 无 | 
-| theme | 徽章主题，可选 `solid`、 `light`、 `inverted` | string | `solid` |
-| type | 徽章类型，可选 `primary`、 `secondary`、 `tertiary`、 `danger`、 `warning` | string | `primary`  |
+| 属性             | 说明                                                                         | 类型   | 默认值 |
+|----------------|----------------------------------------------------------------------------|-----------------|---|
+| children       | 徽章的 base                                                                   | ReactNode | 无 | 
+| className      | 外侧 className                                                               | string | - |
+| count          | 展示的内容                                                                      | ReactNode  | 无 |
+| countClassName | 内容区域 className                                                             |  string | 无 |
+| dot            | 不展示数字，显示小圆点                                                                | boolean  | false |
+| overflowCount  | 最大的展示数字值                                                                   | number | 无 |
+| position       | 徽章位置，可选 `leftTop`、 `leftBottom`、 `rightTop`、 `rightBottom`                 | string | `rightTop` |
+| countStyle     | 徽章内容的样式, v2.59.1后生效                                                        | CSSProperties | 无 | 
+| theme          | 徽章主题，可选 `solid`、 `light`、 `inverted`                                       | string | `solid` |
+| type           | 徽章类型，可选 `primary`、 `secondary`、 `tertiary`、 `danger`、 `warning`、 `success` | string | `primary` |
 
+## 文案规范
+- Badge内容若为英文时，首字母应大写
 ## 设计变量
 <DesignToken/>
+

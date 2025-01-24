@@ -1,6 +1,6 @@
 ---
 localeCode: en-US
-order: 65
+order: 86
 category: Feedback
 title: Spin
 subTitle: Spin
@@ -103,7 +103,7 @@ Delayed to display Spin.
 
 ```jsx live=true hideInDSM
 import React, { useState } from 'react';
-import { Spin } from '@douyinfe/semi-ui';
+import { Spin, Button } from '@douyinfe/semi-ui';
 
 () => {
     const [loading, toggleLoading] = useState(false);
@@ -128,7 +128,7 @@ Use `spinning` to determine if the component is in loading status
 
 ```jsx live=true hideInDSM
 import React, { useState } from 'react';
-import { Spin } from '@douyinfe/semi-ui';
+import { Spin, Button } from '@douyinfe/semi-ui';
 
 () => {
     const [loading, toggleLoading] = useState(false);
@@ -163,6 +163,10 @@ import { Spin } from '@douyinfe/semi-ui';
 ## Design Tokens
 
 <DesignToken/>
+
+## Content Guidelines
+- Precisely state the loading status, using words such as "Loading", "Submitting", "Processing", etc.
+- Use as few words as possible to describe the state
 
 ## FAQ
 

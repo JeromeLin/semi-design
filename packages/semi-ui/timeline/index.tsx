@@ -3,20 +3,22 @@ import cls from 'classnames';
 import PropTypes from 'prop-types';
 import '@douyinfe/semi-foundation/timeline/timeline.scss';
 import { cssClasses, strings } from '@douyinfe/semi-foundation/timeline/constants';
+import getDataAttr from '@douyinfe/semi-foundation/utils/getDataAttr';
 import ConfigContext from '../configProvider/context';
 import Item, { TimelineItemProps } from './item';
 
-export { TimelineItemProps } from './item';
+export type { TimelineItemProps } from './item';
 
 export interface Data extends TimelineItemProps {
-    content: React.ReactNode;
+    content: React.ReactNode
 }
 
-export interface TimelineProps {
+export interface TimelineProps extends Pick<React.AriaAttributes, 'aria-label'> {
     mode?: 'left' | 'right' | 'center' | 'alternate';
     className?: string;
     style?: React.CSSProperties;
     dataSource?: Data[];
+    children?: React.ReactNode
 }
 
 const prefixCls = cssClasses.PREFIX;
@@ -60,6 +62,7 @@ class Timeline extends PureComponent<TimelineProps> {
     addClassName = (items: React.ReactNode) => React.Children.map(items, (ele, idx) => {
         if (React.isValidElement(ele)) {
             return React.cloneElement(ele, {
+                // @ts-ignore
                 className: cls(
                     ele.props.className,
                     this.getPosCls(ele, idx)
@@ -70,7 +73,7 @@ class Timeline extends PureComponent<TimelineProps> {
     });
 
     render() {
-        const { children, className, style, mode, dataSource } = this.props;
+        const { children, className, style, mode, dataSource, ...rest } = this.props;
         const classString = cls(
             prefixCls,
             className,
@@ -86,7 +89,7 @@ class Timeline extends PureComponent<TimelineProps> {
         const items = childrenList || this.addClassName(children);
 
         return (
-            <ul style={style} className={classString}>
+            <ul aria-label={this.props['aria-label']} style={style} className={classString} {...getDataAttr(rest)}>
                 {items}
             </ul>
         );

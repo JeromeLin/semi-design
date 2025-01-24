@@ -1,5 +1,7 @@
 //@import '../theme/variables.scss';
+@import "./animation.scss";
 @import "./variables.scss";
+
 
 $module: #{$prefix}-slider;
 
@@ -29,7 +31,7 @@ $module: #{$prefix}-slider;
         font-variant: tabular-nums;
         line-height: $font-slider_rail-lineHeight;
         list-style: none;
-        font-feature-settings: "tnum";
+        font-feature-settings: 'tnum';
         position: absolute;
         height: $height-slider_rail;
         cursor: pointer;
@@ -54,7 +56,21 @@ $module: #{$prefix}-slider;
         border: none;
         border-radius: 50%;
         cursor: pointer;
-        transition: #fff .3s;
+        transition: background-color $transition_duration_slider_handle-bg $transition_function-slider-handle-bg $transition_delay-slider_handle-bg;
+        transform: $transform_scale-slider_handle translateX(-50%) translateY($spacing-slider_handle-translateY);
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        &:focus-visible {
+            outline: $width-slider_handle-focus solid $color-slider_handle-focus;
+        }
+
+        &-dot{
+            background:$color-slider_handle_dot;
+            width:$width-slider_handle_dot;
+            height: $width-slider_handle_dot;
+            border-radius: var(--semi-border-radius-circle);
+        }
     }
 
     &-handle:hover {
@@ -63,6 +79,7 @@ $module: #{$prefix}-slider;
 
     &-handle-clicked {
         border: solid $width-slider_handle_clicked $color-slider_handle-border-focus;
+        cursor: grabbing;
     }
 
     &-track {
@@ -94,6 +111,7 @@ $module: #{$prefix}-slider;
         //border: 1px solid $color-control-bg-default;
         border-radius: 50%;
         cursor: pointer;
+        transform: translateX($spacing-slider_dot-translateX);
     }
 
     &-dot-active {
@@ -132,9 +150,7 @@ $module: #{$prefix}-slider;
         text-align: center;
         cursor: pointer;
         transform: translate(-50%, 0) rotate(-180deg);
-
     }
-
 
     &-boundary {
         position: relative;
@@ -191,6 +207,10 @@ $module: #{$prefix}-slider;
     .#{$module}-handle {
         margin-top: $spacing-slider_vertical_handle-marginTop;
         margin-left: $spacing-slider_vertical_handle-marginLeft;
+        transform: $transform_scale-slider_handle translateY(-50%) translateX($spacing-slider_vertical_handle-translateX);
+    }
+    .#{$module}-dot{
+        transform: translateY($spacing-slider_vertical_dot-translateY);
     }
 }
 

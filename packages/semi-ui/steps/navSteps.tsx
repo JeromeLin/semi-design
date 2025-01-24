@@ -1,5 +1,6 @@
-import React, { cloneElement, Children, useMemo } from 'react';
+import React, { cloneElement, Children, useMemo, isValidElement, ReactElement } from 'react';
 import PropTypes from 'prop-types';
+import getDataAttr from '@douyinfe/semi-foundation/utils/getDataAttr';
 import cls from 'classnames';
 import { stepsClasses as css } from '@douyinfe/semi-foundation/steps/constants';
 
@@ -13,12 +14,13 @@ export interface NavStepsProps {
     size?: Size;
     children?: React.ReactNode;
     onChange?: (current: number) => void;
+    "aria-label"?: string
 }
 
 const Steps = (props: NavStepsProps) => {
-    const { size, current, initial, children, prefixCls, className, style, onChange } = props;
+    const { size, current, initial, children, prefixCls, className, style, onChange, ...rest } = props;
     const inner = useMemo(() => {
-        const filteredChildren = Children.toArray(children).filter(c => Boolean(c));
+        const filteredChildren = Children.toArray(children).filter(c => isValidElement(c)) as Array<ReactElement>;
         const total = filteredChildren.length;
         const content = Children.map(filteredChildren, (child: React.ReactElement, index) => {
             if (!child) {
@@ -30,15 +32,15 @@ const Steps = (props: NavStepsProps) => {
                 ...child.props,
             };
             childProps.active = index === current;
-            childProps.onChange = () => {
+            childProps.onChange = onChange ? () => {
                 if (index !== current) {
                     onChange(index + initial);
                 }
-            };
+            } : undefined;
             return cloneElement(child, { ...childProps });
         });
         return content;
-    }, [children, prefixCls, current, size]);
+    }, [children, prefixCls, current, size, initial, onChange]);
 
     const wrapperCls = cls(className, {
         [`${prefixCls}-nav`]: true,
@@ -46,7 +48,7 @@ const Steps = (props: NavStepsProps) => {
     });
 
     return (
-        <div className={wrapperCls} style={style}>
+        <div aria-label={props["aria-label"]} className={wrapperCls} style={style} {...getDataAttr(rest)}>
             {inner}
         </div>
     );

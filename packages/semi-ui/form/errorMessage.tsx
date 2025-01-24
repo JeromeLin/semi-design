@@ -1,13 +1,13 @@
-/* eslint-disable prefer-template */
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { cssClasses } from '@douyinfe/semi-foundation/form/constants';
 import { IconAlertTriangle, IconAlertCircle } from '@douyinfe/semi-icons';
+import type { BasicFieldError } from '@douyinfe/semi-foundation/form/interface';
 
 const prefix = cssClasses.PREFIX;
 
-export type ReactFieldError = boolean | string | Array<any> | React.ReactNode | undefined;
+export type ReactFieldError = BasicFieldError | React.ReactNode;
 
 export interface ErrorMessageProps {
     error?: ReactFieldError;
@@ -17,6 +17,8 @@ export interface ErrorMessageProps {
     validateStatus?: string;
     helpText?: React.ReactNode;
     isInInputGroup?: boolean;
+    errorMessageId?: string;
+    helpTextId?: string
 }
 
 export default class ErrorMessage extends PureComponent<ErrorMessageProps> {
@@ -28,14 +30,23 @@ export default class ErrorMessage extends PureComponent<ErrorMessageProps> {
         showValidateIcon: PropTypes.bool,
         helpText: PropTypes.node,
         isInInputGroup: PropTypes.bool,
+        // internal props
+        errorMessageId: PropTypes.string,
+        helpTextId: PropTypes.string,
     };
 
     generatorText(error: ReactFieldError) {
+        const { helpTextId, errorMessageId } = this.props;
+        const propsError = this.props.error;
+        let id = errorMessageId;
+        if (!propsError) {
+            id = helpTextId;
+        }
         if (typeof error === 'string') {
-            return <span>{error}</span>;
+            return <span id={id}>{error}</span>;
         } else if (Array.isArray(error)) {
             const err = error.filter(e => e);
-            return err.length ? <span>{err.join(', ')}</span> : null;
+            return err.length ? <span id={id}>{err.join(', ')}</span> : null;
         } else if (React.isValidElement(error)) {
             return error;
         }

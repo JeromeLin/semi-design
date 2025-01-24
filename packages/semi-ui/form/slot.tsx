@@ -1,8 +1,7 @@
-/* eslint-disable max-lines-per-function, prefer-destructuring, prefer-const, @typescript-eslint/no-unused-vars */
 import React, { useContext } from 'react';
 import classNames from 'classnames';
 import { cssClasses } from '@douyinfe/semi-foundation/form/constants';
-import { isString, isNumber, isObject } from 'lodash-es';
+import { isString, isNumber, isObject } from 'lodash';
 import Label, { LabelProps } from './label';
 import { Col } from '../grid';
 import { FormUpdaterContext } from './context';
@@ -13,11 +12,11 @@ const prefix = cssClasses.PREFIX;
 export interface SlotProps {
     className?: string;
     style?: React.CSSProperties;
-    label?: LabelProps | React.ReactNode | number | string;
+    label?: LabelProps | React.ReactNode;
     noLabel?: boolean;
     labelPosition?: 'top' | 'left';
     error?: ErrorMessageProps;
-    children?: React.ReactNode;
+    children?: React.ReactNode
 }
 
 const FormSlot = (props: SlotProps) => {
@@ -35,7 +34,6 @@ const FormSlot = (props: SlotProps) => {
     } catch (error) {
     }
 
-    // eslint-disable-next-line react/destructuring-assignment
     props.labelPosition ? labelPosition = props.labelPosition : null;
 
     let { children, label, className, style, error, noLabel, ...rest } = props;
@@ -59,9 +57,11 @@ const FormSlot = (props: SlotProps) => {
             // do nothing
             break;
         case isString(label) || isNumber(label):
+            // @ts-ignore skip type check, the actual type is already determined
             label = { text: label };
             break;
         case React.isValidElement(label):
+            // @ts-ignore skip type check, the actual type is already determined
             label = { text: label };
             break;
         default:

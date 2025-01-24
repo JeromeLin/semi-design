@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { strings } from '@douyinfe/semi-foundation/timePicker/constants';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 
 import Input from '../input';
 import BaseComponent, { BaseProps } from '../_base/baseComponent';
@@ -33,18 +32,21 @@ export type TimeInputProps = Pick<TimePickerProps,
 'locale' |
 'localeCode' |
 'insetLabel' |
-'validateStatus'> & BaseProps & {
+'validateStatus' |
+'borderless'|
+'preventScroll'> & BaseProps & {
     onChange?: (value: string) => void;
     onEsc?: () => void;
     onClick?: React.MouseEventHandler;
     defaultOpenValue?: boolean;
     currentSelectPanel?: string;
     timeStampValue?: any;
-    invalid?: boolean;
+    invalid?: boolean
 };
 
 class TimeInput extends BaseComponent<TimeInputProps, any> {
     static propTypes = {
+        borderless: PropTypes.bool,
         format: PropTypes.string,
         prefixCls: PropTypes.string,
         placeholder: PropTypes.string,
@@ -69,9 +71,11 @@ class TimeInput extends BaseComponent<TimeInputProps, any> {
         localeCode: PropTypes.string,
         insetLabel: PropTypes.node,
         validateStatus: PropTypes.string,
+        preventScroll: PropTypes.bool,
     };
 
     static defaultProps = {
+        borderless: false,
         inputReadOnly: false,
         onChange: noop,
         onBlur: noop,
@@ -96,13 +100,13 @@ class TimeInput extends BaseComponent<TimeInputProps, any> {
 
     componentDidMount() {
         super.componentDidMount();
-        const { focusOnOpen } = this.props;
+        const { focusOnOpen, preventScroll } = this.props;
         if (focusOnOpen) {
             const requestAnimationFrame = window.requestAnimationFrame || window.setTimeout;
             requestAnimationFrame(() => {
                 const inputNode = this.adapter.getCache('inputNode');
                 if (inputNode) {
-                    inputNode.focus();
+                    inputNode.focus({ preventScroll });
                     inputNode.select();
                 }
             });

@@ -6,7 +6,7 @@ import { radioClasses as css } from '@douyinfe/semi-foundation/radio/constants';
 import Context from './context';
 import classnames from 'classnames';
 import { IconRadio } from '@douyinfe/semi-icons';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 
 export type RadioInnerMode = 'advanced' | '';
 export interface RadioInnerProps extends BaseProps {
@@ -20,10 +20,17 @@ export interface RadioInnerProps extends BaseProps {
     prefixCls?: string;
     ref?: React.MutableRefObject<RadioInner> | ((instance: RadioInner) => void);
     isPureCardRadioGroup?: boolean;
+    addonId?: string;
+    extraId?: string;
+    'aria-label'?: React.AriaAttributes['aria-label'];
+    focusInner?: boolean;
+    onInputFocus?: (e: any) => void;
+    onInputBlur?: (e: any) => void;
+    preventScroll?: boolean
 }
 
 interface RadioInnerState {
-    checked?: boolean;
+    checked?: boolean
 }
 
 class RadioInner extends BaseComponent<RadioInnerProps, RadioInnerState> {
@@ -35,6 +42,11 @@ class RadioInner extends BaseComponent<RadioInnerProps, RadioInnerState> {
         isButtonRadio: PropTypes.bool,
         onChange: PropTypes.func,
         mode: PropTypes.oneOf(['advanced', '']),
+        'aria-label': PropTypes.string,
+        focusInner: PropTypes.bool,
+        onInputFocus: PropTypes.func,
+        onInputBlur: PropTypes.func,
+        preventScroll: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -44,6 +56,7 @@ class RadioInner extends BaseComponent<RadioInnerProps, RadioInnerState> {
 
 
     inputEntity!: HTMLInputElement;
+    foundation: RadioInnerFoundation;
     constructor(props: RadioInnerProps) {
         super(props);
         this.state = {
@@ -84,7 +97,8 @@ class RadioInner extends BaseComponent<RadioInnerProps, RadioInnerState> {
     }
 
     focus() {
-        this.inputEntity.focus();
+        const { preventScroll } = this.props;
+        this.inputEntity.focus({ preventScroll });
     }
 
     onChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -92,7 +106,7 @@ class RadioInner extends BaseComponent<RadioInnerProps, RadioInnerState> {
     }
 
     render() {
-        const { disabled, mode, autoFocus, name, isButtonRadio, isPureCardRadioGroup } = this.props;
+        const { disabled, mode, autoFocus, name, isButtonRadio, isPureCardRadioGroup, addonId, extraId, 'aria-label': ariaLabel, focusInner, onInputFocus, onInputBlur } = this.props;
         const { checked } = this.state;
 
         const prefix = this.props.prefixCls || css.PREFIX;
@@ -105,6 +119,8 @@ class RadioInner extends BaseComponent<RadioInnerProps, RadioInnerState> {
         });
 
         const inner = classnames({
+            [`${prefix}-focus`]: focusInner,
+            [`${prefix}-focus-border`]: focusInner && !checked,
             [`${prefix}-inner-display`]: !isButtonRadio,
         });
 
@@ -120,6 +136,11 @@ class RadioInner extends BaseComponent<RadioInnerProps, RadioInnerState> {
                     disabled={disabled}
                     onChange={this.onChange}
                     name={name}
+                    aria-label={ariaLabel}
+                    aria-labelledby={addonId}
+                    aria-describedby={extraId}
+                    onFocus={onInputFocus}
+                    onBlur={onInputBlur}
                 />
                 <span className={inner}>{checked ? <IconRadio /> : null}</span>
             </span>

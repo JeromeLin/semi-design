@@ -1,6 +1,6 @@
 ---
 localeCode: zh-CN
-order: 37
+order: 53
 category: 导航类
 title:  Pagination 翻页器
 icon: doc-pagination
@@ -15,9 +15,10 @@ brief: 分页器帮助用户在多个页之间进行导航
 ```jsx import
 import { Pagination } from '@douyinfe/semi-ui';
 ```
+
 ### 基本
 
-基础分页，通过 `total` 设置总页数，`pageSize` 设置每页容量
+基础分页，通过 `total` 设置总条数，`pageSize` 设置每页容量
 
 ```jsx live=true width=60%
 import React from 'react';
@@ -30,14 +31,27 @@ import { Pagination } from '@douyinfe/semi-ui';
         <Pagination total={200} style={{ marginBottom: 12 }}></Pagination>
         <Pagination total={80} pageSize={30} style={{ marginBottom: 12 }}></Pagination>
     </div>
-)
+);
+```
+
+### 禁用
+
+通过 `disabled` 设置禁用
+
+```jsx live=true width=60%
+import React from 'react';
+import { Pagination } from '@douyinfe/semi-ui';
+
+() => (
+    <Pagination total={30} disabled style={{ marginBottom: 12 }}></Pagination>
+);
 ```
 
 ### 总页数显示
 
 通过 `showTotal` 属性控制是否展示总页数
 
-```jsx live=true width=60%
+```jsx live=true width=55%
 import React from 'react';
 import { Pagination } from '@douyinfe/semi-ui';
 
@@ -46,14 +60,14 @@ import { Pagination } from '@douyinfe/semi-ui';
         <Pagination total={80} showTotal style={{ marginBottom: 12 }}></Pagination>
         <Pagination total={200} showTotal style={{ marginBottom: 12 }}></Pagination>
     </div>
-)
+);
 ```
 
 ### 指定当前页码
 
 可以通过 `defaultCurrentPage` 指定当前激活的页码
 
-```jsx live=true width=60%
+```jsx live=true width=55%
 import React from 'react';
 import { Pagination } from '@douyinfe/semi-ui';
 
@@ -61,7 +75,7 @@ import { Pagination } from '@douyinfe/semi-ui';
     <div>
         <Pagination total={80} showTotal defaultCurrentPage={3}></Pagination>
     </div>
-)
+);
 ```
 
 ### 每页容量切换
@@ -77,7 +91,7 @@ import { Pagination } from '@douyinfe/semi-ui';
         <Pagination total={80} showSizeChanger style={{ marginBottom: 12 }}></Pagination>
         <Pagination total={300} showSizeChanger></Pagination>
     </div>
-)
+);
 ```
 
 ### 快速跳转至某页
@@ -95,7 +109,7 @@ import { Pagination } from '@douyinfe/semi-ui';
         <Pagination total={80} showQuickJumper style={{ marginBottom: 12 }}></Pagination>
         <Pagination total={300} showQuickJumper></Pagination>
     </div>
-)
+);
 ```
 ### 页码受控
 
@@ -117,7 +131,7 @@ import { Pagination } from '@douyinfe/semi-ui';
             onPageChange={onPageChange}>
         </Pagination>
     );
-}
+};
 ```
 
 ### 预设每页容量可选值
@@ -142,7 +156,7 @@ import { Pagination } from '@douyinfe/semi-ui';
             pageSizeOpts={[10, 20, 50, 200]}>
         </Pagination>
     </div>
-)
+);
 ```
 
 ### 迷你版本
@@ -155,7 +169,7 @@ import { Pagination } from '@douyinfe/semi-ui';
 
 () => (
     <Pagination total={90} size="small"></Pagination>
-)
+);
 ```
 
 开启 hoverShowPageSelect，可以 hover 页码快速切换（v1.27.0后提供）
@@ -166,7 +180,7 @@ import { Pagination } from '@douyinfe/semi-ui';
 
 () => (
     <Pagination total={90} size="small" hoverShowPageSelect></Pagination>
-)
+);
 
 ```
 ## API 参考
@@ -176,7 +190,8 @@ import { Pagination } from '@douyinfe/semi-ui';
 | className          | 类名                                                                              | string                                          |                     |
 | currentPage        | 当前页码                                                                          | number                                          |                     |
 | defaultCurrentPage | 默认的当前页码                                                                    | number                                          |                     |
-| hideOnSinglePage   | 总页数小于 2 时，是否自动隐藏分页器                                               | boolean                                            | false               |
+| disabled           | 禁用                                                                             | boolean                                         |false                  | 2.37.0
+| hideOnSinglePage   | 总页数小于 2 时，是否自动隐藏分页器，当 showSizeChanger 为true时，此开关不再生效           | boolean                                            | false               |
 | hoverShowPageSelect  | hover 页码时是否展示切换页数的Select控件，仅当 size = 'small'时生效  | boolean             | false               | 1.27.0|
 | nextText           | 下一页文本                                                                        | string\|ReactNode                               |                     |
 | pageSize           | 每页条数                                                                          | number                                          | 10                  |
@@ -193,6 +208,13 @@ import { Pagination } from '@douyinfe/semi-ui';
 | onChange           | 页码、每页容量变化时的回调函数                                                    | function(currentPage: number, pageSize: number) |                     |
 | onPageChange       | 页码变化的回调函数                                                                | function(currentPage: number)                   |                     |
 | onPageSizeChange   | 每页容量变化时的回调函数                                                          | function(pageSize: number)                      |                     |
+
+## Accessibility
+
+### ARIA
+
+- `aria-label`: 描述组件内页码、前一页、后一页等元素的标签
+- `aria-current`: 指向当前页的页码元素
 
 ## 设计变量
 <DesignToken/>

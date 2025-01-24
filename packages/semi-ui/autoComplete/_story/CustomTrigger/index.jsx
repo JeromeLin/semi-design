@@ -1,5 +1,5 @@
 import React from 'react';
-import { debounce } from 'lodash-es';
+import { debounce } from 'lodash';
 import { AutoComplete, Icon, Button } from '@douyinfe/semi-ui';
 import { IconSearch } from '@douyinfe/semi-icons';
 
@@ -98,7 +98,7 @@ export default class ObjectDemo extends React.Component {
                     renderItem={this.renderItem}
                     renderSelectedItem={this.renderSelectedItem}
                     onSelect={this.handleSelect}
-                    triggerRender={({ value, inputValue }) => <Button>{inputValue}</Button>}
+                    triggerRender={({ value, inputValue, onFocus }) => <Button onFocus={onFocus}>{inputValue}</Button>}
                 />
             </div>
         );

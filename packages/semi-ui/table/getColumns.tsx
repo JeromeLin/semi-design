@@ -1,6 +1,6 @@
 import React from 'react';
 import Column from './Column';
-import { get, omit } from 'lodash-es';
+import { get, omit } from 'lodash';
 import { ColumnProps } from './interface';
 
 /**
@@ -13,7 +13,7 @@ export default function getColumns(children: React.ReactNode) {
         const columns: ColumnProps[] = [];
 
         React.Children.forEach(children, child => {
-            if (React.isValidElement(child) && (child.type === Column || get(child, 'type.name') === Column.name)) {
+            if (React.isValidElement(child) && (child.type === Column || get(child, 'type.elementType') === 'Column')) {
                 const col = omit(child.props, ['children']);
 
                 if (Array.isArray(child.props.children) && child.props.children.length) {

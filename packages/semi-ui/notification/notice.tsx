@@ -1,26 +1,28 @@
-/* eslint-disable no-unreachable */
 import React from 'react';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
-import ConfigContext from '../configProvider/context';
-import { numbers, cssClasses, strings } from '@douyinfe/semi-foundation/notification/constants';
+import ConfigContext, { ContextValue } from '../configProvider/context';
+import { cssClasses, numbers, strings } from '@douyinfe/semi-foundation/notification/constants';
 import NotificationFoundation, {
     NoticeAdapter,
-    NoticeState,
-    NoticeProps
+    NoticeProps,
+    NoticeState
 } from '@douyinfe/semi-foundation/notification/notificationFoundation';
 import Button from '../iconButton';
 import BaseComponent from '../_base/baseComponent';
-import { isSemiIcon } from '../_utils';
-import { noop } from 'lodash-es';
-import { IconAlertTriangle, IconInfoCircle, IconTickCircle, IconAlertCircle, IconClose } from '@douyinfe/semi-icons';
+import { getDefaultPropsFromGlobalConfig, isSemiIcon } from '../_utils';
+import { noop } from 'lodash';
+import { IconAlertCircle, IconAlertTriangle, IconClose, IconInfoCircle, IconTickCircle } from '@douyinfe/semi-icons';
+import { getUuidShort } from '@douyinfe/semi-foundation/utils/uuid';
 
-export interface NoticeReactProps extends NoticeProps{
+export interface NoticeReactProps extends NoticeProps {
     style?: React.CSSProperties;
     title?: React.ReactNode;
     content?: React.ReactNode;
     icon?: React.ReactNode;
     onClick?: (e: React.MouseEvent) => void;
+    onAnimationEnd?: (e: React.AnimationEvent) => void;
+    onAnimationStart?: (e: React.AnimationEvent) => void
 }
 
 const prefixCls = cssClasses.NOTICE;
@@ -31,7 +33,7 @@ class Notice extends BaseComponent<NoticeReactProps, NoticeState> {
     static contextType = ConfigContext;
     static propTypes = {
         duration: PropTypes.number,
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        id: PropTypes.string,
         title: PropTypes.node,
         content: PropTypes.node, // strings、numbers、array、element
         type: PropTypes.oneOf(types),
@@ -46,7 +48,9 @@ class Notice extends BaseComponent<NoticeReactProps, NoticeState> {
         direction: PropTypes.oneOf(directions),
     };
 
-    static defaultProps = {
+    static __SemiComponentName__ = "Notification";
+
+    static defaultProps = getDefaultPropsFromGlobalConfig(Notice.__SemiComponentName__, {
         duration,
         id: '',
         close: noop,
@@ -57,7 +61,7 @@ class Notice extends BaseComponent<NoticeReactProps, NoticeState> {
         title: '',
         showClose: true,
         theme: 'normal',
-    };
+    });
 
     get adapter(): NoticeAdapter {
         return {
@@ -81,6 +85,8 @@ class Notice extends BaseComponent<NoticeReactProps, NoticeState> {
         this.foundation = new NotificationFoundation(this.adapter);
     }
 
+    context: ContextValue;
+
     componentWillUnmount() {
         this.foundation.destroy();
     }
@@ -88,23 +94,23 @@ class Notice extends BaseComponent<NoticeReactProps, NoticeState> {
     renderTypeIcon() {
         const { type, icon } = this.props;
         const iconMap = {
-            warning: <IconAlertTriangle size="large" />,
-            success: <IconTickCircle size="large" />,
-            info: <IconInfoCircle size="large" />,
-            error: <IconAlertCircle size="large" />,
+            warning: <IconAlertTriangle size="large"/>,
+            success: <IconTickCircle size="large"/>,
+            info: <IconInfoCircle size="large"/>,
+            error: <IconAlertCircle size="large"/>,
         };
         let iconType = iconMap[type];
         const iconCls = cls({
-            [`${prefixCls }-icon`]: true,
-            [`${prefixCls }-${ type}`]: true,
+            [`${prefixCls}-icon`]: true,
+            [`${prefixCls}-${type}`]: true,
         });
         if (icon) {
             iconType = icon;
         }
         if (iconType) {
             return (
-                <div className={iconCls}>
-                    {isSemiIcon(iconType) ? React.cloneElement(iconType, {size : iconType.props.size || 'large'}): iconType}
+                <div className={iconCls} x-semi-prop="icon">
+                    {isSemiIcon(iconType) ? React.cloneElement(iconType, { size: iconType.props.size || 'large' }) : iconType}
                 </div>
             );
         }
@@ -152,6 +158,7 @@ class Notice extends BaseComponent<NoticeReactProps, NoticeState> {
             [`${prefixCls}-${theme}`]: theme === 'light',
             [`${prefixCls}-rtl`]: direction === 'rtl',
         });
+        const titleID = getUuidShort({});
         return (
             <div
                 className={wrapper}
@@ -159,12 +166,28 @@ class Notice extends BaseComponent<NoticeReactProps, NoticeState> {
                 onMouseEnter={this.clearCloseTimer}
                 onMouseLeave={this.startCloseTimer}
                 onClick={this.notifyClick}
+                aria-labelledby={titleID}
+                role={'alert'}
+                onAnimationEnd={this.props.onAnimationEnd}
+                onAnimationStart={this.props.onAnimationStart}
             >
                 <div>{this.renderTypeIcon()}</div>
                 <div className={`${prefixCls}-inner`}>
                     <div className={`${prefixCls}-content-wrapper`}>
-                        {title ? <div className={`${prefixCls}-title`}>{title}</div> : ''}
-                        {content ? <div className={`${prefixCls}-content`}>{content}</div> : ''}
+                        {title ? (
+                            <div id={titleID} className={`${prefixCls}-title`} x-semi-prop="title">
+                                {title}
+                            </div>
+                        ) : (
+                            ''
+                        )}
+                        {content ? (
+                            <div className={`${prefixCls}-content`} x-semi-prop="content">
+                                {content}
+                            </div>
+                        ) : (
+                            ''
+                        )}
                     </div>
                     {showClose && (
                         <Button

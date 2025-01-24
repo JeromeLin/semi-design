@@ -4,15 +4,15 @@ import { destroyFns, ModalReactProps } from './Modal';
 import ConfirmModal from './ConfirmModal';
 
 import '@douyinfe/semi-foundation/modal/modal.scss';
-import { get } from 'lodash-es';
-import { IconAlertTriangle, IconInfoCircle, IconTickCircle, IconHelpCircle, IconAlertCircle } from '@douyinfe/semi-icons';
-import { Motion } from '../_base/base';
+import { IconAlertCircle, IconAlertTriangle, IconHelpCircle, IconInfoCircle, IconTickCircle } from '@douyinfe/semi-icons';
+import { omit } from "lodash";
+import { type ButtonProps } from "../button";
 
-export interface ConfirmProps extends ModalReactProps{
-    type: 'success' | 'info' | 'warning' | 'error' | 'confirm';
+export interface ConfirmProps extends ModalReactProps {
+    type: 'success' | 'info' | 'warning' | 'error' | 'confirm'
 }
 
-export default function confirm(props: ConfirmProps) {
+export default function confirm<T>(props: ConfirmProps) {
     // create a dom in adapter?
     const div = document.createElement('div');
     document.body.appendChild(div);
@@ -28,7 +28,6 @@ export default function confirm(props: ConfirmProps) {
         for (let i = 0; i < destroyFns.length; i++) {
             const fn = destroyFns[i];
 
-            // eslint-disable-next-line @typescript-eslint/no-use-before-define
             if (fn === close) {
                 destroyFns.splice(i, 1);
                 break;
@@ -36,22 +35,15 @@ export default function confirm(props: ConfirmProps) {
         }
     };
 
-    const mergedMotion: Motion = typeof (props.motion) === 'undefined' || props.motion ? {
-        ...(props.motion as any),
-        didLeave: (...args: any) => {
-            const didLeave = get(props.motion, 'didLeave');
-
-            if (typeof didLeave === 'function') {
-                didLeave(...args);
-            }
-
-            destroy();
-        }
-
-    } : false;
 
     function render(renderProps: ConfirmProps) {
-        ReactDOM.render(<ConfirmModal {...renderProps} motion={mergedMotion} />, div);
+        const { afterClose } = renderProps;
+        //@ts-ignore
+        ReactDOM.render(<ConfirmModal {...renderProps} afterClose={(...args: any) => {
+            //@ts-ignore
+            afterClose?.(...args);
+            destroy();
+        }} motion={props.motion}/>, div);
     }
 
     function close() {
@@ -62,7 +54,7 @@ export default function confirm(props: ConfirmProps) {
         render(currentConfig);
     }
 
-    function update(newConfig: ConfirmProps) {
+    function update(newConfig: T extends { type: Exclude<ConfirmProps['type'], 'confirm'> } ? ModalReactProps : ConfirmProps) {
         currentConfig = {
             ...currentConfig,
             ...newConfig,
@@ -79,11 +71,10 @@ export default function confirm(props: ConfirmProps) {
 }
 
 
-
 export function withInfo(props: ModalReactProps) {
     return {
         type: 'info' as const,
-        icon: <IconInfoCircle />,
+        icon: <IconInfoCircle/>,
         ...props
     };
 }
@@ -91,7 +82,7 @@ export function withInfo(props: ModalReactProps) {
 export function withSuccess(props: ModalReactProps) {
     return {
         type: 'success' as const,
-        icon: <IconTickCircle />,
+        icon: <IconTickCircle/>,
         ...props
     };
 }
@@ -99,7 +90,7 @@ export function withSuccess(props: ModalReactProps) {
 export function withWarning(props: ModalReactProps) {
     return {
         type: 'warning' as const,
-        icon: <IconAlertTriangle />,
+        icon: <IconAlertTriangle/>,
         ...props
     };
 }
@@ -107,15 +98,16 @@ export function withWarning(props: ModalReactProps) {
 export function withError(props: ModalReactProps) {
     return {
         type: 'error' as const,
-        icon: <IconAlertCircle />,
-        ...props
+        icon: <IconAlertCircle/>,
+        okButtonProps: { type: 'danger' as ButtonProps['type'], ...props.okButtonProps },
+        ...(omit(props, ['okButtonProps']))
     };
-}
+} 
 
 export function withConfirm(props: ModalReactProps) {
     return {
         type: 'confirm' as const,
-        icon: <IconHelpCircle />,
+        icon: <IconHelpCircle/>,
         ...props
     };
 }

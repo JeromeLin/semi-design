@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable react/destructuring-assignment */
 import React, { PureComponent, isValidElement } from 'react';
 import PropTypes from 'prop-types';
 import { Animation as SemiAnimation, events } from '@douyinfe/semi-animation';
@@ -12,7 +11,7 @@ export interface AnimationProps {
     onResume?: Function;
     onStop?: Function;
     onRest?: Function;
-    children?: React.ReactNode;
+    children?: React.ReactNode | ((AnimationChildProps?: any) => React.ReactNode);
     from?: Record<string, any>;
     to?: Record<string, any>;
     reverse?: boolean;
@@ -21,7 +20,7 @@ export interface AnimationProps {
     config?: Record<string, any>;
     autoStart?: boolean;
     forwardInstance?: (value: any) => void;
-    immediate?: boolean;
+    immediate?: boolean
 }
 
 export default class Animation extends PureComponent<AnimationProps> {
@@ -86,6 +85,12 @@ export default class Animation extends PureComponent<AnimationProps> {
 
         const { forwardInstance } = this.props;
 
+        if (this.animation === null) {
+            // didmount/willUnmount may be called twice when React.StrictMode is true in React 18, we need to ensure that this.animation is correct
+            this.initAnimation();
+            this.bindEvents();
+        }
+
         if (typeof forwardInstance === 'function') {
             forwardInstance(this.animation);
         }
@@ -123,9 +128,7 @@ export default class Animation extends PureComponent<AnimationProps> {
     }
 
     initAnimation = (props?: AnimationProps) => {
-        // eslint-disable-next-line eqeqeq
         props = props == null ? this.props : props;
-        // eslint-disable-next-line prefer-const
         let { from, to, config, reverse } = props;
 
         if (reverse) {

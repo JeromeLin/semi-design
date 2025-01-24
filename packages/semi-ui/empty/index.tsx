@@ -11,7 +11,7 @@ const prefixCls = cssClasses.PREFIX;
 interface SVGNode {
     id?: string;
     viewBox?: string;
-    url?: string;
+    url?: string
 }
 
 export interface EmptyProps {
@@ -23,11 +23,11 @@ export interface EmptyProps {
     darkModeImage?: React.ReactNode | SVGNode;
     style?: React.CSSProperties;
     className?: string;
-    children?: React.ReactNode;
+    children?: React.ReactNode
 }
 
 interface EmptyState {
-    mode: any;
+    mode: any
 }
 
 export default class Empty extends BaseComponent<EmptyProps, EmptyState> {
@@ -60,7 +60,7 @@ export default class Empty extends BaseComponent<EmptyProps, EmptyState> {
         this.observer && this.observer.disconnect();
     }
 
-    observe(mutationsList: any): void {
+    observe = (mutationsList: any): void => {
         for (const mutation of mutationsList) {
             if (mutation.type === 'attributes' && mutation.attributeName === 'theme-mode') {
                 this.updateMode();
@@ -68,7 +68,7 @@ export default class Empty extends BaseComponent<EmptyProps, EmptyState> {
         }
     }
 
-    updateMode(): void {
+    updateMode = (): void => {
         const val = this.body.getAttribute('theme-mode');
         if (val !== this.state.mode) {
             this.setState({ mode: val });
@@ -76,20 +76,20 @@ export default class Empty extends BaseComponent<EmptyProps, EmptyState> {
     }
 
     render(): JSX.Element {
-        const { className, image, description, style, title, imageStyle, children, layout, darkModeImage } = this.props;
+        const { className, image, description, style, title, imageStyle, children, layout, darkModeImage, ...rest } = this.props;
 
         const alt = typeof description === 'string' ? description : 'empty';
-        const imgSrc = this.state.mode && darkModeImage ? darkModeImage : image;
+        const imgSrc = ((this.state.mode === 'dark') && darkModeImage) ? darkModeImage : image;
         let imageNode = null;
         if (typeof imgSrc === 'string') {
-            imageNode = <img alt={alt} src={imgSrc} />;
+            imageNode = <img alt={alt} src={imgSrc}/>;
         } else if (imgSrc && 'id' in (imgSrc as any)) {
             imageNode = (
                 <svg
                     // className={iconCls}
                     aria-hidden="true"
                 >
-                    <use xlinkHref={`#${(imgSrc as any).id}`} />
+                    <use xlinkHref={`#${(imgSrc as any).id}`}/>
                 </svg>
             );
         } else {
@@ -108,18 +108,26 @@ export default class Empty extends BaseComponent<EmptyProps, EmptyState> {
                 style: { fontWeight: 400 },
             };
         return (
-            <div className={wrapperCls} style={style}>
-                <div className={`${prefixCls}-image`} style={imageStyle}>
+            <div className={wrapperCls} style={style} {...this.getDataAttr(rest)}>
+                <div className={`${prefixCls}-image`} style={imageStyle} x-semi-prop="image,darkModeImage">
                     {imageNode}
                 </div>
                 <div className={`${prefixCls}-content`}>
                     {title ? (
-                        <Typography.Title {...(titleProps as any)} className={`${prefixCls}-title`}>
+                        <Typography.Title {...(titleProps as any)} className={`${prefixCls}-title`} x-semi-prop="title">
                             {title}
                         </Typography.Title>
                     ) : null}
-                    {description ? <div className={`${prefixCls}-description`}>{description}</div> : null}
-                    {children ? <div className={`${prefixCls}-footer`}>{children}</div> : null}
+                    {description ? (
+                        <div className={`${prefixCls}-description`} x-semi-prop="description">
+                            {description}
+                        </div>
+                    ) : null}
+                    {children ? (
+                        <div className={`${prefixCls}-footer`} x-semi-prop="children">
+                            {children}
+                        </div>
+                    ) : null}
                 </div>
             </div>
         );

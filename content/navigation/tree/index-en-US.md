@@ -1,6 +1,6 @@
 ---
 localeCode: en-US
-order: 40
+order: 56
 category: Navigation
 title:  Tree
 subTitle: Tree
@@ -26,170 +26,7 @@ import React from 'react';
 import { Tree } from '@douyinfe/semi-ui';
 
 () => {
-  const treeData = [
-    {
-        label: 'Asia',
-        value: 'Asia',
-        key: '0',
-        children: [
-            {
-                label: 'China',
-                value: 'China',
-                key: '0-0',
-                children: [
-                    {
-                        label: 'Beijing',
-                        value: 'Beijing',
-                        key: '0-0-0',
-                    },
-                    {
-                        label: 'Shanghai',
-                        value: 'Shanghai',
-                        key: '0-0-1',
-                    },
-                ],
-            },
-            {
-                label: 'Japan',
-                value: 'Japan',
-                key: '0-1',
-                children: [
-                    {
-                        label: 'Osaka',
-                        value: 'Osaka',
-                        key: '0-1-0'
-                    }
-                ]
-            },
-        ],
-    },
-    {
-        label: 'North America',
-        value: 'North America',
-        key: '1',
-        children: [
-            {
-                label: 'United States',
-                value: 'United States',
-                key: '1-0'
-            },
-            {
-                label: 'Canada',
-                value: 'Canada',
-                key: '1-1'
-            }
-        ]
-    }
-  ]
-  const style = {
-      width: 260,
-      height: 420,
-      border: '1px solid var(--semi-color-border)'
-  }
-  return (
-    <Tree treeData={treeData} defaultExpandAll style={style} />
-  )
-}
-```
-
-### Multi-choice
-
-You could use `multiple` to set mode to multi-choice. When all child items are selected, the parent item will be selected.
-
-```jsx live=true
-import React from 'react';
-import { Tree } from '@douyinfe/semi-ui';
-
-() => {
-  const treeData = [
-    {
-        label: 'Asia',
-        value: 'Asia',
-        key: '0',
-        children: [
-            {
-                label: 'China',
-                value: 'China',
-                key: '0-0',
-                children: [
-                    {
-                        label: 'Beijing',
-                        value: 'Beijing',
-                        key: '0-0-0',
-                    },
-                    {
-                        label: 'Shanghai',
-                        value: 'Shanghai',
-                        key: '0-0-1',
-                    },
-                ],
-            },
-            {
-                label: 'Japan',
-                value: 'Japan',
-                key: '0-1',
-                children: [
-                    {
-                        label: 'Osaka',
-                        value: 'Osaka',
-                        key: '0-1-0'
-                    }
-                ]
-            },
-        ],
-    },
-    {
-        label: 'North America',
-        value: 'North America',
-        key: '1',
-        children: [
-            {
-                label: 'United States',
-                value: 'United States',
-                key: '1-0'
-            },
-            {
-                label: 'Canada',
-                value: 'Canada',
-                key: '1-1'
-            }
-        ]
-    }
-  ]
-  const style = {
-      width: 260,
-      height: 420,
-      border: '1px solid var(--semi-color-border)'
-  }
-  return (
-      <Tree treeData={treeData} multiple defaultExpandAll style={style} />
-  )
-}
-```
-
-### Searchable
-
-Use `filterTreeNode` to support search input. By default it searches the `label` property of the data. You can use `treeNodeFilterProp` to set another property to search or pass in a function to `filterTreeNode` to customize search behavior.
-
-You could also use `showFilteredOnly` if you prefer to display filtered results only.
-
-```jsx live=true
-import React from 'react';
-import { Tree, Switch } from '@douyinfe/semi-ui';
-
-class Demo extends React.Component {
-    constructor() {
-        super()
-        this.state = {
-            showFilteredOnly: false,
-        }
-        this.onChange = this.onChange.bind(this);
-    }
-    onChange(showFilteredOnly) {
-        this.setState({ showFilteredOnly });
-    }
-    render() {
-        const treeData = [
+    const treeData = [
         {
             label: 'Asia',
             value: 'Asia',
@@ -243,33 +80,353 @@ class Demo extends React.Component {
                 }
             ]
         }
-    ]
+    ];
     const style = {
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
-    const { showFilteredOnly } = this.state;
+    };
     return (
-        <>
-        <span>showFilteredOnly</span>
-        <Switch
-            checked={showFilteredOnly}
-            onChange={this.onChange}
-            size="small"
-        />
-        <br/>
-        <Tree
-            treeData={treeData}
-            multiple
-            filterTreeNode
-            showFilteredOnly={showFilteredOnly}
-            style={style}
-        />
-        </>
-    )
+        <Tree treeData={treeData} defaultExpandAll style={style} />
+    );
+};
+```
+
+### Multi-choice
+
+You could use `multiple` to set mode to multi-choice. When all child items are selected, the parent item will be selected.
+
+```jsx live=true
+import React from 'react';
+import { Tree } from '@douyinfe/semi-ui';
+
+() => {
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree treeData={treeData} multiple defaultExpandAll style={style} />
+    );
+};
+```
+
+### Searchable
+
+Use `filterTreeNode` to support search input. By default it searches the `label` property of the data. You can use `treeNodeFilterProp` to set another property to search or pass in a function to `filterTreeNode` to customize search behavior.
+
+You could also use `showFilteredOnly` if you prefer to display filtered results only.
+
+```jsx live=true
+import React from 'react';
+import { Tree, Switch } from '@douyinfe/semi-ui';
+
+class Demo extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            showFilteredOnly: false,
+        };
+        this.onChange = this.onChange.bind(this);
+    }
+    onChange(showFilteredOnly) {
+        this.setState({ showFilteredOnly });
+    }
+    render() {
+        const treeData = [
+            {
+                label: 'Asia',
+                value: 'Asia',
+                key: '0',
+                children: [
+                    {
+                        label: 'China',
+                        value: 'China',
+                        key: '0-0',
+                        children: [
+                            {
+                                label: 'Beijing',
+                                value: 'Beijing',
+                                key: '0-0-0',
+                            },
+                            {
+                                label: 'Shanghai',
+                                value: 'Shanghai',
+                                key: '0-0-1',
+                            },
+                        ],
+                    },
+                    {
+                        label: 'Japan',
+                        value: 'Japan',
+                        key: '0-1',
+                        children: [
+                            {
+                                label: 'Osaka',
+                                value: 'Osaka',
+                                key: '0-1-0'
+                            }
+                        ]
+                    },
+                ],
+            },
+            {
+                label: 'North America',
+                value: 'North America',
+                key: '1',
+                children: [
+                    {
+                        label: 'United States',
+                        value: 'United States',
+                        key: '1-0'
+                    },
+                    {
+                        label: 'Canada',
+                        value: 'Canada',
+                        key: '1-1'
+                    }
+                ]
+            }
+        ];
+        const style = {
+            width: 260,
+            height: 420,
+            border: '1px solid var(--semi-color-border)'
+        };
+        const { showFilteredOnly } = this.state;
+        return (
+            <>
+                <span>showFilteredOnly</span>
+                <Switch
+                    checked={showFilteredOnly}
+                    onChange={this.onChange}
+                    size="small"
+                />
+                <br/>
+                <Tree
+                    treeData={treeData}
+                    multiple
+                    filterTreeNode
+                    showFilteredOnly={showFilteredOnly}
+                    style={style}
+                />
+            </>
+        );
     }
 }
+```
+
+After setting the `filterTreeNode` property to enable search, you can customize the rendering method of the search box by setting `searchRender`. When set to `false`, the search box can be hidden.
+```jsx live=true
+import React from 'react';
+import { Tree, Input } from '@douyinfe/semi-ui';
+
+() => {
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
+
+    return (
+        <Tree
+            filterTreeNode
+            searchRender={({ prefix, ...restProps }) => (
+                <Input
+                    prefix='Search'
+                    {...restProps}
+                />
+            )}
+            treeData={treeData}
+        />
+    );
+};
+
+```
+
+### Trigger search manually
+Use ref to get tree instance，you can call `search` method of tree to trigger search manually. Note that you need to set `filterTreeNode` to enable search at the same time.If the search box is outside the tree, you can hide the search box inside the tree by setting `searchRender=false`.
+```jsx live=true
+import React from 'react';
+import { Tree, Input } from '@douyinfe/semi-ui';
+
+() => {
+    const ref = useRef();
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0',
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0',
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1',
+                },
+            ],
+        },
+    ];
+    return (
+        <div>
+            <Input aria-label='filter tree' prefix="Search" showClear onChange={v => ref.current.search(v)} />
+            <div style={{ marginTop: 20 }}>search result：</div>
+            <Tree
+                ref={ref}
+                filterTreeNode
+                searchRender={false}
+                treeData={treeData}
+                blockNode={false}
+            />
+        </div>
+    );
+};
 ```
 
 ### JSON TreeData
@@ -281,29 +438,29 @@ import React from 'react';
 import { Tree } from '@douyinfe/semi-ui';
 
 () => {
-  const json = {
-      "Node1": {
-        "Child Node1": '0-0-1',
-        "Child Node2": '0-0-2',
-    },
-    "Node2": "0-1"
-  }
-  const style = {
-      width: 260,
-      height: 420,
-      border: '1px solid var(--semi-color-border)'
-  }
-  return (
-    <Tree
-        treeDataSimpleJson={json}
-        multiple
-        onChange={e => console.log('All selected values: ',e)}
-        onSelect={e => console.log('Current item: ',e)}
-        style={style}
-    />
+    const json = {
+        "Node1": {
+            "Child Node1": '0-0-1',
+            "Child Node2": '0-0-2',
+        },
+        "Node2": "0-1"
+    };
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeDataSimpleJson={json}
+            multiple
+            onChange={e => console.log('All selected values: ', e)}
+            onSelect={e => console.log('Current item: ', e)}
+            style={style}
+        />
 
-  )
-}
+    );
+};
 ```
 
 ### BlockNode
@@ -315,161 +472,161 @@ import React from 'react';
 import { Tree } from '@douyinfe/semi-ui';
 
 () => {
-  const treeData = [
-    {
-        label: 'Asia',
-        value: 'Asia',
-        key: '0',
-        children: [
-            {
-                label: 'China',
-                value: 'China',
-                key: '0-0',
-                children: [
-                    {
-                        label: 'Beijing',
-                        value: 'Beijing',
-                        key: '0-0-0',
-                    },
-                    {
-                        label: 'Shanghai',
-                        value: 'Shanghai',
-                        key: '0-0-1',
-                    },
-                ],
-            },
-            {
-                label: 'Japan',
-                value: 'Japan',
-                key: '0-1',
-                children: [
-                    {
-                        label: 'Osaka',
-                        value: 'Osaka',
-                        key: '0-1-0'
-                    }
-                ]
-            },
-        ],
-    },
-    {
-        label: 'North America',
-        value: 'North America',
-        key: '1',
-        children: [
-            {
-                label: 'United States',
-                value: 'United States',
-                key: '1-0'
-            },
-            {
-                label: 'Canada',
-                value: 'Canada',
-                key: '1-1'
-            }
-        ]
-    }
-  ]
-  return (
-    <div>
-    <Tree
-        treeData={treeData}
-        defaultValue='Shanghai'
-        blockNode={false}
-    />
-    <br/>
-    <Tree
-        treeData={treeData}
-        defaultValue='Shanghai'
-        multiple
-        blockNode={false}
-    />
-    </div>
-  )
-}
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
+    return (
+        <div>
+            <Tree
+                treeData={treeData}
+                defaultValue='Shanghai'
+                blockNode={false}
+            />
+            <br/>
+            <Tree
+                treeData={treeData}
+                defaultValue='Shanghai'
+                multiple
+                blockNode={false}
+            />
+        </div>
+    );
+};
 ```
 
 ### Custom TreeNode Label
 
-You could pass in ReactNode for `label` in `treeNode` to customize label. Pay attention that by default `filterTreeNode` searches data by label. When label is a ReactNode, it is advised to pass in customized search function for a searchable tree.
+You could pass in ReactNode for `label` in `TreeNodeData` to customize label. Pay attention that by default `filterTreeNode` searches data by label. When label is a ReactNode, it is advised to pass in customized search function for a searchable tree.
 
 ```jsx live=true
 import React from 'react';
 import { Tree, ButtonGroup, Button } from '@douyinfe/semi-ui';
 
 () => {
-  let opts = {
-    content: 'Hi, Bytedance dance dance',
-    duration: 3,
-  };
+    let opts = {
+        content: 'Hi, Bytedance dance dance',
+        duration: 3,
+    };
 
-  const button = (
-      <ButtonGroup
-        size="small"
-        theme="borderless"
-    >
-        <Button
-            onClick={e => {
-                Toast.info(opts);
-                e.stopPropagation()
-            }}
-        >Alert</Button>
-        <Button>Click</Button>
-    </ButtonGroup>
-  )
+    const button = (
+        <ButtonGroup
+            size="small"
+            theme="borderless"
+        >
+            <Button
+                onClick={e => {
+                    Toast.info(opts);
+                    e.stopPropagation();
+                }}
+            >Alert</Button>
+            <Button>Click</Button>
+        </ButtonGroup>
+    );
 
-  const style = {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-  }
+    const style = {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    };
 
-  const treeDataWithNode = [
-    {
-        label: (
-            <div style={style}>
-                <span>Asia</span>
-                {button}
-            </div>
-        ),
-        value: 'Asia',
-        key: 'Asia',
-        children: [
-            {
-                label: (
-                    <div style={style}>
-                        <span>China</span>
-                        {button}
-                    </div>
-                ),
-                value: 'China',
-                key: 'China'
-            },
-            {
-                label: (
-                    <div style={style}>
-                        <span>Japan</span>
-                        {button}
-                    </div>
-                ),
-                value: 'Japan',
-                key: 'Japan',
-            },
-        ],
-    }
-];
-  const treeStyle = {
-    width: 260,
-    height: 420,
-    border: '1px solid var(--semi-color-border)'
-  }
-  return (
-    <Tree
-        treeData={treeDataWithNode}
-        style={treeStyle}
-    />
-  )
-}
+    const treeDataWithNode = [
+        {
+            label: (
+                <div style={style}>
+                    <span>Asia</span>
+                    {button}
+                </div>
+            ),
+            value: 'Asia',
+            key: 'Asia',
+            children: [
+                {
+                    label: (
+                        <div style={style}>
+                            <span>China</span>
+                            {button}
+                        </div>
+                    ),
+                    value: 'China',
+                    key: 'China'
+                },
+                {
+                    label: (
+                        <div style={style}>
+                            <span>Japan</span>
+                            {button}
+                        </div>
+                    ),
+                    value: 'Japan',
+                    key: 'Japan',
+                },
+            ],
+        }
+    ];
+    const treeStyle = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeData={treeDataWithNode}
+            style={treeStyle}
+        />
+    );
+};
 ```
 
 ### Custom Icon
@@ -482,40 +639,40 @@ import { Tree } from '@douyinfe/semi-ui';
 import { IconMapPin } from '@douyinfe/semi-icons';
 
 () => {
-  const treeData = [
-    {
-        label: 'Asia',
-        value: 'Asia',
-        key: '0',
-        icon: (<IconMapPin style={{color: 'var(--semi-color-text-2)'}}/>),
-        children: [
-            {
-                label: 'China',
-                value: 'China',
-                key: '0-0',
-                icon: (<IconMapPin style={{color: 'var(--semi-color-text-2)'}}/>)
-            },
-            {
-                label: 'Japan',
-                value: 'Japan',
-                key: '0-1',
-                icon: (<IconMapPin style={{color: 'var(--semi-color-text-2)'}}/>)
-            },
-        ],
-    }
-  ]
-  const style = {
-    width: 260,
-    height: 420,
-    border: '1px solid var(--semi-color-border)'
- }
-  return (
-    <Tree
-        treeData={treeData}
-        style={style}
-    />
-  )
-}
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            icon: (<IconMapPin style={{ color: 'var(--semi-color-text-2)' }}/>),
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    icon: (<IconMapPin style={{ color: 'var(--semi-color-text-2)' }}/>)
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    icon: (<IconMapPin style={{ color: 'var(--semi-color-text-2)' }}/>)
+                },
+            ],
+        }
+    ];
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeData={treeData}
+            style={style}
+        />
+    );
+};
 ```
 
 ### Directory
@@ -527,74 +684,74 @@ import React from 'react';
 import { Tree } from '@douyinfe/semi-ui';
 
 () => {
-  const treeData = [
-    {
-        label: 'Asia',
-        value: 'Asia',
-        key: '0',
-        children: [
-            {
-                label: 'China',
-                value: 'China',
-                key: '0-0',
-                children: [
-                    {
-                        label: 'Beijing',
-                        value: 'Beijing',
-                        key: '0-0-0',
-                    },
-                    {
-                        label: 'Shanghai',
-                        value: 'Shanghai',
-                        key: '0-0-1',
-                    },
-                ],
-            },
-            {
-                label: 'Japan',
-                value: 'Japan',
-                key: '0-1',
-                children: [
-                    {
-                        label: 'Osaka',
-                        value: 'Osaka',
-                        key: '0-1-0'
-                    }
-                ]
-            },
-        ],
-    },
-    {
-        label: 'North America',
-        value: 'North America',
-        key: '1',
-        children: [
-            {
-                label: 'United States',
-                value: 'United States',
-                key: '1-0'
-            },
-            {
-                label: 'Canada',
-                value: 'Canada',
-                key: '1-1'
-            }
-        ]
-    }
-  ]
-  const style = {
-      width: 260,
-      height: 420,
-      border: '1px solid var(--semi-color-border)'
-  }
-  return (
-    <Tree
-        treeData={treeData}
-        directory
-        style={style}
-    />
-  )
-}
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeData={treeData}
+            directory
+            style={style}
+        />
+    );
+};
 ```
 
 ### Disabled
@@ -606,78 +763,165 @@ import React from 'react';
 import { Tree } from '@douyinfe/semi-ui';
 
 () => {
-  const treeData = [
-    {
-        label: 'Asia',
-        value: 'Asia',
-        key: '0',
-        children: [
-            {
-                label: 'China',
-                value: 'China',
-                key: '0-0',
-                children: [
-                    {
-                        label: 'Beijing',
-                        value: 'Beijing',
-                        key: '0-0-0',
-                        disabled: true,
-                    },
-                    {
-                        label: 'Shanghai',
-                        value: 'Shanghai',
-                        key: '0-0-1',
-                        disabled: true,
-                    },
-                ],
-            },
-            {
-                label: 'Japan',
-                value: 'Japan',
-                key: '0-1',
-                children: [
-                    {
-                        label: 'Osaka',
-                        value: 'Osaka',
-                        key: '0-1-0'
-                    }
-                ]
-            },
-        ],
-    },
-    {
-        label: 'North America',
-        value: 'North America',
-        key: '1',
-        children: [
-            {
-                label: 'United States',
-                value: 'United States',
-                key: '1-0'
-            },
-            {
-                label: 'Canada',
-                value: 'Canada',
-                key: '1-1'
-            }
-        ]
-    }
-  ]
-  const style = {
-      width: 260,
-      height: 420,
-      border: '1px solid var(--semi-color-border)'
-  }
-  return (
-    <Tree
-        treeData={treeData}
-        defaultValue='Shanghai'
-        multiple
-        style={style}
-        disableStrictly
-    />
-  )
-}
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                            disabled: true,
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                            disabled: true,
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeData={treeData}
+            defaultValue='Shanghai'
+            multiple
+            style={style}
+            disableStrictly
+        />
+    );
+};
+```
+
+### Checked RelationShip
+Version: >= 2.5.0
+
+When multiple selections are made, `checkRelation` can be used to set the type of node selection relationship, optional: 'related' (default), 'unRelated'. When the selection relationship is 'unRelated', it means that selections between nodes do not affect each other.
+
+```jsx live=true
+import React from 'react';
+import { Tree } from '@douyinfe/semi-ui';
+
+() => {
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                        {
+                            label: 'Chengdu',
+                            value: 'Chengdu',
+                            key: '0-0-2',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return (
+        <Tree
+            treeData={treeData}
+            multiple
+            checkRelation='unRelated'
+            defaultExpandAll
+            style={style}
+        />
+    );
+};
 ```
 
 ### Default Expand All
@@ -716,7 +960,7 @@ import { Tree, Button } from '@douyinfe/semi-ui';
     };
     const [tree, setTree] = useState(json);
     const handleClick = () => {
-        setTree(json2)
+        setTree(json2);
     };
     return (
         <>
@@ -743,8 +987,70 @@ import { Tree, Button } from '@douyinfe/semi-ui';
             </div>
         </>
     );
-}
+};
 
+```
+
+### Controlled Expansion with Search
+When `expandedKeys` is passed in, it is the expanded controlled component, which can be used with `onExpand`. When the expansion is controlled, if you enable `filterTreeNode` and search, the node will not be automatically expanded. At this time, the expansion of the node is completely controlled by `expandedKeys`. You can use the input parameter `filteredExpandedKeys` (version: >= 2.38.0) of `onSearch` to realize the search expansion effect when the expansion is controlled.
+
+```jsx live=true hideInDSM
+import React, { useState } from 'react';
+import { Tree } from '@douyinfe/semi-ui';
+
+() => {
+    const [expandedKeys, setExpandedKeys] = useState([]);
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+        }
+    ];
+    return (
+        <Tree
+            style={{ width: 300 }}
+            treeData={treeData}
+            filterTreeNode
+            expandedKeys={expandedKeys}
+            onExpand={expandedKeys => {
+                setExpandedKeys(expandedKeys);
+            }}
+            onSearch={(inputValue, filteredExpandedKeys) => {
+                setExpandedKeys([...filteredExpandedKeys]);
+            }}
+        />
+    );
+};
 ```
 
 ### Controlled Component
@@ -757,75 +1063,75 @@ import { Tree } from '@douyinfe/semi-ui';
 
 class Demo extends React.Component {
     constructor() {
-        super()
+        super();
         this.state = {
             value: 'Shanghai'
         };
     }
     onChange(value) {
-        this.setState({value})
+        this.setState({ value });
     }
     render() {
-const treeData = [
-    {
-        label: 'Asia',
-        value: 'Asia',
-        key: '0',
-        children: [
+        const treeData = [
             {
-                label: 'China',
-                value: 'China',
-                key: '0-0',
+                label: 'Asia',
+                value: 'Asia',
+                key: '0',
                 children: [
                     {
-                        label: 'Beijing',
-                        value: 'Beijing',
-                        key: '0-0-0',
+                        label: 'China',
+                        value: 'China',
+                        key: '0-0',
+                        children: [
+                            {
+                                label: 'Beijing',
+                                value: 'Beijing',
+                                key: '0-0-0',
+                            },
+                            {
+                                label: 'Shanghai',
+                                value: 'Shanghai',
+                                key: '0-0-1',
+                            },
+                        ],
                     },
                     {
-                        label: 'Shanghai',
-                        value: 'Shanghai',
-                        key: '0-0-1',
+                        label: 'Japan',
+                        value: 'Japan',
+                        key: '0-1',
+                        children: [
+                            {
+                                label: 'Osaka',
+                                value: 'Osaka',
+                                key: '0-1-0'
+                            }
+                        ]
                     },
                 ],
             },
             {
-                label: 'Japan',
-                value: 'Japan',
-                key: '0-1',
+                label: 'North America',
+                value: 'North America',
+                key: '1',
                 children: [
                     {
-                        label: 'Osaka',
-                        value: 'Osaka',
-                        key: '0-1-0'
+                        label: 'United States',
+                        value: 'United States',
+                        key: '1-0'
+                    },
+                    {
+                        label: 'Canada',
+                        value: 'Canada',
+                        key: '1-1'
                     }
                 ]
-            },
-        ],
-    },
-    {
-        label: 'North America',
-        value: 'North America',
-        key: '1',
-        children: [
-            {
-                label: 'United States',
-                value: 'United States',
-                key: '1-0'
-            },
-            {
-                label: 'Canada',
-                value: 'Canada',
-                key: '1-1'
             }
-        ]
-    }
-  ]
+        ];
         const style = {
             width: 260,
             height: 420,
             border: '1px solid var(--semi-color-border)'
-        }
+        };
         return (
             <Tree
                 treeData={treeData}
@@ -833,7 +1139,7 @@ const treeData = [
                 onChange={value => this.onChange(value)}
                 style={style}
             />
-        )
+        );
     }
 }
 ```
@@ -851,11 +1157,11 @@ class Demo extends React.Component {
     constructor() {
         super();
         this.state = {
-            expandedKeys: ['0','0-0']
+            expandedKeys: ['0', '0-0']
         };
     }
     onExpand(value) {
-        this.setState({expandedKeys: value});
+        this.setState({ expandedKeys: value });
     }
     render() {
         const treeData = [
@@ -893,7 +1199,7 @@ class Demo extends React.Component {
             width: 260,
             height: 420,
             border: '1px solid var(--semi-color-border)'
-        }
+        };
         return (
             <Tree
                 autoExpandParent
@@ -902,9 +1208,82 @@ class Demo extends React.Component {
                 expandedKeys={this.state.expandedKeys}
                 style={style}
             />
-        )
+        );
     }
 }
+```
+
+### Tree with line
+
+Set the line between nodes through `showLine`, the default is false, supported starting from 2.50.0
+
+```jsx live=true hideInDSM
+import React, { useState, useCallback } from 'react';
+import { Tree, Switch } from '@douyinfe/semi-ui';
+
+() => {
+    const [show, setShow] = useState(true);
+    const onChange = useCallback((value) => {
+        setShow(value);
+    }, []);
+    const treeData = useMemo(() => {
+        return [
+            {
+                label: 'parent-0',
+                key: 'parent-0',
+                children: [
+                    {
+                        label: 'leaf-0-0',
+                        key: 'leaf-0-0',
+                        children: [
+                            {
+                                label: 'leaf-0-0-0',
+                                key: 'leaf-0-0-0',
+                            },
+                            {
+                                label: 'leaf-0-0-1',
+                                key: 'leaf-0-0-1',
+                            },
+                            {
+                                label: 'leaf-0-0-2',
+                                key: 'leaf-0-0-2',
+                            },
+                        ]
+                    },
+                    {
+                        label: 'leaf-0-1',
+                        key: 'leaf-0-1',
+                    }
+                ]
+            },
+            {
+                label: 'parent-1',
+                key: 'parent-1',
+            }
+        ];
+    }, []);
+
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+
+    return (
+        <>
+            <div style={{ display: 'flex', alignItems: 'center', columnGap: 5, marginBottom: 5 }}>
+                <strong>showLine </strong>
+                <Switch checked={show} onChange={onChange} />
+            </div>
+            <Tree
+                showLine={show}
+                defaultExpandAll
+                treeData={treeData}
+                style={style}
+            />
+        </>
+    );
+};
 ```
 
 ### Virtualized Tree
@@ -927,7 +1306,7 @@ class Demo extends React.Component {
         this.state = {
             gData: [],
             total: 0,
-        }
+        };
         this.onGen = this.onGen.bind(this);
     }
 
@@ -964,7 +1343,7 @@ class Demo extends React.Component {
             const rec = n => (n >= 0 ? x * y ** n-- + rec(n) : 0);
             return rec(z + 1);
         }
-        return {gData, total: calcTotal(x, y, z)};
+        return { gData, total: calcTotal(x, y, z) };
     }
 
       
@@ -981,28 +1360,28 @@ class Demo extends React.Component {
             width: 260,
             // height: 360,
             border: '1px solid var(--semi-color-border)'
-        }
-      return (
-        <div style={{ padding: '0 20px' }}>
-          <Button onClick={this.onGen}>Generate Data: </Button>
-          <span>In total: {this.state.total}</span>
-          <br/>
-          <br/>
-          {this.state.gData.length ? (
-                <Tree
-                  treeData={this.state.gData}
-                  filterTreeNode
-                  style={style}
-                  showFilteredOnly
-                  virtualize={{
-                    // if set height for tree, it will fill 100%
-                    height: 300,
-                    itemSize: 28,                    
-                  }}
-            />
-          ) : null}
-        </div>
-      );
+        };
+        return (
+            <div style={{ padding: '0 20px' }}>
+                <Button onClick={this.onGen}>Generate Data: </Button>
+                <span>In total: {this.state.total}</span>
+                <br/>
+                <br/>
+                {this.state.gData.length ? (
+                    <Tree
+                        treeData={this.state.gData}
+                        filterTreeNode
+                        style={style}
+                        showFilteredOnly
+                        virtualize={{
+                            // if set height for tree, it will fill 100%
+                            height: 300,
+                            itemSize: 28,                    
+                        }}
+                    />
+                ) : null}
+            </div>
+        );
     }
 }
 ```
@@ -1015,14 +1394,14 @@ import { Tree, Button } from '@douyinfe/semi-ui';
 
 class Demo extends React.Component {
     constructor() {
-        super()
+        super();
         this.state = {
             treeData: [{
                 key: '0',
                 label: 'item-0',
                 value: '0'
             }],
-        }
+        };
         this.add = this.add.bind(this);
     }
     add() {
@@ -1034,7 +1413,7 @@ class Demo extends React.Component {
                     key: `${i}-${ci}`,
                     label: `Leaf-${i}-${ci}`,
                     value: `${i}-${ci}`
-                }
+                };
                 return child;
             });
             let item = {
@@ -1044,7 +1423,7 @@ class Demo extends React.Component {
                 children
             };
             return item;
-        })
+        });
         this.setState({ treeData });
     }
     render() {
@@ -1053,18 +1432,18 @@ class Demo extends React.Component {
             width: 260,
             height: 420,
             border: '1px solid var(--semi-color-border)'
-        }
+        };
         return (
             <div style={style}>
                 <Tree
                     treeData={this.state.treeData}
                 />
                 <br/>
-                <Button onClick={this.add} style={{margin: 20}}>
+                <Button onClick={this.add} style={{ margin: 20 }}>
                     Update Data
                 </Button>
             </div>
-        )
+        );
     }
 }
 ```
@@ -1076,24 +1455,24 @@ import React, { useState } from 'react';
 import { Tree } from '@douyinfe/semi-ui';
 
 () => {
-const initialData = [
-    {
-        label: 'Expand to load',
-        value: '0',
-        key: '0',
-    },
-    {
-        label: 'Expand to load',
-        value: '1',
-        key: '1',
-    },
-    {
-        label: 'Leaf Node',
-        value: '2',
-        key: '2',
-        isLeaf: true,
-    },
-];
+    const initialData = [
+        {
+            label: 'Expand to load',
+            value: '0',
+            key: '0',
+        },
+        {
+            label: 'Expand to load',
+            value: '1',
+            key: '1',
+        },
+        {
+            label: 'Leaf Node',
+            value: '2',
+            key: '2',
+            isLeaf: true,
+        },
+    ];
     const [treeData, setTreeData] = useState(initialData);
 
     function updateTreeData(list, key, children) {
@@ -1140,8 +1519,39 @@ const initialData = [
 
 ### Draggable Tree
 You could use `draggable` along with `onDrop` to achieve a draggable Tree.
-**Virtualized not supported at this moment**
-**v>=1.8.0**
+
+<Notice title='Notice'>
+    Drag and drop is available since v 1.8.0. Simultaneous use with virtualization is currently not supported
+</Notice>
+
+The callback input parameters of the drag event are as follows:
+
+```
+- onDragEnd: function({ event, node: DragTreeNode })
+- onDragEnter:function({ event, node: DragTreeNode, expandedKeys: string[] })
+- onDragLeave:function({ event, node: DragTreeNode })
+- onDragOver:function({ event, node: DragTreeNode })
+- onDragStart: function({ event, node: DragTreeNode })
+- onDrop:function({ event, node: DragTreeNode, dragNode: DragTreeNode, dragNodesKeys: string[], dropPosition: number, dropToGap: Boolean })
+```
+
+The data type DragTreeNode, in addition to all the attributes of TreeNodeData, also includes expanded and pos attributes,
+```
+DragTreeNode {
+    expanded: Boolean,
+    pos: string
+    value?: string | number;
+    label?: React.ReactNode;
+    disabled?: boolean;
+    isLeaf?: boolean;
+    [key: string]: any;
+}
+```
+
+- `pos` refers to the positional relationship of the current node in the entire treeData, such as the 0th node of the 2nd node of the 1st node of the 0th layer: '0-1-2-0'
+- `dropPosition` refers to the position where the dragged node is dropped in the current hierarchy. If it is inserted before the 0th node of the same level, it will be -1, and after the 0th node, it will be 1, and it will fall on it. is 0, and so on. With dropToGap, a more complete judgment can be obtained.
+- `dropToGap` refers to whether the dragged node is dropped between nodes, if false, it is dropped above a node
+
 ```jsx live=true
 import React, { useState } from 'react';
 import { Tree } from '@douyinfe/semi-ui';
@@ -1223,51 +1633,51 @@ import { Tree } from '@douyinfe/semi-ui';
             data.forEach((item, ind, arr) => {
                 if (item.key === key) return callback(item, ind, arr);
                 if (item.children) return loop(item.children, key, callback);
-            })
-        }
+            });
+        };
 
         let dragObj;
         loop(data, dragKey, (item, ind, arr) => {
             arr.splice(ind, 1);
             dragObj = item;
-        })
+        });
 
         if (!dropToGap) {
             // inset into the dropPosition
             loop(data, dropKey, (item, ind, arr) => {
                 item.children = item.children || [];
-                item.children.push(dragObj)
-            })
+                item.children.push(dragObj);
+            });
         } else if (dropPosition === 1 && node.children && node.expanded) {
             // has children && expanded and drop into the node bottom gap
             // could insert anywhere. Here we insert to the top.
             loop(data, dropKey, item => {
                 item.children = item.children || [];
-                item.children.unshift(dragObj)
-            })
+                item.children.unshift(dragObj);
+            });
         } else {
             let dropNodeInd;
             let dropNodePosArr;
             loop(data, dropKey, (item, ind, arr) => {
                 dropNodePosArr = arr;
                 dropNodeInd = ind;
-            })
+            });
             if (dropPosition === -1) {
                 // insert to top
-                dropNodePosArr.splice(dropNodeInd, 0, dragObj)
+                dropNodePosArr.splice(dropNodeInd, 0, dragObj);
             } else {
                 // insert to bottom
-                dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj)
+                dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj);
             }
         }
-        setTreeData(data)
+        setTreeData(data);
     }
 
     return <Tree
-                treeData={treeData}
-                draggable
-                onDrop={onDrop}
-            />;
+        treeData={treeData}
+        draggable
+        onDrop={onDrop}
+    />;
 };
 ```
 
@@ -1276,14 +1686,60 @@ import { Tree } from '@douyinfe/semi-ui';
 
 You could use `renderFullLabel` for advanced rendering to render the entire option on you own.
 
+The parameter types of renderFullLabel are as follows:
+
+```ts
+type RenderFullLabelProps = {
+    /* The original data of the row */
+    data: BasicTreeNodeData;
+    /* The level of the line can be used to customize the indentation value */
+    level: number;
+    /* The style required for virtualization, if virtualization is used, the style must be assigned to the DOM element */
+    style: any;
+    /* Class name, including built-in styles such as indentation, expand button, filter, disable, select, etc. */
+    className: string;
+    /* icon of Expand button */
+    expandIcon: any;
+    /* Selected state */
+    checkStatus: {
+        /* Whether to select in the multi-select state */
+        checked: boolean;
+        /* Whether to half-select in the multi-select state */
+        halfChecked: boolean
+    };
+    /* Expand status */
+    expandStatus: {
+        /* Has it been expanded */
+        expanded: boolean;
+        /* Is it unfolding */
+        loading: boolean
+    };
+    /* Whether the node meets the search conditions */
+    filtered: boolean | undefined;
+    /* Current search box input */
+    searchWord: string | undefined;
+    /* Click the callback of the entire row to control the expansion behavior and selection */
+    onClick: (e: MouseEvent) => void;
+    /* Multi-select click callback */
+    onCheck: (e: MouseEvent) => void;
+    /* Right-click the callback for the entire row */
+    onContextMenu: (e: MouseEvent) => void; 
+    /* Double-click the entire line of callback */
+    onDoubleClick: (e: MouseEvent) => void;
+    /* 展开回调 */
+    onExpand: (e: MouseEvent) => void;
+}
+```
+
 <Notice type="primary" title="Important">
 <div>If virtualized is set to true, be sure to apply `style` to targeted ReactNode to correctly render virtualized list.</div>
 </Notice>
 
 Here are some demos.
 
-First is to render Parent node as separator and only allow leaf nodes to be selected.
-⚠️：renderFullLabel only takes care of the UI rendering and won't affect inside data logic. But you could choose info to your needs and use it with controlled mode for advanced usage.
+First is to render Parent node as separator and only allow leaf nodes to be selected.  
+renderFullLabel only takes care of the UI rendering and won't affect inside data logic. But you could choose info to your needs and use it with controlled mode for advanced usage.
+
 ```jsx live=true
 import React from 'react';
 import { Tree, Checkbox } from '@douyinfe/semi-ui';
@@ -1300,100 +1756,101 @@ import { Tree, Checkbox } from '@douyinfe/semi-ui';
         checkStatus,
         expandIcon,
     }) => {
-      const { label } = data;
-      const isLeaf = !(data.children && data.children.length);
-      return (
-          <li
-            className={className}
-            role="treenode"
-            onClick={isLeaf ? onCheck : onExpand}
-            onContextMenu={onContextMenu}
-            onDoubleClick={onDoubleClick}
-        >
-            {isLeaf ? null : expandIcon}
-            {isLeaf ? <div onClick={onCheck}>
-                <Checkbox
-                indeterminate={checkStatus.halfChecked}
-                checked={checkStatus.checked}
-                style={{marginRight: 8}}
-                />
-            </div> : null}
-            <span>{label}</span>
-        </li>
-      )
-    }
+        const { label } = data;
+        const isLeaf = !(data.children && data.children.length);
+        return (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+            <li
+                className={className}
+                role="treeitem"
+                onClick={isLeaf ? onCheck : onExpand}
+                onContextMenu={onContextMenu}
+                onDoubleClick={onDoubleClick}
+            >
+                {isLeaf ? null : expandIcon}
+                {isLeaf ? <div onClick={onCheck} role='checkbox' tabIndex={0} aria-checked={checkStatus.checked}>
+                    <Checkbox
+                        indeterminate={checkStatus.halfChecked}
+                        checked={checkStatus.checked}
+                        style={{ marginRight: 8 }}
+                    />
+                </div> : null}
+                <span>{label}</span>
+            </li>
+        );
+    };
     
-  const treeData = [
-    {
-        label: 'Asia',
-        value: 'Asia',
-        key: '0',
-        children: [
-            {
-                label: 'China',
-                value: 'China',
-                key: '0-0',
-                children: [
-                    {
-                        label: 'Beijing',
-                        value: 'Beijing',
-                        key: '0-0-0',
-                    },
-                    {
-                        label: 'Shanghai',
-                        value: 'Shanghai',
-                        key: '0-0-1',
-                    },
-                ],
-            },
-            {
-                label: 'Japan',
-                value: 'Japan',
-                key: '0-1',
-                children: [
-                    {
-                        label: 'Osaka',
-                        value: 'Osaka',
-                        key: '0-1-0'
-                    }
-                ]
-            },
-        ],
-    },
-    {
-        label: 'North America',
-        value: 'North America',
-        key: '1',
-        children: [
-            {
-                label: 'United States',
-                value: 'United States',
-                key: '1-0'
-            },
-            {
-                label: 'Canada',
-                value: 'Canada',
-                key: '1-1'
-            }
-        ]
-    }
-  ]
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                    children: [
+                        {
+                            label: 'Osaka',
+                            value: 'Osaka',
+                            key: '0-1-0'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+            children: [
+                {
+                    label: 'United States',
+                    value: 'United States',
+                    key: '1-0'
+                },
+                {
+                    label: 'Canada',
+                    value: 'Canada',
+                    key: '1-1'
+                }
+            ]
+        }
+    ];
 
-  const treeStyle = {
-    width: 260,
-    height: 420,
-    border: '1px solid var(--semi-color-border)'
-  }
-  return ( 
-    <Tree
-        treeData={treeData}
-        renderFullLabel={renderLabel}
-        multiple
-        leafOnly
-        style={treeStyle}
-    />
-  )
-}
+    const treeStyle = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+    return ( 
+        <Tree
+            treeData={treeData}
+            renderFullLabel={renderLabel}
+            multiple
+            leafOnly
+            style={treeStyle}
+        />
+    );
+};
 ```
 
 The second is for the scenario of "I hope that only leaf nodes can be single-selected, and the parent node only plays a role in grouping".
@@ -1416,13 +1873,13 @@ import { Tree } from '@douyinfe/semi-ui';
         return (
             <li
                 className={className}
-                role="treenode"
+                role="treeitem"
                 onClick={isLeaf ? onClick : onExpand}
             >
                 {isLeaf ? null : expandIcon}
                 <span>{label}</span>
             </li>
-        )
+        );
     };
 
     const treeData = [
@@ -1485,7 +1942,7 @@ import { Tree } from '@douyinfe/semi-ui';
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
     return (
         <Tree
             treeData={treeData}
@@ -1494,7 +1951,7 @@ import { Tree } from '@douyinfe/semi-ui';
             onChange={(...args) => console.log('change', ...args)}
         />
     );
-}
+};
 ```
 
 Third is for the scenario when selecting Parent node also highlighting child node.
@@ -1505,56 +1962,56 @@ import { Tree } from '@douyinfe/semi-ui';
 import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSectionStroked, IconComponentStroked } from '@douyinfe/semi-icons';
 
 () => {
-  const [selected, setSelected] = useState(new Set());
-  const [selectedThroughParent, setSelectedThroughParent] = useState(new Set());
-  const treeData = [
-      {
-          label: 'Fixed Black Button',
-          icon: <IconFixedStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
-          key: 'fix-btn-0'
-      },
-    {
-        label: 'Module',
-        key: 'module-0',
-        icon: <IconSectionStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
-        children: [
-            {
-                label: 'Free Components',
-                icon: <IconAbsoluteStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
-                key: 'free-compo-0',
-            },
-            {
-                label: 'Split Container',
-                icon: <IconInnerSectionStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
-                key: 'split-col-0',
-                children: [
-                    {
-                        label: 'Button',
-                        icon: <IconComponentStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
-                        key: 'btn-0'
-                    },
-                    {
-                        label: 'Button',
-                        icon: <IconComponentStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
-                        key: 'btn-1'
-                    }
-                ]
-            },
-        ],
-    },
-    {
-        label: 'Module',
-        icon: <IconSectionStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
-        key: 'module-1',
-        children: [
-            {
-                label: 'Custom Component',
-                icon: <IconComponentStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
-                key: 'cus-0'
-            }
-        ]
-    }
-  ]
+    const [selected, setSelected] = useState(new Set());
+    const [selectedThroughParent, setSelectedThroughParent] = useState(new Set());
+    const treeData = [
+        {
+            label: 'Fixed Black Button',
+            icon: <IconFixedStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
+            key: 'fix-btn-0'
+        },
+        {
+            label: 'Module',
+            key: 'module-0',
+            icon: <IconSectionStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
+            children: [
+                {
+                    label: 'Free Components',
+                    icon: <IconAbsoluteStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
+                    key: 'free-compo-0',
+                },
+                {
+                    label: 'Split Container',
+                    icon: <IconInnerSectionStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
+                    key: 'split-col-0',
+                    children: [
+                        {
+                            label: 'Button',
+                            icon: <IconComponentStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
+                            key: 'btn-0'
+                        },
+                        {
+                            label: 'Button',
+                            icon: <IconComponentStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
+                            key: 'btn-1'
+                        }
+                    ]
+                },
+            ],
+        },
+        {
+            label: 'Module',
+            icon: <IconSectionStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
+            key: 'module-1',
+            children: [
+                {
+                    label: 'Custom Component',
+                    icon: <IconComponentStroked style={{ marginRight: 8, color: 'var(--semi-color-text-2)' }} />,
+                    key: 'cus-0'
+                }
+            ]
+        }
+    ];
 
     const findDescendantKeys = (node) => {
         let res = [node.key];
@@ -1571,58 +2028,58 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
         };
         findChild(node);
         return res;
-    }  
+    };  
     
     const handleSelect = (key, bool, node) => {
         setSelected(new Set([key]));
         const descendantKeys = findDescendantKeys(node);
         setSelectedThroughParent(new Set(descendantKeys));
-     }
+    };
 
-     const renderLabel = ({
+    const renderLabel = ({
         className,
         data,
         onClick,
         expandIcon
     }) => {
-      const { label, icon, key } = data;
-      const isLeaf = !(data.children && data.children.length);
-      const style = {
-          backgroundColor: selected.has(key) 
-            ? 'rgba(var(--semi-blue-0), 1)' 
-            : selectedThroughParent.has(key) 
-                ? 'rgba(var(--semi-blue-0), .5)' : 'transparent'
-      }
-      return (
-          <li
-            className={className}
-            role="treenode"
-            onClick={onClick}
-            style={style}
-        >
-            {isLeaf ? <span style={{width: 24}}></span> : expandIcon}
-            {icon}
-            <span>{label}</span>
-        </li>
-      )
-    }
+        const { label, icon, key } = data;
+        const isLeaf = !(data.children && data.children.length);
+        const style = {
+            backgroundColor: selected.has(key) 
+                ? 'rgba(var(--semi-blue-0), 1)' 
+                : selectedThroughParent.has(key) 
+                    ? 'rgba(var(--semi-blue-0), .5)' : 'transparent'
+        };
+        return (
+            <li
+                className={className}
+                role="treeitem"
+                onClick={onClick}
+                style={style}
+            >
+                {isLeaf ? <span style={{ width: 24 }}></span> : expandIcon}
+                {icon}
+                <span>{label}</span>
+            </li>
+        );
+    };
 
-  const treeStyle = {
-    width: 260,
-    height: 420,
-    border: '1px solid var(--semi-color-border)'
-  }
+    const treeStyle = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
   
-  return ( 
-    <Tree
-        treeData={treeData}
-        renderFullLabel={renderLabel}
-        onSelect={handleSelect}
-        style={treeStyle}
-        defaultExpandAll
-    />
-  )
-}
+    return ( 
+        <Tree
+            treeData={treeData}
+            renderFullLabel={renderLabel}
+            onSelect={handleSelect}
+            style={treeStyle}
+            defaultExpandAll
+        />
+    );
+};
 ```
 
 
@@ -1700,40 +2157,40 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
             data.forEach((item, ind, arr) => {
                 if (item.key === key) return callback(item, ind, arr);
                 if (item.children) return loop(item.children, key, callback);
-            })
-        }
+            });
+        };
 
         let dragObj;
         loop(data, dragKey, (item, ind, arr) => {
             arr.splice(ind, 1);
             dragObj = item;
-        })
+        });
 
         if (!dropToGap) {
             loop(data, dropKey, (item, ind, arr) => {
                 item.children = item.children || [];
-                item.children.push(dragObj)
-            })
+                item.children.push(dragObj);
+            });
         } else if (dropPosition === 1 && node.children && node.expanded) {
             loop(data, dropKey, item => {
                 item.children = item.children || [];
-                item.children.unshift(dragObj)
-            })
+                item.children.unshift(dragObj);
+            });
         } else {
             let dropNodeInd;
             let dropNodePosArr;
             loop(data, dropKey, (item, ind, arr) => {
                 dropNodePosArr = arr;
                 dropNodeInd = ind;
-            })
+            });
             if (dropPosition === -1) {
-                dropNodePosArr.splice(dropNodeInd, 0, dragObj)
+                dropNodePosArr.splice(dropNodeInd, 0, dragObj);
             } else {
-                dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj)
+                dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj);
             }
         }
-        setTreeData(data)
-    }
+        setTreeData(data);
+    };
 
     const findDescendantKeys = (node) => {
         let res = [node.key];
@@ -1750,13 +2207,13 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
         };
         findChild(node);
         return res;
-    }
+    };
 
     const handleSelect = (key, bool, node) => {
         setSelected(new Set([key]));
         const descendantKeys = findDescendantKeys(node);
         setSelectedThroughParent(new Set(descendantKeys));
-    }
+    };
 
     const renderLabel = ({
         className,
@@ -1771,11 +2228,11 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
                 ? 'rgba(var(--semi-blue-0), 1)'
                 : selectedThroughParent.has(key)
                     ? 'rgba(var(--semi-blue-0), .5)' : 'transparent'
-        }
+        };
         return (
             <li
                 className={className}
-                role="treenode"
+                role="treeitem"
                 onClick={onClick}
                 style={style}
             >
@@ -1783,14 +2240,14 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
                 {icon}
                 <span>{label}</span>
             </li>
-        )
-    }
+        );
+    };
 
     const treeStyle = {
         width: 260,
         height: 420,
         border: '1px solid var(--semi-color-border)'
-    }
+    };
 
 
     return <Tree
@@ -1814,11 +2271,13 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
 | ------------------- | --------------------- | ------------------------------------------------- | ------- | ------ |
 | autoExpandParent | Toggle whether to expand parent node automatically | boolean | false | 0.34.0 |
 | autoExpandWhenDragEnter | Toggle whether allow autoExpand when drag enter node | boolean | true | 1.8.0 | 
+| autoMergeValue | Sets the automerge value. Specifically, when enabled, when a parent node is selected, value will include that node and its children. (Works if leafOnly is false)| boolean | true | 2.61.0 | 
 | blockNode           | Toggle whether to display node as row     | boolean                     | true    | - |
+| checkRelation | In multiple, the relationship between the checked states of the nodes, optional: 'related'、'unRelated' | string | 'related' | 2.5.0 |
 | className           | Class name| string                      | -       | - |
 | defaultExpandAll    | Set whether to expand all nodes during initialization. And if the subsequent data (`treeData`/`treeDataSimpleJson`) changes, this api cannot affect the default expansion of the node. If you need this, you can use `expandAll`    | boolean                     | false   | - |
 | defaultExpandedKeys | Keys of default expanded nodes. Direct child nodes will be displayed.     | string\[]                   | -       | - |
-| defaultValue        | Default value                      | string \| number \| TreeNode \| (string \| number \| TreeNode)[]            | -       | - |
+| defaultValue        | Default value                      | string \| number \| TreeNodeData \| (string \| number \| TreeNodeData)[]            | -       | - |
 | directory           | Toggle whether to display tree in directory mode | boolean                     | false   | - |
 | disableStrictly | When a node is disabled, its status could not be changed by its parent or child nodes | boolean | false | 1.4.0 | 
 | disabled | Toggle whether to disable the entire tree to be unselectable | boolean | false | 0.32.0 |
@@ -1827,48 +2286,51 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
 | expandAction             | Expand logic, one of false, 'click', 'doubleClick'. Default is set to false, which means item will not be expanded on clicking except on expand icon    | boolean \| string   | false | 0.35.0       |
 | expandAll | Set whether to expand all nodes by default. If the subsequent data (`treeData`/`treeDataSimpleJson`) changes, the default expansion will also be affected by this api | boolean | false | 1.30.0 |
 | expandedKeys        | （Controlled）Keys of expanded nodes. Direct child nodes will be displayed.  | string[]                    | -       | - |
-| filterTreeNode      | Toggle whether searchable or pass in a function to customize search behavior.| boolean \| ((inputValue: string, treeNodeString: string) => boolean)  | false   | - |
+| keyMaps | Customize the key, label, and value fields in the node | object |  - | 2.47.0 |
+| filterTreeNode      | Toggle whether searchable or pass in a function to customize search behavior, data parameter provided since v2.28.0 | boolean \| ((inputValue: string, treeNodeString: string, data?: TreeNodeData) => boolean)  | false   | - |
 | hideDraggingNode | Toggle whether to hide dragImg of dragging node | boolean | false | 1.8.0 | 
-| icon       | Icon | ReactNode         | -       | - |
+| icon       | Icon | ReactNode \|(props: TreeNodeProps) => ReactNode         | -       | - |
 | labelEllipsis | Toggle whether to ellipsis label when overflow. Set to false iff there are other requirements | boolean | false\|true(virtualized) | 1.8.0 | 
 | leafOnly | Toggle whether to display tags for leaf nodes only and for onChange callback params in multiple mode | boolean | false | 1.18.0 |
-| loadData | Load data asynchronously and the return value should be a promise | (treeNode?: TreeNode) => Promise< void > |-| 1.0.0|
+| loadData | Load data asynchronously and the return value should be a promise | (treeNode?: TreeNodeData) => Promise< void > |-| 1.0.0|
 | loadedKeys | （Controlled）Mark node as loaded, working with `loadData` | string[] | - | 1.0.0|
 | motion              | Toggle whether to turn on animation| boolean                     | true    | - |
 | multiple            | Toggle whether in multi-choice mode| boolean                     | false   | - |
-| renderDraggingNode | Custom render function to render html element of dragImg for dragging node | (nodeInstance: HTMLElement, node: TreeNode) => HTMLElement | - | 1.8.0 | 
+| preventScroll | Indicates whether the browser should scroll the document to display the newly focused element, acting on the focus method inside the component, excluding the component passed in by the user | boolean |  |  |
+| renderDraggingNode | Custom render function to render html element of dragImg for dragging node | (nodeInstance: HTMLElement, node: TreeNodeData) => HTMLElement | - | 1.8.0 | 
 | renderFullLabel | Custom option render function | (data: object) => ReactNode | - | 1.7.0 | 
-| renderLabel | Custom label render function | (label: ReactNode, data: TreeNode) => ReactNode | - | 1.6.0 | 
+| renderLabel | Custom label render function. The searchWord parameter is supported since 2.65.0 | <ApiType detail='(label: ReactNode, data: TreeNodeData, searchWord: string) => ReactNode'>(label, data, searchWord) => ReactNode</ApiType> | - | 1.6.0 | 
 | searchClassName     | Classname property for search box  | string                      | -       | - |
 | searchPlaceholder   | Placeholder for search box         | string                      | -       | - |
 | searchRender | Custom method to render search input; hide search box if set to false(**V>=1.0.0**) | ((searchRenderProps: object) => ReactNode) \| false | - | 0.35.0 |
 | searchStyle         | Style for for search box           | CSSProperties                      | -       | - |
 | showClear   | Toggle whether to support clear input box | boolean                     | true   | 0.35.0|
 | showFilteredOnly | Toggle whether to displayed filtered result only in search mode | boolean | false | 0.32.0 |
+| showLine | show line between tree nodes | boolean | false | 2.50.0 |
 | style               | Inline style                       | CSSProperties                      | -       | - |
-| treeData            | Data for treeNodes                 | TreeNode[]            | \[]     | - |
+| treeData            | Data for treeNodes                 | TreeNodeData[]            | \[]     | - |
 | treeDataSimpleJson  | Data for treeNodes in JSON format, return value in JSON format as well    | TreeDataSimpleJson                      | \{}     | - |
 | treeNodeFilterProp  | Property in a `treeNode` used to search   | string                      | `label` | - |
-| value               | Current value, used when tree is a controlled component                   | string \| number \| TreeNode \| (string \| number \| TreeNode)[]           | -       | - |
+| value               | Current value, used when tree is a controlled component                   | string \| number \| TreeNodeData \| (string \| number \| TreeNodeData)[]           | -       | - |
 | virtualize | Efficiently rendering large lists, refer to VirtualizeObj. Motion is disabled when tree is rendered as virtualized list. | VirtualizeObj | - | 0.32.0 |
-| onChange            | Callback function when the tree node is selected, return the value property of data                   | (string \| number \| TreeNode \| (string \| number \| TreeNode)[]) => void   | -       | - |
+| onChange            | Callback function when the tree node is selected, return the value property of data                   | (string \| number \| TreeNodeData \| (string \| number \| TreeNodeData)[]) => void   | -       | - |
 | onChangeWithObject        | Toggle whether to return all properties in an option as a return value. When set to true, return value looks like: { value, label, ...rest }. For controlled mode, you need to pass an object with { value: value } to value correspondingly. DefaultValue similarly.  | boolean                     | false   | - |
-| onDoubleClick | (e: MouseEvent, node: TreeNode) => void | - | 0.35.0 |
+| onDoubleClick | (e: MouseEvent, node: TreeNodeData) => void | - | 0.35.0 |
 | onDragEnd | Callback function for onDragEnd  | (dragProps: object) => void | - | 1.8.0 | 
 | onDragEnter | Callback function for onDragEnter  | (dragEnterProps: object) => void | - | 1.8.0 | 
 | onDragLeave | Callback function for onDragLeave  | (dragProps: object) => void | - | 1.8.0 | 
 | onDragOver | Callback function for onDragOver  | (dragProps: object) => void | - | 1.8.0 | 
 | onDragStart | Callback function for onDragStart  | (dragProps: object) => void | - | 1.8.0 | 
 | onDrop | Callback function for onDrop  | (onDragProps: object) => void | - | 1.8.0 | 
-| onExpand            | Callback function when expand or collapse a node | (expandedKeys: string[], {expanded: boolean, node: TreeNode}) => void               | -       | - |
-| onLoad | Callback function when a node is loaded | (loadedKeys: Set< string >, treeNode: TreeNode) => void | - | 1.0.0|
-| onContextMenu | Callback function when right click on an item | (e: MouseEvent, node: TreeNode) => void | - | 0.35.0 |
-| onSearch            | Callback function when the values for search input changes                | (sunInput: string) => void  | -       | - |
-| onSelect            | Callback function when selected, return the key property of data          | (selectedKey:string, selected: bool, selectedNode: TreeNode) => void | -       | - |
+| onExpand            | Callback function when expand or collapse a node | (expandedKeys: string[], {expanded: boolean, node: TreeNodeData}) => void               | -       | - |
+| onLoad | Callback function when a node is loaded | (loadedKeys: Set< string >, treeNode: TreeNodeData) => void | - | 1.0.0|
+| onContextMenu | Callback function when right click on an item | (e: MouseEvent, node: TreeNodeData) => void | - | 0.35.0 |
+| onSearch                 | Callback function when search value changes. `filteredExpandedKeys` represents the key of the node expanded due to search or value/defaultValue, which can be used when expandedKeys is controlled<br/> **filteredExpandedKeys is supported in 2.38.0**      | function(input: string, filteredExpandedKeys: string[])  
+| onSelect            | Callback function when selected, return the key property of data          | (selectedKey:string, selected: bool, selectedNode: TreeNodeData) => void | -       | - |
 
-### TreeNode
+### TreeNodeData
 
-> **Key for `TreeNode` is required and must be unique**, `label` can be duplicated. Before **v>=1.7.0** value is also required and must be unique.
+> **Key for `TreeNodeData` is required and must be unique**, `label` can be duplicated. Before **v>=1.7.0** value is also required and must be unique.
 > After **v>=1.7.0**, value is not required. In this case, the value property in `onChange`, `value`, `defaultValue` and `onChangeWithObject` will point to key property.
 > To ensure everything behave as expected, keep a consistency of whether to have value or not to have value.
 
@@ -1891,8 +2353,36 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
 | itemSize | Height for each line of treeNode, required | number | - |
 | width | Width | number\|string | '100%' |
 
-### Ref Method
-- search(sugInput) => void
+## Methods
+Some internal methods provided by Tree can be accessed through ref:
+
+|Name | Description | Type | Version |
+|----|----|----|----|
+| search | Trigger search manually | (value: string) => void |-|
+| scrollTo | In a virtualized Tree, make the specified node(Which is an expanded node in the tree) scroll to view | （{key: string; align?: 'center' \| 'start' \| 'end' \| 'smart' \| 'auto';}) => void | 2.18.0|
+
+
+## Accessibility
+
+### ARIA
+
+- Tree supports passing in `aria-label` to indicate the role of the Tree;
+- Tree will set `aria-disabled`, `aria-checked`, `aria-selected`, and `aria-level` for each child node to indicate the node status and level;
+- Tree will set `role` to `tree` and `treeitem` for corresponding parts.
+
+Demo:
+```typescript
+    <Tree
+        /* other attributes */
+        aria-label='example tree'
+    />
+```
+
+
+## Content Guidelines
+- Try to use phrases, capitalize the first letter
+- Keep the same form of terminology between levels, such as all place names or country names
+
 
 ## Design Tokens
 <DesignToken/>

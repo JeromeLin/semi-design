@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import React from 'react';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
@@ -20,18 +19,19 @@ export type Type = 'info' | 'danger' | 'warning' | 'success';
 export interface BannerProps {
     type?: Type;
     className?: string;
+    children?: React.ReactNode;
     fullMode?: boolean;
     title?: React.ReactNode;
     description?: React.ReactNode;
-    icon?: string | React.ReactNode;
-    closeIcon?: string | React.ReactNode;
+    icon?: React.ReactNode;
+    closeIcon?: React.ReactNode;
     style?: React.CSSProperties;
     bordered?: boolean;
-    onClose?: (e: React.MouseEvent) => void;
+    onClose?(e: React.MouseEvent): void
 }
 
 export interface BannerState {
-    visible: boolean;
+    visible: boolean
 }
 
 export default class Banner extends BaseComponent<BannerProps, BannerState> {
@@ -42,8 +42,8 @@ export default class Banner extends BaseComponent<BannerProps, BannerState> {
         type: PropTypes.oneOf(types),
         title: PropTypes.node,
         description: PropTypes.node,
-        icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-        closeIcon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+        icon: PropTypes.node,
+        closeIcon: PropTypes.node,
         children: PropTypes.node,
         style: PropTypes.object,
         className: PropTypes.string,
@@ -52,7 +52,6 @@ export default class Banner extends BaseComponent<BannerProps, BannerState> {
     };
 
     static defaultProps = {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         onClose: () => { },
         type: 'info',
         fullMode: true,
@@ -108,10 +107,11 @@ export default class Banner extends BaseComponent<BannerProps, BannerState> {
             <Button
                 className={`${prefixCls}-close`}
                 onClick={this.remove}
-                icon={closeIcon || <IconClose />}
+                icon={closeIcon || <IconClose x-semi-prop="closeIcon" aria-hidden={true}/>}
                 theme="borderless"
                 size="small"
                 type="tertiary"
+                aria-label='Close'
             />
         );
         return closer;
@@ -120,10 +120,10 @@ export default class Banner extends BaseComponent<BannerProps, BannerState> {
     renderIcon() {
         const { type, icon } = this.props;
         const iconMap = {
-            warning: <IconAlertTriangle size="large" />,
-            success: <IconTickCircle size="large" />,
-            info: <IconInfoCircle size="large" />,
-            danger: <IconAlertCircle size="large" />
+            warning: <IconAlertTriangle size="large" aria-label='warning'/>,
+            success: <IconTickCircle size="large" aria-label='success'/>,
+            info: <IconInfoCircle size="large" aria-label='info'/>,
+            danger: <IconAlertCircle size="large" aria-label='danger'/>
         };
         let iconType: React.ReactNode = iconMap[type];
         const iconCls = cls({
@@ -135,7 +135,7 @@ export default class Banner extends BaseComponent<BannerProps, BannerState> {
         }
         if (iconType) {
             return (
-                <div className={iconCls}>
+                <div className={iconCls} x-semi-prop="icon">
                     {iconType}
                 </div>
             );
@@ -153,18 +153,18 @@ export default class Banner extends BaseComponent<BannerProps, BannerState> {
             [`${prefixCls}-bordered`]: !fullMode && bordered,
         });
         const banner = visible ? (
-            <div className={wrapper} style={style}>
+            <div className={wrapper} style={style} role="alert" {...this.getDataAttr(this.props)}>
                 <div className={`${prefixCls}-content-wrapper`}>
                     <div className={`${prefixCls}-content`}>
                         {this.renderIcon()}
                         <div className={`${prefixCls}-content-body`}>
-                            {title ? <Typography.Title heading={5} className={`${prefixCls}-title`} component="div">{title}</Typography.Title> : null}
-                            {description ? <Typography.Paragraph className={`${prefixCls}-description`} component="div">{description}</Typography.Paragraph> : null}
+                            {title ? <Typography.Title heading={5} className={`${prefixCls}-title`} component="div" x-semi-prop="title">{title}</Typography.Title> : null}
+                            {description ? <Typography.Paragraph className={`${prefixCls}-description`} component="div" x-semi-prop="description">{description}</Typography.Paragraph> : null}
                         </div>
                     </div>
                     {this.renderCloser()}
                 </div>
-                {children ? <div className={`${prefixCls}-extra`}>{children}</div> : null}
+                {children ? <div className={`${prefixCls}-extra`} x-semi-prop="children">{children}</div> : null}
             </div>
         ) : null;
         return banner;

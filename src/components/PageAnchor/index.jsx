@@ -17,19 +17,39 @@ const makeAnchorOfToken = data => {
 
 const PageAnchor = props => {
     const { data = [], slug } = props;
+    const skipCondition = ['introduction', 'accessibility', 'dark-mode', 'customize-theme', 'content-guidelines', 'getting-started', 'design-to-code', 'chart'].some(item => slug.includes(item));
 
     let flag = false;
     const makeAnchor = data => {
         let anchorList = [];
         for (let anchorItem of data) {
-            if (anchorItem.title === '代码演示' || anchorItem.title === 'Demos') {
+            if (anchorItem.title === '代码演示' || anchorItem.title === 'Demos' || skipCondition) {
                 flag = true;
             }
             if (!flag) {
                 continue;
             }
             if (Array.isArray(anchorItem.items) && anchorItem.items.length > 0) {
-                if (anchorItem.title === '代码演示' || anchorItem.title === 'Demos') {
+                if (['Voice and Tone', '语法', 'Grammar and Mechanics',
+                    'Installation and Usage', '安装和使用',
+                    'Common Chart Types Examples', '常用图表类型示例', 
+                    '设计规范', 'Design Guidelines'
+                ].includes(anchorItem.title)) {
+                    anchorList.push(<Anchor.Link
+                        href={`#${makeAnchorId(anchorItem.title)}`}
+                        title={anchorItem.title}
+                        key={anchorItem.title}
+                    > 
+                        {makeAnchor(anchorItem.items)}
+                    </Anchor.Link>);
+                } else if (['与其他方案的差异', 'Comparisons'].includes(anchorItem.title)) {
+                    anchorList.push(<Anchor.Link
+                        href={`#${makeAnchorId(anchorItem.title)}`}
+                        title={anchorItem.title}
+                        key={anchorItem.title}
+                    > 
+                    </Anchor.Link>);
+                } else if (anchorItem.title === '代码演示' || anchorItem.title === 'Demos' || skipCondition) {
                     anchorList.push(makeAnchor(anchorItem.items));
                 } else {
                     anchorList.push(

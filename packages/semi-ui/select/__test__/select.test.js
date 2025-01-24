@@ -1,10 +1,11 @@
 import { Select } from '../../index';
-import { noop } from 'lodash-es';
+import { noop } from 'lodash';
 const Option = Select.Option;
 const OptGroup = Select.OptGroup;
 import { IconClear, IconChevronDown } from '@douyinfe/semi-icons';
 import { BASE_CLASS_PREFIX } from '../../../semi-foundation/base/constants';
 import keyCode from '../../../semi-foundation/utils/keyCode';
+import {sleep} from "../../_test_/utils";
 
 const defaultList = [
     { value: 'abc', label: 'Abc' },
@@ -20,7 +21,7 @@ function getOption(list = defaultList) {
 let commonProps = {
     // Select use Popup Layer to show candidate option,
     // but all Popup Layer which extends from Tooltip (eg Popover, Dropdown) have animation and delay.
-    // Turn off animation and delay during testing, to avoid wating (something like setTimeOut/balabala...) in the test code
+    // Turn off animation and delay during testing, to avoid waiting (something like setTimeOut/balabala...) in the test code
     motion: false,
     mouseEnterDelay: 0,
     mouseLeaveDelay: 0,
@@ -241,6 +242,21 @@ describe('Select', () => {
         defaultSelect.unmount();
     });
 
+    it('dropdownMatchSelectWidth, width is string', () => {
+        let stringProps = {
+            defaultOpen: true,
+            style: { width: '90px' },
+            defaultValue: 'abc',
+        };
+        let stringSelect = getSelect(stringProps);
+        let strSelector = stringSelect.find(`.${BASE_CLASS_PREFIX}-select`).getDOMNode();
+        let strSelectorWidth = window.getComputedStyle(strSelector).width; // expect 90px
+        let strList = stringSelect.find(`.${BASE_CLASS_PREFIX}-select-option-list`).getDOMNode().parentNode;
+        let strListWidth = window.getComputedStyle(strList).minWidth;
+        expect(strSelectorWidth).toEqual(strListWidth);
+        stringSelect.unmount();
+    });
+
     it('dropdownMatchSelectWidth = false', () => {
         let notMatchProps = {
             defaultOpen: true,
@@ -353,7 +369,7 @@ describe('Select', () => {
     });
 
     it('innerTopSlot', () => {
-        let innerTopSlot = <div class="inner-slot">inner</div>;
+        let innerTopSlot = <div className="inner-slot">inner</div>;
         let props = {
             innerTopSlot: innerTopSlot,
             defaultOpen: true,
@@ -363,7 +379,7 @@ describe('Select', () => {
     });
 
     it('outerTopSlot', () => {
-        let outerTopSlot = <div class="outer-slot">outer</div>;
+        let outerTopSlot = <div className="outer-slot">outer</div>;
         let props = {
             outerTopSlot: outerTopSlot,
             defaultOpen: true,
@@ -374,7 +390,7 @@ describe('Select', () => {
 
     // TODO
     it('innerBottomSlot', () => {
-        let innerBottomSlot = <div class="inner-slot">inner</div>;
+        let innerBottomSlot = <div className="inner-slot">inner</div>;
         let props = {
             innerBottomSlot: innerBottomSlot,
             defaultOpen: true,
@@ -384,7 +400,7 @@ describe('Select', () => {
     });
 
     it('outerBottomSlot', () => {
-        let outerBottomSlot = <div class="outer-slot">outer</div>;
+        let outerBottomSlot = <div className="outer-slot">outer</div>;
         let props = {
             outerBottomSlot: outerBottomSlot,
             defaultOpen: true,
@@ -452,24 +468,27 @@ describe('Select', () => {
         const props = { disabled: true };
         const select = getSelect(props);
         expect(select.exists(`.${BASE_CLASS_PREFIX}-select-disabled`)).toEqual(true);
-        // Does not respond click events when disbaled is true
+        // Does not respond click events when disabled is true
         select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('click', {});
         expect(select.exists(`.${BASE_CLASS_PREFIX}-select-option-list`)).toEqual(false);
     });
 
-    it('onDropdownVisibleChange & clickToHide', () => {
+    it('onDropdownVisibleChange & clickToHide', async () => {
         let onDropdownVisible = () => {};
         let spyOnDV = sinon.spy(onDropdownVisible);
         const props = {
             onDropdownVisibleChange: spyOnDV,
             clickToHide: true,
+            motion: false
         };
         const select = getSelect(props);
         select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('click', {});
+        await sleep(1000);
         expect(select.exists(`.${BASE_CLASS_PREFIX}-select-option-list`)).toEqual(true);
         expect(spyOnDV.calledOnce).toEqual(true);
         expect(spyOnDV.calledWithMatch(true)).toEqual(true);
         select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('click', {});
+        await sleep(1000);
         expect(select.exists(`.${BASE_CLASS_PREFIX}-select-option-list`)).toEqual(false);
         expect(spyOnDV.calledWithMatch(false)).toEqual(true);
     });
@@ -487,6 +506,22 @@ describe('Select', () => {
         let optionList = select.find(`.${BASE_CLASS_PREFIX}-select-option-list`).children();
         expect(optionList.length).toEqual(1);
         expect(optionList.at(0).text()).toEqual('Abc');
+    });
+
+    it('filter = true,label includes regex special character and key it at first', () => {
+        let props = {
+            filter: true,
+            optionList: [{label: 'label++',value: ''}]
+        };
+        const select = getSelect(props);
+        // click to show input
+        select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('click', {});
+        let inputValue = '+';
+        let event = { target: { value: inputValue } };
+        select.find('input').simulate('change', event);
+        let optionList = select.find(`.${BASE_CLASS_PREFIX}-select-option-list`).children();
+        expect(optionList.length).toEqual(1);
+        expect(optionList.at(0).text()).toEqual('label++');
     });
 
     it('filter = custom function', () => {
@@ -525,12 +560,6 @@ describe('Select', () => {
         select.unmount();
         // when click clear button, should trigger onSearch
         // TODO
-        let scProps = {
-            showClear: true,
-            filter: true,
-            defaultValue: 'tikok',
-        };
-        const scSelect = getSelect(props);
     });
 
     it('emptyContent', () => {
@@ -687,7 +716,7 @@ describe('Select', () => {
     });
 
     it('onDeselect', () => {
-        // trigger onDeselect when option is deselectd
+        // trigger onDeselect when option is deselected
         let onDeselect = (value, option) => {};
         let spyOnDeselect = sinon.spy(onDeselect);
         let props = {
@@ -776,8 +805,9 @@ describe('Select', () => {
     });
 
     it('【value】controlled mode', () => {
+        let spyOnChange = sinon.spy((value, option) => {});
+
         let props = {
-            data: [],
             value: 'abc',
         };
         let select = getSelect(props);
@@ -789,13 +819,46 @@ describe('Select', () => {
         select.update();
         expect(select.find(`.${BASE_CLASS_PREFIX}-select-selection-text`).getDOMNode().textContent).toEqual('');
         select.unmount();
+
+        let singleProps = {
+            value: 'abc',
+            optionList: defaultList,
+            defaultOpen: true,
+            onChange: spyOnChange,
+        };
+        select = getSelect(singleProps);
+        let options = select.find(`.${BASE_CLASS_PREFIX}-select-option-list`).children();
+        const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
+        options.at(1).simulate('click', nativeEvent);
+        expect(spyOnChange.getCall(0).args[0]).toEqual('hotsoon');
+        select.unmount();
+
+        let spyMOnChange = sinon.spy((value, option) => {});
+        let spyMOnClear = sinon.spy(() => {});
+        let multipleProps = {
+            value: '',
+            optionList: defaultList,
+            defaultOpen: true,
+            multiple: true,
+            filter: true,
+            onChange: spyMOnChange,
+            showClear: true,
+            onClear: spyMOnClear,
+        };
+        select = getSelect(multipleProps);
+        let mOptions = select.find(`.${BASE_CLASS_PREFIX}-select-option-list`).children();
+        mOptions.at(1).simulate('click', nativeEvent);
+        expect(spyMOnChange.getCall(0).args[0]).toEqual(['hotsoon']);
+
+        // TODO
+        // test 
+
     });
 
     it('【onBlur/onFocus】', () => {
         let spyOnBlur = sinon.spy((value, option) => {
         });
         let spyOnFocus = sinon.spy((value, option) => {
-            // debugger
         });
 
         let props = {
@@ -811,9 +874,9 @@ describe('Select', () => {
         // Since there is no mechanism such as event bubbling in enzyme + jsdom, the blur event can only be triggered manually on the blur element,
         // and the blur of the `a element` cannot be achieved through the focus `b element`.
 
-        // blur usually call when popover close, so use select instance close() method to mock blur click like use in browser
+        // Adapt to A11y requirements, close the panel will not call the onBlur func 
         select.instance().close();
-        expect(spyOnBlur.callCount).toEqual(1);
+        expect(spyOnBlur.callCount).toEqual(0);
         select.unmount();
     });
 
@@ -851,7 +914,7 @@ describe('Select', () => {
     });
 
     it('【autoFocus】 & onBlur when autoFocus = true', () => {
-        // autoFocus should trigger onBlur when click ohter element directly （dropdown not open）
+        // autoFocus should trigger onBlur when click other element directly （dropdown not open）
         let spyOnBlur = sinon.spy((value, option) => {
         });
         let props = {
@@ -871,7 +934,7 @@ describe('Select', () => {
         expect(spyOnBlur.callCount).toEqual(1);
     });
 
-    it('vitrual', () => {
+    it('virtual', () => {
         let spyOnChange = sinon.spy((value) => {
         });
         let optionList = Array.from({ length: 100 }, (v, i) => ({ label: `option-${i}`, value: i }));
@@ -983,7 +1046,7 @@ describe('Select', () => {
     it('customTrigger', () => {
         const triggerRender = ({ value, ...rest }) => {
             return (
-              <div className="custom-triger">
+              <div className="custom-trigger">
                 trigger
               </div>
             );
@@ -992,7 +1055,7 @@ describe('Select', () => {
             triggerRender,
         };
         let select = getSelect(props);
-        let trigger = select.find('.custom-triger');
+        let trigger = select.find('.custom-trigger');
         expect(trigger.length).toEqual(1);
         expect(trigger.at(0).text()).toEqual('trigger');
         trigger.at(0).simulate('click')
@@ -1002,12 +1065,20 @@ describe('Select', () => {
     it('test keyboard press', () => {
         let props = {
             defaultOpen: true,
+            optionList: [
+                { value: 'abc', label: 'Abc' },
+                { value: 'hotsoon', label: 'Hotsoon' },
+                { value: 'pipixia', label: 'Pipixia' },
+                { value: 'toutiao', label: 'TopBuzz' },
+            ],
         };
         let select = getSelect(props);
         // press ⬇️
+        // since the defaultActiveFirstOption default to be true, after ⬇️, the second option focused
         select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('keydown', { keyCode: keyCode.DOWN });
-        expect(select.find(`.${BASE_CLASS_PREFIX}-select-option`).at(0).hasClass(`${BASE_CLASS_PREFIX}-select-option-focused`)).toBe(true);
+        expect(select.find(`.${BASE_CLASS_PREFIX}-select-option`).at(1).hasClass(`${BASE_CLASS_PREFIX}-select-option-focused`)).toBe(true);
         // press ⬆️
+        select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('keydown', { keyCode: keyCode.UP });
         select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('keydown', { keyCode: keyCode.UP });
         expect(select.find(`.${BASE_CLASS_PREFIX}-select-option`).at(defaultList.length-1).hasClass(`${BASE_CLASS_PREFIX}-select-option-focused`)).toBe(true);
         // press ESC
@@ -1018,7 +1089,25 @@ describe('Select', () => {
         select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('keydown', { keyCode: keyCode.DOWN });
         select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('keydown', { keyCode: keyCode.ENTER });
         expect(select.find(`.${BASE_CLASS_PREFIX}-select-selection-text`).text()).toBe(defaultList[0].label);
+        select.unmount();
+
+        // test whether backspace can skip disabled option
+        let dProps = {
+            defaultOpen: true,
+            optionList: [
+                { value: 'abc', label: 'Abc' },
+                { value: 'hotsoon', label: 'Hotsoon', disabled: true },
+                { value: 'pipixia', label: 'Pipixia' },
+            ],
+            defaultValue: ['hotsoon', 'abc'],
+            multiple: true,
+        };
+        let dSelect = getSelect(dProps);
+        dSelect.find(`.${BASE_CLASS_PREFIX}-select`).simulate('keydown', { keyCode: keyCode.BACKSPACE });
+        let selections = Array.from(dSelect.state().selections);
+        expect(selections[0][0]).toEqual('Hotsoon');
     });
+
     it('allowCreate', () => {
         const props = {
             multiple: true,
@@ -1034,10 +1123,186 @@ describe('Select', () => {
         select.find(`.${BASE_CLASS_PREFIX}-select .${BASE_CLASS_PREFIX}-input`).simulate('keydown', { keyCode: keyCode.BACKSPACE });
         expect(select.find(`.${BASE_CLASS_PREFIX}-select .semi-tag`).length).toBe(0);
     });
+
+    it('【onMouseEnter/onMouseLeave】', () => {
+        let spyEnter = sinon.spy((e) => {
+        });
+        let spyLeave = sinon.spy((e) => {
+        });
+
+        let props = {
+            onMouseEnter: spyEnter,
+            onMouseLeave: spyLeave,
+        };
+        let select = getSelect(props);
+        let trigger = select.find('.semi-select');
+        const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
+        trigger.simulate('mouseenter', nativeEvent);
+        expect(spyEnter.callCount).toEqual(1);
+
+        trigger.simulate('mouseleave', nativeEvent);
+        expect(spyLeave.callCount).toEqual(1);
+        select.unmount();
+    });
+
+    it('ref method', () => {
+        let r;
+        let props = {
+            ref: (ref) => { r = ref },
+            filter: true,
+            multiple: true,
+            optionList: defaultList,
+        };
+
+        let select = getSelect(props);
+        r.open();
+        expect(select.state().isOpen).toEqual(true);
+
+        r.close();
+        expect(select.state().isOpen).toEqual(false);
+
+        r.selectAll();
+        select.update();
+        expect(select.state().selections.size).toEqual(4);
+
+        r.deselectAll();
+        expect(select.state().selections.size).toEqual(0);
+
+        r.focus();
+        expect(document.activeElement.tagName).toEqual('INPUT');
+
+        select.unmount();
+        // selectAll not work when multiple is false
+        let r2;
+        let props2 = {
+            ref: (ref) => { r2 = ref },
+            filter: true,
+            optionList: defaultList,
+        };
+        let singleSelect = getSelect(props2);
+        r2.selectAll();
+        expect(singleSelect.state().selections.size).toEqual(0);
+    });
+
+    it('props optionList update after choose some option, uncontrolled mode', () => {
+
+        let props = {
+            defaultActiveFirstOption: true,
+            optionList: [
+                { value: 'abc', label: 'Abc' },
+                { value: 'hotsoon', label: 'Hotsoon' }
+            ],
+            defaultOpen: true,
+            multiple: true,
+            filter: true,
+        };
+        
+        let select = getSelect(props);
+        let options = select.find(`.${BASE_CLASS_PREFIX}-select-option-list`).children();
+        const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
+        options.at(0).simulate('click', nativeEvent);
+        options.at(1).simulate('click', nativeEvent);
+
+        let newList = [
+            { value: 'pipixia', label: 'Pipixia' },
+            { value: 'toutiao', label: 'TopBuzz' },
+        ];
+        select.setProps({ optionList: newList });
+        select.update();
+        let selections = Array.from(select.state().selections);
+        expect(selections[0][0]).toEqual('Abc');
+        expect(selections[1][0]).toEqual('Hotsoon');
+        select.unmount();
+
+        let singleProps = {
+            defaultActiveFirstOption: true,
+            optionList: [
+                { value: 'abc', label: 'Abc' },
+                { value: 'hotsoon', label: 'Hotsoon' },
+            ],
+            defaultOpen: true,
+        };
+
+        let singleSelect = getSelect(singleProps);
+        let options2 = singleSelect.find(`.${BASE_CLASS_PREFIX}-select-option-list`).children();
+        options2.at(0).simulate('click', nativeEvent);
+        singleSelect.setProps({ optionList: newList });
+        singleSelect.update();
+        let selections2 = Array.from(singleSelect.state().selections);
+        expect(selections2[0][0]).toEqual('abc');
+    });
+
+    it('click tag close when multiple, controlled mode', () => {
+        let spyOnChange = sinon.spy((value) => {
+        });
+        let spyOnDeselect = sinon.spy((option) => {
+        });
+        let props = {
+            optionList: [
+                { value: 'abc', label: 'Abc' },
+                { value: 'hotsoon', label: 'Hotsoon' },
+            ],
+            multiple: true,
+            value: ['abc', 'hotsoon'],
+            onChange: spyOnChange,
+            onDeselect: spyOnDeselect,
+        };
+        let select = getSelect(props);
+        let tagClose = select.find('.semi-tag-close').children();
+        const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
+        tagClose.at(0).simulate('click', nativeEvent);
+        expect(spyOnDeselect.calledWith('abc'));
+        expect(spyOnChange.calledWith(['hotsoon']));
+    });
+
+    it('autoClearSearchValue', () => {
+        // default usage
+        let optionList = Array.from({ length: 100 }, (v, i) => ({ label: `option-${i}`, value: i }));
+
+        let props = {
+            multiple: true,
+            optionList: optionList,
+            defaultOpen: true,
+            filter: true,
+        };
+        let select = getSelect(props);
+        select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('click', {});
+        let keyword = 'option';
+        let event = { target: { value: keyword } };
+        select.find('input').simulate('change', event);
+
+        let options = select.find(`.${BASE_CLASS_PREFIX}-select-option-list`).children();
+        const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
+        options.at(0).simulate('click', nativeEvent);
+        let inputValue = select.find('input').getDOMNode().value;
+        expect(inputValue).toEqual('');
+    });
+
+    it('autoClearSearchValue = false', () => {
+        let optionList = Array.from({ length: 100 }, (v, i) => ({ label: `option-${i}`, value: i }));
+
+        let props = {
+            multiple: true,
+            optionList: optionList,
+            defaultOpen: true,
+            autoClearSearchValue: false,
+            filter: true,
+        };
+        let select = getSelect(props);
+        select.find(`.${BASE_CLASS_PREFIX}-select`).simulate('click', {});
+        let keyword = 'option';
+        let event = { target: { value: keyword } };
+        select.find('input').simulate('change', event);
+
+        let options = select.find(`.${BASE_CLASS_PREFIX}-select-option-list`).children();
+        const nativeEvent = { nativeEvent: { stopImmediatePropagation: noop } };
+        options.at(0).simulate('click', nativeEvent);
+        let inputValue = select.find('input').getDOMNode().value;
+        expect(inputValue).toEqual(keyword);
+    });
     // TODO ref selectAll \deselectAll when onChangeWithObject is true
-    // TODO when loading is true, do not response any keyborard event
-    // TODO can't remove tag when option is diabled
-    // TODO
+    // TODO when loading is true, do not response any keyboard event
+    // TODO can't remove tag when option is disabled
     // it('allowCreate-renderCreateItem', ()=>{})
     // it('autoAdjustOverflow', ()=>{})
     // it('remote', ()=>{})
@@ -1059,7 +1324,4 @@ describe('Select', () => {
     //         expect(candidate.at(0).getDOMNode().textContent).toEqual('ies');
     //         expect(candidate.at(1).getDOMNode().textContent).toEqual('design');
     //     })
-
-    //     // 即将废弃的兼容API测试
-    // OptGroup
 });

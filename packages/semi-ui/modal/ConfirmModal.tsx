@@ -1,5 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable eqeqeq */
 import React, { useState, useCallback } from 'react';
 import cls from 'classnames';
 import { cssClasses } from '@douyinfe/semi-foundation/modal/constants';
@@ -81,7 +79,7 @@ const ConfirmModal = (props: ConfirmProps) => {
             visible={visible}
             {...rest}
         >
-            <div className={contentCls}>{content}</div>
+            <div className={contentCls} x-semi-prop="content">{content}</div>
         </Modal>
     );
 };

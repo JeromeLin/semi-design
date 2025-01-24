@@ -1,10 +1,9 @@
 import React from 'react';
 import cls from 'classnames';
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import PropTypes from 'prop-types';
-import { isEqual, noop, omit, isEmpty, isArray } from 'lodash-es';
+import { isEqual, noop, omit, isEmpty, isArray, pick } from 'lodash';
 import TransferFoundation, { TransferAdapter, BasicDataItem, OnSortEndProps } from '@douyinfe/semi-foundation/transfer/foundation';
-import { _generateDataByType, _generateSelectedItems } from '@douyinfe/semi-foundation/transfer/transferUtlls';
+import { _generateDataByType, _generateSelectedItems } from '@douyinfe/semi-foundation/transfer/transferUtils';
 import { cssClasses, strings } from '@douyinfe/semi-foundation/transfer/constants';
 import '@douyinfe/semi-foundation/transfer/transfer.scss';
 import BaseComponent from '../_base/baseComponent';
@@ -17,35 +16,37 @@ import Button from '../button';
 import Tree from '../tree';
 import { IconClose, IconSearch, IconHandle } from '@douyinfe/semi-icons';
 import { Value as TreeValue, TreeProps } from '../tree/interface';
+import { RenderItemProps, Sortable } from '../_sortable';
+import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 export interface DataItem extends BasicDataItem {
     label?: React.ReactNode;
-    style?: React.CSSProperties;
+    style?: React.CSSProperties
 }
 
 export interface GroupItem {
     title?: string;
-    children?: Array<DataItem>;
+    children?: Array<DataItem>
 }
 
 export interface TreeItem extends DataItem {
-    children: Array<TreeItem>;
+    children: Array<TreeItem>
 }
 
 export interface RenderSourceItemProps extends DataItem {
     checked: boolean;
-    onChange?: () => void;
+    onChange?: () => void
 }
 
 export interface RenderSelectedItemProps extends DataItem {
     onRemove?: () => void;
-    sortableHandle?: typeof SortableHandle;
+    sortableHandle?: any
 }
 
 export interface EmptyContent {
     left?: React.ReactNode;
     right?: React.ReactNode;
-    search?: React.ReactNode;
+    search?: React.ReactNode
 }
 
 export type Type = 'list' | 'groupList' | 'treeList';
@@ -60,6 +61,8 @@ export interface SourcePanelProps {
     filterData: Array<DataItem>;
     /* All items */
     sourceData: Array<DataItem>;
+    /* transfer props' dataSource */
+    propsDataSource: DataSource;
     /* Whether to select all */
     allChecked: boolean;
     /* Number of filtered results */
@@ -75,7 +78,7 @@ export interface SourcePanelProps {
     /* The function that should be called when selecting or deleting a single option */
     onSelectOrRemove: (item: DataItem) => void;
     /* The function that should be called when selecting an option, */
-    onSelect: (value: Array<string | number>) => void;
+    onSelect: (value: Array<string | number>) => void
 }
 
 export type OnSortEnd = ({ oldIndex, newIndex }: OnSortEndProps) => void;
@@ -90,14 +93,20 @@ export interface SelectedPanelProps {
     /* The function that should be called when a single option is deleted */
     onRemove: (item: DataItem) => void;
     /* The function that should be called when reordering the results */
-    onSortEnd: OnSortEnd;
+    onSortEnd: OnSortEnd
 }
 
 export interface ResolvedDataItem extends DataItem {
     _parent?: {
-        title: string;
+        title: string
     };
-    _optionKey?: string | number;
+    _optionKey?: string | number
+}
+
+export interface DraggableResolvedDataItem {
+    key?: string | number;
+    index?: number;
+    item?: ResolvedDataItem
 }
 
 export type DataSource = Array<DataItem> | Array<GroupItem> | Array<TreeItem>;
@@ -108,13 +117,28 @@ interface HeaderConfig {
     onAllClick: () => void;
     type: string;
     showButton: boolean;
+    num: number;
+    allChecked?: boolean
+}
+
+type SourceHeaderProps = {
+    num: number;
+    showButton: boolean;
+    allChecked: boolean;
+    onAllClick: () => void
+}
+
+type SelectedHeaderProps = {
+    num: number;
+    showButton: boolean;
+    onClear: () => void
 }
 
 export interface TransferState {
     data: Array<ResolvedDataItem>;
     selectedItems: Map<number | string, ResolvedDataItem>;
     searchResult: Set<number | string>;
-    inputValue: string;
+    inputValue: string
 }
 
 export interface TransferProps {
@@ -140,10 +164,11 @@ export interface TransferProps {
     renderSelectedItem?: (item: RenderSelectedItemProps) => React.ReactNode;
     renderSourcePanel?: (sourcePanelProps: SourcePanelProps) => React.ReactNode;
     renderSelectedPanel?: (selectedPanelProps: SelectedPanelProps) => React.ReactNode;
+    renderSourceHeader?: (headProps: SourceHeaderProps) => React.ReactNode;
+    renderSelectedHeader?: (headProps: SelectedHeaderProps) => React.ReactNode
 }
 
-const prefixcls = cssClasses.PREFIX;
-
+const prefixCls = cssClasses.PREFIX;
 class Transfer extends BaseComponent<TransferProps, TransferState> {
     static propTypes = {
         style: PropTypes.object,
@@ -200,12 +225,10 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
             inputValue: '',
         };
         if (Boolean(dataSource) && isArray(dataSource)) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore Avoid reporting errors this.state.xxx is read-only
             this.state.data = _generateDataByType(dataSource, type);
         }
         if (Boolean(defaultValue) && isArray(defaultValue)) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore Avoid reporting errors this.state.xxx is read-only
             this.state.selectedItems = _generateSelectedItems(defaultValue, this.state.data);
         }
@@ -274,7 +297,13 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
     }
 
     onInputChange(value: string) {
-        this.foundation.handleInputChange(value);
+        this.foundation.handleInputChange(value, true);
+    }
+
+    search(value: string) {
+        // The search method is used to provide the user with a manually triggered search
+        // Since the method is manually called by the user, setting the second parameter to false does not trigger the onSearch callback to notify the user
+        this.foundation.handleInputChange(value, false);
     }
 
     onSelectOrRemove(item: ResolvedDataItem) {
@@ -291,7 +320,7 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
             return null;
         }
         return (
-            <div className={`${prefixcls }-filter`}>
+            <div role="search" aria-label="Transfer filter" className={`${prefixCls}-filter`}>
                 <Input
                     prefix={<IconSearch />}
                     placeholder={locale.placeholder}
@@ -306,23 +335,34 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
     }
 
     renderHeader(headerConfig: HeaderConfig) {
-        const { disabled } = this.props;
+        const { disabled, renderSourceHeader, renderSelectedHeader } = this.props;
         const { totalContent, allContent, onAllClick, type, showButton } = headerConfig;
         const headerCls = cls({
-            [`${prefixcls }-header`]: true,
-            [`${prefixcls }-right-header`]: type === 'right',
-            [`${prefixcls }-left-header`]: type === 'left',
+            [`${prefixCls}-header`]: true,
+            [`${prefixCls}-right-header`]: type === 'right',
+            [`${prefixCls}-left-header`]: type === 'left',
         });
+
+        if (type === 'left' && typeof renderSourceHeader === 'function') {
+            const { num, showButton, allChecked, onAllClick } = headerConfig;
+            return renderSourceHeader({ num, showButton, allChecked, onAllClick });
+        }
+        
+        if (type === 'right' && typeof renderSelectedHeader === 'function') {
+            const { num, showButton, onAllClick: onClear } = headerConfig;
+            return renderSelectedHeader({ num, showButton, onClear });                 
+        }
+
         return (
             <div className={headerCls}>
-                <span className={`${prefixcls }-header-total`}>{totalContent}</span>
+                <span className={`${prefixCls}-header-total`}>{totalContent}</span>
                 {showButton ? (
                     <Button
                         theme="borderless"
                         disabled={disabled}
                         type="tertiary"
                         size="small"
-                        className={`${prefixcls }-header-all`}
+                        className={`${prefixCls}-header-all`}
                         onClick={onAllClick}
                     >
                         {allContent}
@@ -340,8 +380,8 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
             return renderSourceItem({ ...item, checked, onChange: () => this.onSelectOrRemove(item) });
         }
         const leftItemCls = cls({
-            [`${prefixcls }-item`]: true,
-            [`${prefixcls }-item-disabled`]: item.disabled,
+            [`${prefixCls}-item`]: true,
+            [`${prefixCls}-item-disabled`]: item.disabled,
         });
         return (
             <Checkbox
@@ -349,7 +389,9 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
                 disabled={item.disabled || disabled}
                 className={leftItemCls}
                 checked={checked}
+                role="listitem"
                 onChange={() => this.onSelectOrRemove(item)}
+                x-semi-children-alias={`dataSource[${index}].label`}
             >
                 {item.label}
             </Checkbox>
@@ -358,7 +400,7 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
 
     renderLeft(locale: Locale['Transfer']) {
         const { data, selectedItems, inputValue, searchResult } = this.state;
-        const { loading, type, emptyContent, renderSourcePanel } = this.props;
+        const { loading, type, emptyContent, renderSourcePanel, dataSource } = this.props;
         const totalToken = locale.total;
         const inSearchMode = inputValue !== '';
         const showNumber = inSearchMode ? searchResult.size : data.length;
@@ -367,23 +409,37 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
         // For example, the filtered data on the left is 1, 3, 4;
         // The selected option is 1,2,3,4, it is true
         // The selected option is 2,3,4, then it is false
-        const leftContainesNotInSelected = Boolean(filterData.find(f => !selectedItems.has(f.key)));
+        let filterDataAllDisabled = true;
+        const leftContainsNotInSelected = Boolean(filterData.find(f => {
+            if (f.disabled) {
+                return false;
+            } else {
+                if (filterDataAllDisabled) {
+                    filterDataAllDisabled = false;
+                }
+                return !selectedItems.has(f.key);
+            }
+        }));
 
         const totalText = totalToken.replace('${total}', `${showNumber}`);
 
         const headerConfig: HeaderConfig = {
             totalContent: totalText,
-            allContent: leftContainesNotInSelected ? locale.selectAll : locale.clearSelectAll,
-            onAllClick: () => this.foundation.handleAll(leftContainesNotInSelected),
+            allContent: leftContainsNotInSelected ? locale.selectAll : locale.clearSelectAll,
+            onAllClick: () => this.foundation.handleAll(leftContainsNotInSelected),
             type: 'left',
-            showButton: type !== strings.TYPE_TREE_TO_LIST,
+            showButton: type !== strings.TYPE_TREE_TO_LIST && !filterDataAllDisabled,
+            num: showNumber,
+            allChecked: !leftContainsNotInSelected
         };
         const inputCom = this.renderFilter(locale);
         const headerCom = this.renderHeader(headerConfig);
         const noMatch = inSearchMode && searchResult.size === 0;
         const emptySearch = emptyContent.search ? emptyContent.search : locale.emptySearch;
         const emptyLeft = emptyContent.left ? emptyContent.left : locale.emptyLeft;
-        const emptyCom = this.renderEmpty('left', inputValue ? emptySearch : emptyLeft);
+        const emptyDataCom = this.renderEmpty('left', emptyLeft);
+        const emptySearchCom = this.renderEmpty('left', emptySearch);
+
         const loadingCom = <Spin />;
 
         let content: React.ReactNode = null;
@@ -392,7 +448,10 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
                 content = loadingCom;
                 break;
             case noMatch:
-                content = emptyCom;
+                content = emptySearchCom;
+                break;
+            case data.length === 0:
+                content = emptyDataCom;
                 break;
             case type === strings.TYPE_TREE_TO_LIST:
                 content = (
@@ -422,13 +481,14 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
             noMatch,
             filterData,
             sourceData: data,
-            allChecked: !leftContainesNotInSelected,
+            propsDataSource: dataSource,
+            allChecked: !leftContainsNotInSelected,
             showNumber,
             inputValue,
             selectedItems,
             value: values,
             onSelect: this.foundation.handleSelect.bind(this.foundation),
-            onAllClick: () => this.foundation.handleAll(leftContainesNotInSelected),
+            onAllClick: () => this.foundation.handleAll(leftContainsNotInSelected),
             onSearch: this.onInputChange,
             onSelectOrRemove: (item: ResolvedDataItem) => this.onSelectOrRemove(item),
         };
@@ -438,17 +498,17 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
         }
 
         return (
-            <section className={`${prefixcls }-left`}>
+            <section className={`${prefixCls}-left`}>
                 {inputCom}
                 {content}
             </section>
         );
     }
 
-    renderGroupTitle(group: GroupItem) {
-        const groupCls = cls(`${prefixcls }-group-title`);
+    renderGroupTitle(group: GroupItem, index: number) {
+        const groupCls = cls(`${prefixCls }-group-title`);
         return (
-            <div className={groupCls} key={group.title}>
+            <div className={groupCls} key={`title-${index}`}>
                 {group.title}
             </div>
         );
@@ -493,7 +553,7 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
                 // group content already insert
                 content.push(optionContent);
             } else if (parentGroup) {
-                const groupContent = this.renderGroupTitle(parentGroup);
+                const groupContent = this.renderGroupTitle(parentGroup, index);
                 groupStatus.set(parentGroup.title, true);
                 content.push(groupContent);
                 content.push(optionContent);
@@ -501,72 +561,72 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
                 content.push(optionContent);
             }
         });
-        return <div className={`${prefixcls }-left-list`}>{content}</div>;
+        return <div className={`${prefixCls}-left-list`} role="list" aria-label="Option list">{content}</div>;
     }
 
-    renderRightItem(item: ResolvedDataItem): React.ReactNode {
+    renderRightItem = (item: ResolvedDataItem, sortableHandle?: any): React.ReactNode => {
         const { renderSelectedItem, draggable, type, showPath } = this.props;
-        let newItem = item;
-        if (draggable) {
-            newItem = { ...item, key: item._optionKey };
-            delete newItem._optionKey;
-        }
-        const onRemove = () => this.foundation.handleSelectOrRemove(newItem);
+        const onRemove = () => this.foundation.handleSelectOrRemove(item);
         const rightItemCls = cls({
-            [`${prefixcls }-item`]: true,
-            [`${prefixcls }-right-item`]: true,
-            [`${prefixcls }-right-item-draggable`]: draggable
+            [`${prefixCls}-item`]: true,
+            [`${prefixCls}-right-item`]: true,
+            [`${prefixCls}-right-item-draggable`]: draggable
         });
         const shouldShowPath = type === strings.TYPE_TREE_TO_LIST && showPath === true;
 
         const label = shouldShowPath ? this.foundation._generatePath(item) : item.label;
 
         if (renderSelectedItem) {
-            return renderSelectedItem({ ...item, onRemove, sortableHandle: SortableHandle });
+            return renderSelectedItem({ ...item, onRemove, sortableHandle });
         }
 
-        const DragHandle = SortableHandle(() => (
-            <IconHandle className={`${prefixcls }-right-item-drag-handler`} />
+        const DragHandle = sortableHandle && sortableHandle(() => (
+            <IconHandle role="button" aria-label="Drag and sort" className={`${prefixCls}-right-item-drag-handler`} />
         ));
 
         return (
-            <div className={rightItemCls} key={newItem.key}>
-                {draggable ? <DragHandle /> : null}
-                <div className={`${prefixcls}-right-item-text`}>{label}</div>
+            // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+            <div role="listitem" className={rightItemCls} key={item.key}>
+                {draggable && sortableHandle ? <DragHandle /> : null}
+                <div className={`${prefixCls}-right-item-text`}>{label}</div>
                 <IconClose
-                    onClick={onRemove} className={cls(`${prefixcls}-item-close-icon`, {
-                        [`${prefixcls}-item-close-icon-disabled`]: item.disabled
+                    onClick={onRemove}
+                    aria-disabled={item.disabled}
+                    className={cls(`${prefixCls}-item-close-icon`, {
+                        [`${prefixCls}-item-close-icon-disabled`]: item.disabled
                     })}
                 />
             </div>
         );
     }
 
+    renderSortItem = (props: RenderItemProps): React.ReactNode => {
+        const { id, sortableHandle } = props;
+        const { selectedItems } = this.state;
+        const selectedData = [...selectedItems.values()];
+        const item = selectedData.find(item => item.key === id);
+        return this.renderRightItem(item, sortableHandle);
+    }
+
     renderEmpty(type: string, emptyText: React.ReactNode) {
         const emptyCls = cls({
-            [`${prefixcls }-empty`]: true,
-            [`${prefixcls }-right-empty`]: type === 'right',
-            [`${prefixcls }-left-empty`]: type === 'left',
+            [`${prefixCls}-empty`]: true,
+            [`${prefixCls}-right-empty`]: type === 'right',
+            [`${prefixCls}-left-empty`]: type === 'left',
         });
-        return <div className={emptyCls}>{emptyText}</div>;
+        return <div aria-label="empty" className={emptyCls}>{emptyText}</div>;
     }
 
     renderRightSortableList(selectedData: Array<ResolvedDataItem>) {
-        // when choose some items && draggable is true
-        const SortableItem = SortableElement((
-            (item: ResolvedDataItem) => this.renderRightItem(item)) as React.SFC<ResolvedDataItem>
-        );
-        const SortableList = SortableContainer(({ items }: { items: Array<ResolvedDataItem> }) => (
-            <div className={`${prefixcls}-right-list`}>
-                {items.map((item, index: number) => (
-                    // sortableElement will take over the property 'key', so use another '_optionKey' to pass
-                    <SortableItem key={item.label} index={index} {...item} _optionKey={item.key} />
-                ))}
-            </div>
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore see reasons: https://github.com/clauderic/react-sortable-hoc/issues/206
-        ), { distance: 10 });
-        const sortList = <SortableList useDragHandle onSortEnd={this.onSortEnd} items={selectedData} />;
+        const sortItems = selectedData.map(item => item.key);
+        const sortList = <Sortable
+            strategy={verticalListSortingStrategy} 
+            onSortEnd={this.onSortEnd} 
+            items={sortItems} 
+            renderItem={this.renderSortItem} 
+            prefix={`${prefixCls}-right-item`}
+            dragOverlayCls={`${prefixCls}-right-item-drag-item-move`}
+        />;
         return sortList;
     }
 
@@ -588,16 +648,18 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
         }
         const selectedToken = locale.selected;
         const selectedText = selectedToken.replace('${total}', `${selectedData.length}`);
+        const hasValidSelected = selectedData.findIndex(item => !item.disabled) !== -1;
         const headerConfig = {
             totalContent: selectedText,
             allContent: locale.clear,
             onAllClick: () => this.foundation.handleClear(),
             type: 'right',
-            showButton: Boolean(selectedData.length),
+            showButton: Boolean(selectedData.length) && hasValidSelected,
+            num: selectedData.length,
         };
         const headerCom = this.renderHeader(headerConfig);
         const emptyCom = this.renderEmpty('right', emptyContent.right ? emptyContent.right : locale.emptyRight);
-        const panelCls = `${prefixcls }-right`;
+        const panelCls = `${prefixCls}-right`;
 
         let content = null;
 
@@ -608,7 +670,7 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
                 break;
             case selectedData.length && !draggable:
                 const list = (
-                    <div className={`${prefixcls }-right-list`}>
+                    <div className={`${prefixCls}-right-list`} role="list" aria-label="Selected list">
                         {selectedData.map(item => this.renderRightItem({ ...item }))}
                     </div>
                 );
@@ -630,16 +692,16 @@ class Transfer extends BaseComponent<TransferProps, TransferState> {
     }
 
     render() {
-        const { className, style, disabled, renderSelectedPanel, renderSourcePanel } = this.props;
-        const transferCls = cls(prefixcls, className, {
-            [`${prefixcls }-disabled`]: disabled,
-            [`${prefixcls }-custom-panel`]: renderSelectedPanel && renderSourcePanel,
+        const { className, style, disabled, renderSelectedPanel, renderSourcePanel, ...rest } = this.props;
+        const transferCls = cls(prefixCls, className, {
+            [`${prefixCls}-disabled`]: disabled,
+            [`${prefixCls}-custom-panel`]: renderSelectedPanel && renderSourcePanel,
         });
 
         return (
             <LocaleConsumer componentName="Transfer">
                 {(locale: Locale['Transfer']) => (
-                    <div className={transferCls} style={style}>
+                    <div className={transferCls} style={style} {...this.getDataAttr(rest)}>
                         {this.renderLeft(locale)}
                         {this.renderRight(locale)}
                     </div>

@@ -1,8 +1,7 @@
 import BaseFoundation, { DefaultAdapter } from '../base/foundation';
-import { isArray, get } from 'lodash-es';
+import { isArray, get } from 'lodash';
 import scrollIntoView, { CustomBehaviorOptions } from 'scroll-into-view-if-needed';
 import { cssClasses } from './constants';
-import React from 'react';
 
 const prefixCls = cssClasses.PREFIX;
 
@@ -21,8 +20,8 @@ export interface AnchorAdapter<P = Record<string, any>, S = Record<string, any>>
     getAnchorNode: (selector: string) => HTMLElement;
     getContentNode: (selector: string) => HTMLElement;
     notifyChange: (currentLink: string, previousLink: string) => void;
-    notifyClick: (e: React.MouseEvent<HTMLElement>, link: string) => void;
-    canSmoothScroll: () => boolean;
+    notifyClick: (e: any, link: string) => void;
+    canSmoothScroll: () => boolean
 }
 
 export default class AnchorFoundation<P = Record<string, any>, S = Record<string, any>> extends BaseFoundation<AnchorAdapter<P, S>, P, S> {
@@ -31,10 +30,8 @@ export default class AnchorFoundation<P = Record<string, any>, S = Record<string
         super({ ...AnchorFoundation.defaultAdapter, ...adapter });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     init = () => {};
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     destroy = () => {};
 
     addLink = (link: string) => {
@@ -172,7 +169,7 @@ export default class AnchorFoundation<P = Record<string, any>, S = Record<string
                  *      2. There is a scroll axis (clientHeight < scrollHeight | | clientWidth < scrollWidth)
                  *      3.overflowX or overflowY has a value and is not visible or clip
                  *       For details, please see https://github.com/stipsan/compute-scroll-into-view
-                 * 
+                 *
                  * behavior定义滚动行为
                  *  - 可选 'auto' | 'smooth' | Function
                  *  - Function 自定义滚动行为
@@ -185,9 +182,12 @@ export default class AnchorFoundation<P = Record<string, any>, S = Record<string
                  */
                 behavior: actions => {
                     // We just need to scroll the innermost target container
-                    const innermostAction = get(actions, '0');
-                    const el = get(innermostAction, 'el');
-                    const top = get(innermostAction, 'top');
+                    const verticalScrollAction = actions.find(action => {
+                        const { el } = action;
+                        return el.scrollHeight > el.clientHeight;
+                    });
+                    const el = get(verticalScrollAction, 'el');
+                    const top = get(verticalScrollAction, 'top');
                     if (el) {
                         const offsetTop = top - targetOffset;
                         if (el.scroll && canSmoothScroll) {

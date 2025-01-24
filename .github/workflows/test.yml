@@ -3,23 +3,22 @@
 name: test
 
 on:
-  push:
-    branches: [ main, release ]
-  pull_request:
-    branches: [ main, release ]
+    push:
+        branches: [main, release, test-code-coverage]
+    pull_request:
+        branches: [main, release]
 
-  workflow_dispatch:
+    workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Run install
-        run: npm i -g lerna && npm run bootstrap
-
-      - name: Run test
-        run: npm run test:coverage
-      - name: Run codecov
-        run: npx codecov --token=${{ secrets.CODECOV_TOKEN }}
+    jest:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+            - name: Run install
+              run: npm i -g lerna@^6 && npm run bootstrap
+            - name: Run Jest test
+              run: npm run test:unit

@@ -15,8 +15,7 @@ import { Button, Modal, TreeSelect, Row, Col, Avatar, Toast, Select as BasicSele
     Icon } from '../../../index';
 
 
-import { cloneDeepWith, cloneDeep } from 'lodash-es';
-
+import { cloneDeepWith, cloneDeep } from 'lodash';
 
 import { ComponentUsingFormState } from '../Hook/hookDemo';
 const { Input, Select, DatePicker, Switch, Slider, CheckboxGroup, Checkbox, RadioGroup, Radio, TimePicker, InputNumber, InputGroup } = Form;

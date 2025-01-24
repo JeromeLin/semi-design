@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import Button from '../button';
-import { get } from 'lodash-es';
+import { get } from 'lodash';
 import { Locale } from '../locale/interface';
 
 interface FooterProps {
@@ -9,7 +9,7 @@ interface FooterProps {
     locale: Locale['DatePicker'];
     localeCode: string;
     onCancelClick?: React.MouseEventHandler<HTMLButtonElement>;
-    onConfirmClick?: React.MouseEventHandler<HTMLButtonElement>;
+    onConfirmClick?: React.MouseEventHandler<HTMLButtonElement>
 }
 
 export default function Footer(props = {} as FooterProps) {

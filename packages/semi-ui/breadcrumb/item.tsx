@@ -5,16 +5,16 @@ import { cssClasses } from '@douyinfe/semi-foundation/breadcrumb/constants';
 import BreadcrumbItemFoundation, { BreadcrumbItemAdapter, BreadcrumbItemInfo, Route } from '@douyinfe/semi-foundation/breadcrumb/itemFoundation';
 import BaseComponent, { BaseProps } from '../_base/baseComponent';
 import { noop } from '@douyinfe/semi-foundation/utils/function';
-import BreadContext from './bread-context';
-import Typography from '../typography';
-import { merge, isUndefined, isNull } from 'lodash-es';
+import BreadContext, { BreadContextType } from './bread-context';
+import Typography, { EllipsisPos, ShowTooltip as ShowTooltipType } from '../typography';
+import { merge, isUndefined, isNull } from 'lodash';
 
 const clsPrefix = cssClasses.PREFIX;
 
-export { BreadcrumbItemInfo };
+export type { BreadcrumbItemInfo };
 
 export interface RouteProps extends Route {
-    icon?: React.ReactNode;
+    icon?: React.ReactNode
 }
 export interface BreadcrumbItemProps extends BaseProps {
     onClick?: (item: RouteProps, e: React.MouseEvent) => void;
@@ -24,10 +24,16 @@ export interface BreadcrumbItemProps extends BaseProps {
     noLink?: boolean;
     active?: boolean;
     shouldRenderSeparator?: boolean;
-    route?: RouteProps;
+    route?: RouteProps
 }
 
 type BreadcrumbItemState = Record<string, never>;
+
+interface GetTooltipOptType {
+    width: number;
+    ellipsisPos: EllipsisPos;
+    opts?: ShowTooltipType['opts']
+}
 
 export default class BreadcrumbItem extends BaseComponent<BreadcrumbItemProps, BreadcrumbItemState> {
     static isBreadcrumbItem = true;
@@ -40,7 +46,7 @@ export default class BreadcrumbItem extends BaseComponent<BreadcrumbItemProps, B
         children: propTypes.node,
         active: propTypes.bool,
         shouldRenderSeparator: propTypes.bool,
-        icon: propTypes.oneOfType([propTypes.string, propTypes.node]),
+        icon: propTypes.node,
         separator: propTypes.node,
         noLink: propTypes.bool,
     };
@@ -49,6 +55,8 @@ export default class BreadcrumbItem extends BaseComponent<BreadcrumbItemProps, B
         onClick: noop,
         shouldRenderSeparator: true
     };
+
+    context: BreadContextType;
 
     get adapter(): BreadcrumbItemAdapter<BreadcrumbItemProps, BreadcrumbItemState> {
         return {
@@ -81,6 +89,7 @@ export default class BreadcrumbItem extends BaseComponent<BreadcrumbItemProps, B
         const iconSize = compact ? 'small' : 'default';
         const className = `${clsPrefix}-item-icon`;
         if (React.isValidElement(iconType)) {
+            //@ts-ignore
             return React.cloneElement(iconType, { className, size: iconSize });
         }
         return iconType;
@@ -129,7 +138,7 @@ export default class BreadcrumbItem extends BaseComponent<BreadcrumbItemProps, B
         const showTooltip = this.getTooltipOpt();
         const icon = this.renderIcon();
         if (Boolean(children) && typeof children === 'string') {
-            const { opts, ellipsisPos, width } = showTooltip;
+            const { opts, ellipsisPos, width } = showTooltip as GetTooltipOptType;
             return (
                 <Fragment>
                     {icon}
@@ -140,7 +149,7 @@ export default class BreadcrumbItem extends BaseComponent<BreadcrumbItemProps, B
                                 pos: ellipsisPos,
                             }}
                             // icon={this.renderIcon(icon)}
-                            style={{ width }}
+                            style={{ maxWidth: width }}
                             size={compact ? 'small' : 'normal'}
                         >
                             {children}
@@ -188,17 +197,15 @@ export default class BreadcrumbItem extends BaseComponent<BreadcrumbItemProps, B
             shouldRenderSeparator
             // children,
         } = this.props;
-        const pageLabel = active ? {} : { 'aria-current': 'page' as const };
+        const pageLabel = active ? { 'aria-current': 'page' as const } : {};
         const item = this.renderItem();
-        const separator = !active ?
-            this.props.separator || <span className={`${clsPrefix}-separator`}>{this.context.separator}</span> :
-            null;
+        const separator = this.props.separator || <span className={`${clsPrefix}-separator`}>{this.context.separator}</span>;
         const wrapperCLs = cls({
             [`${clsPrefix}-item-wrap`]: true,
             // [`${clsPrefix}-item-wrap-iconOnly`]: !!children && this.props.icon,
         });
         return (
-            <span className={wrapperCLs} {...pageLabel}>
+            <span className={wrapperCLs} {...pageLabel} {...this.getDataAttr(this.props)}>
                 {item}
                 {shouldRenderSeparator && separator}
             </span>

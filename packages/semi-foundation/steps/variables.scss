@@ -4,7 +4,7 @@ $color-steps-bg-default: var(--semi-color-text-2); // 未到达步骤条图标�
 $color-steps-bg-hover: var(--semi-color-fill-0); // 步骤条背景 - 悬浮态
 $color-steps-border-default: transparent; // 步骤条描边 - 默认
 $color-steps-icon-default: var(--semi-color-text-2); // 未到达步骤条图标背景
-$color-steps-text-default: white; // 步骤条图标默认文本颜色
+$color-steps-text-default: rgba(var(--semi-white), 1); // 步骤条图标默认文本颜色
 $color-steps_danger-text-active: var(--semi-color-danger-active); // 错误步骤条文本颜色 - 按下态
 $color-steps_danger-text-default: var(--semi-color-danger); // 错误步骤条文本颜色 - 默认态
 $color-steps_danger-text-hover: var(--semi-color-danger-hover); // 错误步骤条文本颜色 - 悬浮态
@@ -16,10 +16,10 @@ $color-steps_item_error_left-icon: var(--semi-color-danger); // 错误步骤条�
 $color-steps_item_error_left_number-icon: var(--semi-color-primary); // 错误步骤条数字序号文本颜色
 $color-steps_item_finish-icon: var(--semi-color-primary); // 已完成步骤条图标颜色
 $color-steps_item_finish_number-icon: var(--semi-color-white); // 已完成步骤条对勾图标颜色
-$color-steps_item_left_number_icon-bg: var(--semi-color-primary); // 已完成步骤条图标背景颜色
-$color-steps_item_left_number_icon-icon: var(--semi-color-white); // 已完成步骤条图标文字颜色
+$color-steps_item_left_number_icon-bg: var(--semi-color-primary); // 步骤条图标背景颜色
+$color-steps_item_left_number_icon-icon: var(--semi-color-white); // 步骤条图标文字颜色
 $color-steps_item_process_left-icon: var(--semi-color-primary); // 进行中步骤条对勾图标颜色
-$color-steps_item_process_left_number-icon: var(--semi-color-white); // 进行中步骤条对勾图标颜色
+$color-steps_item_process_left_number-icon: var(--semi-color-white); // 进行中步骤条内部图标颜色
 $color-steps_item_title-text-hover: var(--semi-color-focus-border); // 步骤条标题文字悬停颜色
 $color-steps_item_wait_left_icon-icon: var(--semi-color-text-2); // 未到达步骤条图标颜色
 $color-steps_item_wait_left_number_icon-bg-hover: var(--semi-color-secondary-light-default); // 未到达步骤条图标背景颜色 - 悬浮态

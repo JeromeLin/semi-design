@@ -3,18 +3,32 @@ category: 开始
 title: Overview 组件总览
 icon: doc-overview
 localeCode: zh-CN
-order: 8
+order: 7
 brief: 基于Semi 设计语言开发，能够在线调试的React UI 桌面端组件库，帮助开发者高效构建应用
 ---
 
 ## 基础
 
 ```overview
-Grid 布局,
+Divider 分割线,
+Grid 栅格,
 Icon 图标,
 Layout 布局,
 Space 间距,
 Typography 版式
+```
+
+## Plus 组件
+
+```overview
+CodeHighlight 代码高亮,
+Markdown 渲染器,
+Lottie 动画,
+Chat 对话,
+HotKeys 快捷键,
+DragMove 拖拽移动,
+JsonViewer Json编辑器,
+AudioPlayer 音频播放器
 ```
 
 ## 输入类
@@ -28,6 +42,7 @@ DatePicker 日期选择器,
 Form 表单,
 Input 输入框,
 InputNumber 数字输入框,
+PinCode 验证码输入,
 Radio 单选框,
 Rating 评分,
 Select 选择器,
@@ -60,11 +75,15 @@ Avatar 头像,
 Badge 徽章,
 Calendar 日历,
 Card 卡片,
+Carousel 轮播图,
 Collapse 折叠面板,
 Collapsible 折叠,
 Descriptions 描述列表,
 Dropdown 下拉框,
 Empty 空状态,
+Highlight 高亮文本,
+Image 图片,
+Cropper 图片裁切,
 List 列表,
 Modal 模态对话框,
 OverflowList 折叠列表,
@@ -74,7 +93,8 @@ SideSheet 滑动侧边栏,
 Table 表格,
 Tag 标签,
 Timeline 时间轴,
-Tooltip 工具提示
+Tooltip 工具提示,
+VChart 图表
 ```
 
 ## 反馈类
